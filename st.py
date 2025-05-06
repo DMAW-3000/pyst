@@ -326,12 +326,9 @@ class Metaclass(Object):
     The internal representation of Smalltalk Metaclass
     """
     
-    def __init__(self, refKlass):
+    def __init__(self, instKlass):
         super().__init__(6)
-        
-        # link metaclass to reference class
-        refKlass.objClass = self
-        self.instanceClass = refKlass
+        self.instanceClass = instKlass
             
     @property
     def superClass(self):

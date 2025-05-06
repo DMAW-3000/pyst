@@ -25,4 +25,6 @@ Init_Class = (
     ("SequencableCollection", False, "seq_collection", "collection", True, ()),
     ("ArrayedCollection", False, "arr_collection", "seq_collection", False, ()),
     ("Array", True, "array", "arr_collection", False, ()),
+    ("Link", False, "link", "object", True, ("nextLink",)),
+    ("SymLink", True, "sym_link", "link", True, ("symbol",)),
 )

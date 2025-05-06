@@ -29,6 +29,8 @@ class Smalltalk(object):
         self.k_class_desc = None
         self.k_class = None
         self.k_metaclass = None
+        self.k_link = None
+        self.k_sym_link = None
         
     @classmethod
     def get_smalltalk(klass):
@@ -68,11 +70,12 @@ class Smalltalk(object):
             if hasCover:
                 coverKlass = globals()[klassName]
                 setattr(coverKlass, "Cover", klassObj)
-
+                
         # create Class metaclass and fixup
         klassObj = inst.k_class
         inst.create_meta(klassObj)
-        klassObj.subClasses.resize(klassObj.subClasses.size + 1)
+        klassObj.subClasses = Array(1)
+        klassObj.subClasses[0] = 1
         
         # create global dictionaries
         inst._st_dict = Dictionary(64)
@@ -83,33 +86,38 @@ class Smalltalk(object):
             klassName = klassInfo[0]
             cacheName = klassInfo[2]
             klassObj = getattr(inst, "k_" + cacheName)
-            klassObj._klass = inst.k_class
-            inst.create_meta(klassObj)
+            if klassObj is not inst.k_class:
+                inst.create_meta(klassObj)
             inst.add_symbol(klassName)
                 
-            print("%s: %d %s" % (klassName, 
+            print("%s: %d %s %s %s" % (klassName, 
                                  klassObj.get_num_inst(), 
-                                 klassObj.subClasses))
+                                 klassObj.subClasses,
+                                 klassObj.superClass,
+                                 klassObj._klass))
             
         return inst
             
-    def add_symbol(self, name):
+    def add_symbol(self, symName):
         """
         Add a new Symbol to the global symbol table
         """
-        symObj = Symbol.from_str(name)
+        symObj = Symbol.from_str(symName)
         linkObj = SymLink(symObj, self._sym_table.get(symObj))
         self._sym_table.add(symObj, linkObj)
         
-    def create_meta(self, refObj):
+    def create_meta(self, instObj):
         """
-        Create a Metaclass and link it with reference Class
+        Create a Metaclass and link it with instance Class
         """
-        numSubclass = refObj.subClasses
-        if is_int(numSubclass):
-            metaObj = Metaclass(refObj)
+        numSubclass = instObj.subClasses
+        metaObj = Metaclass(instObj)
+        instObj._klass = metaObj
+        if numSubclass > 0:
             metaObj.subClasses = Array(numSubclass)
-            refObj.subClasses = Array(numSubclass)
+            metaObj.subClasses[0] = numSubclass
+            instObj.subClasses = Array(numSubclass)
+            instObj.subClasses[0] = numSubclass
         
         
 
