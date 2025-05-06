@@ -1,8 +1,6 @@
 """
-Common definitions of Smslltalk fundamental types
+Common definitions of Smalltalk fundamental types
 """
-
-from copy import *
 
 
 def is_int(x):
@@ -10,7 +8,7 @@ def is_int(x):
     Returns True if x is a SmallInteger,
     False otherwise.
     """
-    return isinstance(x, int) or (x is None)
+    return isinstance(x, int)
     
     
 def is_obj(x):
@@ -18,7 +16,7 @@ def is_obj(x):
     Returns True if x is an object reference,
     False otherwise.
     """
-    return (not isinstance(x, int)) or (x is None)
+    return not isinstance(x, int)
     
 
 class Object(object):
@@ -26,11 +24,13 @@ class Object(object):
     Smalltalk base Object definition.
     """
     
+    Cover = None
+    
     def __init__(self, sz = 1):
         """
         Create a blank object
         """
-        self._klass = None
+        self._klass = self.Cover
         self._flags = 0
         self.resize(sz)
         
@@ -59,6 +59,13 @@ class Object(object):
         Get one the Object's child references
         """
         self._refs[idx] = x
+        
+
+class Array(Object):
+    """
+    Internal representation of Smalltalk Array
+    """
+    pass
         
         
 class Symbol(Object):
@@ -196,7 +203,6 @@ class Dictionary(Object):
         listSize = self.size - 1
         idx = (sym.hsh() & (listSize - 1)) + 1
         self[idx] = obj
-        print("%s: %d %s" % (sym.to_str(), idx, obj))
         self.tally += 1
         
     def get(self, sym):
@@ -217,7 +223,7 @@ class Class(Object):
         """
         Create a Class object
         """
-        super().__init__(12)
+        super().__init__(11)
         self.superClass = superKlass
         self.instanceSpec = numInstVars << 13
         if isFixed:
@@ -299,12 +305,20 @@ class Class(Object):
         self[8] = x
         
     @property
-    def classVariable(self):
+    def classVariables(self):
         return self[9]
         
-    @classVariable.setter
-    def classVariable(self, x):
+    @classVariables.setter
+    def classVariables(self, x):
         self[9] = x
+        
+    @property
+    def sharedPools(self):
+        return self[10]
+        
+    @sharedPools.setter
+    def sharedPools(self, x):
+        self[10] = x
         
 
 class Metaclass(Object):
@@ -312,8 +326,12 @@ class Metaclass(Object):
     The internal representation of Smalltalk Metaclass
     """
     
-    def __init__(self):
+    def __init__(self, refKlass):
         super().__init__(6)
+        
+        # link metaclass to reference class
+        refKlass.objClass = self
+        self.instanceClass = refKlass
             
     @property
     def superClass(self):
