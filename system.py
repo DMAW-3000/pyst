@@ -36,6 +36,7 @@ class Smalltalk(object):
         self.o_nil = None
         self.o_false = None
         self.o_true = None
+        self.o_char = [None] * 256
         
     @classmethod
     def get_smalltalk(klass):
@@ -102,7 +103,7 @@ class Smalltalk(object):
         
         # create global dictionaries
         inst.g_st_dict = Namespace(64)
-        inst.g_sym_table = SymbolTable(512)
+        inst.g_sym_table = Array(512)
         
         # class initialization pass 2
         for klassInfo in init.Init_Class:
@@ -119,6 +120,7 @@ class Smalltalk(object):
                 metaObj.superClass = inst.k_class
             inst.add_subclass(metaObj.superClass, metaObj)
             inst.add_symbol(klassName)
+            klassObj.methodDictionary = inst.o_nil
                 
             print("%s: %d %s %s %s" % (klassName, 
                                  klassObj.get_num_inst(), 
@@ -132,9 +134,11 @@ class Smalltalk(object):
         """
         Add a new Symbol to the global symbol table
         """
+        symTable = self.g_sym_table
         symObj = Symbol.from_str(symName)
-        linkObj = SymLink(symObj, self.g_sym_table.get(symObj))
-        self.g_sym_table.add(symObj, linkObj)
+        idx = symObj.hsh() & (symTable.size - 1)
+        linkObj = SymLink(symObj, symTable[idx])
+        symTable[idx] = linkObj
         
     def create_meta(self, instObj):
         """
@@ -162,7 +166,7 @@ class Smalltalk(object):
         Create the Array for holding instance variables
         """
         
-        if superObj is None:
+        if is_nil(superObj):
             numSuper = 0
         
         

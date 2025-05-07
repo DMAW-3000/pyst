@@ -244,24 +244,6 @@ class Association(Object):
         self[1] = x
         
         
-class SymbolTable(Array):
-    """
-    Internal representation the Smalltalk symbol table
-    """
-        
-    def add(self, sym, obj):
-        """
-        Add an item to the Dictionary
-        """
-        self[sym.hsh() & (self.size - 1)] = obj
-        
-    def get(self, sym):
-        """
-        Get an item from the dictionary
-        """
-        return self[sym.hsh() & (self.size - 1)]
-        
-        
 class Namespace(Object):
     """
     Internal representation of a Smalltalk Namespace
