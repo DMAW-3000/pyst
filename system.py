@@ -74,7 +74,8 @@ class Smalltalk(object):
         # create Class metaclass and fixup
         klassObj = inst.k_class
         inst.create_meta(klassObj)
-        klassObj.subClasses = Array(1)
+        klassObj._klass = klassObj
+        klassObj.subClasses = Array(2)
         klassObj.subClasses[0] = 1
         
         # create global dictionaries
@@ -88,6 +89,13 @@ class Smalltalk(object):
             klassObj = getattr(inst, "k_" + cacheName)
             if klassObj is not inst.k_class:
                 inst.create_meta(klassObj)
+            metaObj = klassObj._klass
+            superObj = klassObj.superClass
+            if superObj is not None:
+                metaObj.superClass = superObj
+            else:
+                metaObj.superClass = inst.k_class
+            inst.add_subclass(metaObj.superClass, metaObj)
             inst.add_symbol(klassName)
                 
             print("%s: %d %s %s %s" % (klassName, 
@@ -118,6 +126,24 @@ class Smalltalk(object):
             metaObj.subClasses[0] = numSubclass
             instObj.subClasses = Array(numSubclass)
             instObj.subClasses[0] = numSubclass
+            
+    def add_subclass(self, superObj, subObj):
+        """
+        Add a subclass to a class
+        """
+        idx = superObj.subClasses[0] - 1
+        superObj.subClasses[0] = idx
+        superObj.subClasses[idx] = subObj
+        
+    def create_inst_vars(self, superObj, varNames):
+        """
+        Create the Array for holding instance variables
+        """
+        
+        if superObj is None:
+            numSuper = 0
+        
+        
         
         
 
