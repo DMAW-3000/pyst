@@ -18,19 +18,45 @@ def is_obj(x):
     """
     return not isinstance(x, int)
     
+    
+_Obj_Nil = None
+
+def set_obj_nil(x):
+    """
+    Set the global Smalltalk Nil instance.
+    """
+    global _Obj_Nil
+    _Obj_Nil = x
+    
+    
+def is_nil(x):
+    """
+    Returns True if x is Nil,
+    False otherwise.
+    """
+    global _Obj_Nil
+    return x is _Obj_Nil
+
 
 class Object(object):
     """
     Smalltalk base Object definition.
     """
     
-    Cover = None
+    _Cover = None
     
-    def __init__(self, sz = 1):
+    @classmethod
+    def set_cover(klass, x):
+        """
+        Link the python class to its Smalltalk counterpart
+        """
+        klass._Cover = x
+    
+    def __init__(self, sz = 0):
         """
         Create a blank object
         """
-        self._klass = self.Cover
+        self._klass = self._Cover
         self._flags = 0
         self.resize(sz)
         
@@ -44,21 +70,63 @@ class Object(object):
     def resize(self, sz):
         """
         Resize the reference storage arrary for this Object.
-        This will not preservve the old references.
+        This will not preserve the old references.
         """
-        self._refs = [None] * sz
+        global _Obj_Nil
+        self._refs = [_Obj_Nil] * sz
         
     def __getitem__(self, idx):
         """
-        Get one the Object's child references
+        Get one of the Object's child references
         """
         return self._refs[idx]
         
     def __setitem__(self, idx, x):
         """
-        Get one the Object's child references
+        Set one of the Object's child references
         """
         self._refs[idx] = x
+        
+
+class UndefinedObject(Object):
+    """
+    Smalltalk UndefinedObject internal representation
+    """
+    pass
+    
+    
+class CFalse(Object):
+    """
+    Internal representation of Smalltalk False
+    """
+    
+    def __init__(self):
+        super().__init__(1)
+        
+    @property
+    def truthValue(self):
+        return self[0]
+        
+    @truthValue.setter
+    def truthValue(self, x):
+        self[0] = x
+    
+
+class CTrue(Object):
+    """
+    Internal representation of Smalltalk True
+    """
+    
+    def __init__(self):
+        super().__init__(1)
+        
+    @property
+    def truthValue(self):
+        return self[0]
+        
+    @truthValue.setter
+    def truthValue(self, x):
+        self[0] = x
         
 
 class Array(Object):
@@ -176,16 +244,34 @@ class Association(Object):
         self[1] = x
         
         
-class Dictionary(Object):
+class SymbolTable(Array):
     """
-    Internal representation of a Smalltalk Dictionary
+    Internal representation the Smalltalk symbol table
+    """
+        
+    def add(self, sym, obj):
+        """
+        Add an item to the Dictionary
+        """
+        self[sym.hsh() & (self.size - 1)] = obj
+        
+    def get(self, sym):
+        """
+        Get an item from the dictionary
+        """
+        return self[sym.hsh() & (self.size - 1)]
+        
+        
+class Namespace(Object):
+    """
+    Internal representation of a Smalltalk Namespace
     """
     
     def __init__(self, sz):
         """
-        Create an empty Dictionary
+        Create a Namespaece object
         """
-        super().__init__(sz + 1)
+        super().__init__(sz + 5)
         self.tally = 0
         
     @property
@@ -196,22 +282,37 @@ class Dictionary(Object):
     def tally(self, x):
         self[0] = x
         
-    def add(self, sym, obj):
-        """
-        Add an item to the Dictionary
-        """
-        listSize = self.size - 1
-        idx = (sym.hsh() & (listSize - 1)) + 1
-        self[idx] = obj
-        self.tally += 1
+    @property
+    def superspace(self):
+        return self[1]
         
-    def get(self, sym):
-        """
-        Get an item from the dictionary
-        """
-        listSize = self.size - 1
-        idx = (sym.hsh() & (listSize - 1)) + 1
-        return self[idx]
+    @superspace.setter
+    def superspace(self, x):
+        self[1] = x
+        
+    @property
+    def name(self):
+        return self[2]
+        
+    @name.setter
+    def name(self, x):
+        self[2] = x
+        
+    @property
+    def subspaces(self):
+        return self[3]
+        
+    @subspaces.setter
+    def subspaces(self, x):
+        self[3] = x
+        
+    @property
+    def sharedPools(self):
+        return self[4]
+        
+    @sharedPools.setter
+    def sharedPools(self, x):
+        self[4] = x
         
         
 class Class(Object):

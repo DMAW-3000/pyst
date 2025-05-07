@@ -16,8 +16,8 @@ class Smalltalk(object):
         Create a blank Smalltalk environment
         """
         # global dictionaries
-        self._st_dict = None
-        self._sym_table = None
+        self.g_st_dict = None
+        self.g_sym_table = None
         
         # cached class definitions
         self.k_object = None
@@ -31,6 +31,11 @@ class Smalltalk(object):
         self.k_metaclass = None
         self.k_link = None
         self.k_sym_link = None
+        
+        # fundamental objects
+        self.o_nil = None
+        self.o_false = None
+        self.o_true = None
         
     @classmethod
     def get_smalltalk(klass):
@@ -46,9 +51,14 @@ class Smalltalk(object):
         """
         import init
         
+        # create empty system
         klass._SmalltalkInstance = inst = klass()
             
-        # class initialization pass 1
+        # Class initialization pass 1
+        # this establishes the Class tree and
+        # set the cover classes for those Classes that have them.
+        # After this point, Python cover classes have the right
+        # Smalltalk type.
         for klassInfo in init.Init_Class:
             klassName = klassInfo[0]
             hasCover = klassInfo[1]
@@ -69,7 +79,7 @@ class Smalltalk(object):
             setattr(inst, "k_" + cacheName, klassObj)
             if hasCover:
                 coverKlass = globals()[klassName]
-                setattr(coverKlass, "Cover", klassObj)
+                coverKlass.set_cover(klassObj)
                 
         # create Class metaclass and fixup
         klassObj = inst.k_class
@@ -78,9 +88,21 @@ class Smalltalk(object):
         klassObj.subClasses = Array(2)
         klassObj.subClasses[0] = 1
         
+        # create Smalltalk Nil singleton
+        inst.o_nil = UndefinedObject()
+        
+        # set object global Nil so covers created
+        # after this point use Smalltalk Nil instead
+        # of Python None
+        set_obj_nil(inst.o_nil)
+        
+        # create Smalltalk Boolean singletons
+        inst.o_false = CFalse()
+        inst.o_true = CTrue()
+        
         # create global dictionaries
-        inst._st_dict = Dictionary(64)
-        inst._sym_table = Dictionary(64)
+        inst.g_st_dict = Namespace(64)
+        inst.g_sym_table = SymbolTable(512)
         
         # class initialization pass 2
         for klassInfo in init.Init_Class:
@@ -111,8 +133,8 @@ class Smalltalk(object):
         Add a new Symbol to the global symbol table
         """
         symObj = Symbol.from_str(symName)
-        linkObj = SymLink(symObj, self._sym_table.get(symObj))
-        self._sym_table.add(symObj, linkObj)
+        linkObj = SymLink(symObj, self.g_sym_table.get(symObj))
+        self.g_sym_table.add(symObj, linkObj)
         
     def create_meta(self, instObj):
         """
