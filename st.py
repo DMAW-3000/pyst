@@ -2,6 +2,8 @@
 Common definitions of Smalltalk fundamental types
 """
 
+import sys
+
 
 def is_int(x):
     """
@@ -10,7 +12,6 @@ def is_int(x):
     """
     return isinstance(x, int)
     
-    
 def is_obj(x):
     """
     Returns True if x is an object reference,
@@ -18,9 +19,7 @@ def is_obj(x):
     """
     return not isinstance(x, int)
     
-    
 _Obj_Nil = None
-
 
 def set_obj_nil(x):
     """
@@ -28,7 +27,6 @@ def set_obj_nil(x):
     """
     global _Obj_Nil
     _Obj_Nil = x
-    
     
 def is_nil(x):
     """
@@ -38,17 +36,19 @@ def is_nil(x):
     global _Obj_Nil
     return x is _Obj_Nil
     
+Int_Max = sys.maxsize
     
 def hsh_seq(x):
     """
     Create a hash key from a sequence of values
     """
+    global Int_Max
     h = 1497032417
-    m = 0xffffffff
+    m = Int_Max
     for c in x:
         h = (h + c) & m
-        h = (h + (h << 10)) & m
-        h = (h ^ (h >> 6)) & m
+        h = (h + ((h << 10) & m)) & m
+        h = (h ^ (h >> 6))
     return h
     
 
