@@ -95,8 +95,9 @@ class Smalltalk(object):
         inst.o_true = CTrue()
         
         # create global dictionaries
-        inst.g_st_dict = Namespace(64)
         inst.g_sym_table = Array(512)
+        inst.g_st_dict = Namespace(64)
+        inst.g_st_dict.name = inst.symbol_add("Smalltalk")
         
         # class initialization pass 2
         for klassInfo in init.Init_Class:
@@ -112,11 +113,12 @@ class Smalltalk(object):
             else:
                 metaObj.superClass = inst.k_class
                 klassObj.superClass = inst.o_nil
-            inst.add_subclass(metaObj.superClass, metaObj)
-            inst.symbol_add(klassName)
+            inst.subclass_add(metaObj.superClass, metaObj)
+            klassObj.name = inst.symbol_add(klassName)
             klassObj.methodDictionary = inst.o_nil
                 
-            print("%s: %d %s %s %s" % (klassName, 
+            print("%s: %s %d %s %s %s" % (klassName,
+                                 klassObj.name,
                                  klassObj.get_num_inst(), 
                                  klassObj.subClasses,
                                  klassObj.superClass,
@@ -127,12 +129,14 @@ class Smalltalk(object):
         Add a new Symbol to the global symbol table if it
         does not already exist.
         """
-        if is_nil(self.symbol_find(symName)):
+        symObj = self.symbol_find(symName)
+        if is_nil(symObj):
             symTable = self.g_sym_table
             symObj = Symbol.from_str(symName)
             idx = symObj.hsh() & (symTable.size - 1)
             link = SymLink(symObj, symTable[idx])
             symTable[idx] = link
+        return symObj
         
     def symbol_find(self, symName):
         """
@@ -145,7 +149,7 @@ class Smalltalk(object):
             if symName == link.symbol.to_str():
                 return link.symbol
             link = link.nextLink
-        return link
+        return link  # nil
         
     def create_meta(self, instObj):
         """
@@ -162,7 +166,7 @@ class Smalltalk(object):
             instObj.subClasses = Array(numSubclass)
             instObj.subClasses[0] = numSubclass
             
-    def add_subclass(self, superObj, subObj):
+    def subclass_add(self, superObj, subObj):
         """
         Add a subclass to a class
         """
