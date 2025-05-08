@@ -96,8 +96,9 @@ class Smalltalk(object):
         
         # create global dictionaries
         inst.g_sym_table = Array(512)
-        inst.g_st_dict = Namespace(64)
-        inst.g_st_dict.name = inst.symbol_add("Smalltalk")
+        inst.g_st_dict = stDict = Namespace(512)
+        stDict.name = inst.symbol_add("Smalltalk")
+        inst.name_add_sym(stDict, "Smalltalk", stDict)
         
         # class initialization pass 2
         for klassInfo in init.Init_Class:
@@ -129,13 +130,11 @@ class Smalltalk(object):
         Add a new Symbol to the global symbol table if it
         does not already exist.
         """
-        symObj = self.symbol_find(symName)
-        if is_nil(symObj):
-            symTable = self.g_sym_table
-            symObj = Symbol.from_str(symName)
-            idx = symObj.hsh() & (symTable.size - 1)
-            link = SymLink(symObj, symTable[idx])
-            symTable[idx] = link
+        symTable = self.g_sym_table
+        symObj = Symbol.from_str(symName)
+        idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
+        link = SymLink(symObj, symTable[idx])
+        symTable[idx] = link
         return symObj
         
     def symbol_find(self, symName):
@@ -150,6 +149,33 @@ class Smalltalk(object):
                 return link.symbol
             link = link.nextLink
         return link  # nil
+        
+    def name_add_sym(self, dictObj, symName, itemObj):
+        """
+        Add an item to a Namespace instance using
+        a newly created Symbol as the key.
+        """
+        symObj = self.symbol_add(symName)
+        bind = Association(symObj, itemObj)
+        self.dict_add(dictObj, symObj, bind)
+        
+    def dict_add(self, dictObj, keyObj, itemObj):
+        """
+        Add an item to a Dictionary-like instance.
+        """
+        numInst = dictObj.get_class().get_num_inst()
+        arrSize = dictObj.size - numInst
+        idx = (keyObj.hsh() & (arrSize - 1)) + numInst
+        print(keyObj, keyObj.hsh(), idx)
+        
+    def dict_find(self, dictObj, keyObj):
+        """
+        Find an Object in a Dictionary-like instance
+        """
+        numInst = dictObj.get_class().get_num_inst()
+        arrSize = dictObj.size - numInst
+        idx = (keyObj.hsh() & (arrSize - 1)) + numInst
+        print(idx)
         
     def create_meta(self, instObj):
         """

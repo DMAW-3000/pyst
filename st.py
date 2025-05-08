@@ -48,9 +48,19 @@ def hsh_seq(x):
     for c in x:
         h = (h + c) & m
         h = (h + ((h << 10) & m)) & m
-        h = (h ^ (h >> 6))
+        h ^= (h >> 6)
     return h
     
+def hsh_scram(x):
+    """
+    Generate a hash key from a single value
+    """
+    global Int_Max
+    m = Int_Max
+    x ^= (((x << 10) & m) | (x >> 22))
+    x ^= (((x <<  6) & m) | (x >> 26))
+    x ^= (((x << 16) & m) | (x >> 16))
+    return x
 
 class Object(object):
     """
@@ -94,6 +104,12 @@ class Object(object):
         Return the Smalltalk class to which Object belongs
         """
         return self._klass
+        
+    def hsh(self):
+        """
+        Return a hask key for the object.
+        """
+        return hsh_scram(id(self))
         
     def __getitem__(self, idx):
         """
@@ -197,12 +213,6 @@ class Symbol(Object):
         for n in range(self.size):
             s += chr(self[n])
         return s
-        
-    def hsh(self):
-        """
-        Return a hash value for the Symbol
-        """
-        return hsh_seq(self._refs)
             
     def __str__(self):
         return "#" + self.to_str()
