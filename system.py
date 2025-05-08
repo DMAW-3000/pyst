@@ -37,13 +37,6 @@ class Smalltalk(object):
         self.o_false = None
         self.o_true = None
         self.o_char = [None] * 256
-        
-    @classmethod
-    def get_smalltalk(klass):
-        """
-        Get a reference to the Smalltalk instance
-        """
-        return klass._SmalltalkInstance
     
     @classmethod
     def rebuild(klass):
@@ -120,7 +113,7 @@ class Smalltalk(object):
                 metaObj.superClass = inst.k_class
                 klassObj.superClass = inst.o_nil
             inst.add_subclass(metaObj.superClass, metaObj)
-            inst.add_symbol(klassName)
+            inst.symbol_add(klassName)
             klassObj.methodDictionary = inst.o_nil
                 
             print("%s: %d %s %s %s" % (klassName, 
@@ -129,21 +122,19 @@ class Smalltalk(object):
                                  klassObj.superClass,
                                  klassObj._klass))
             
-        return inst
-            
-    def add_symbol(self, symName):
+    def symbol_add(self, symName):
         """
         Add a new Symbol to the global symbol table if it
         does not already exist.
         """
-        if is_nil(self.find_symbol(symName)):
+        if is_nil(self.symbol_find(symName)):
             symTable = self.g_sym_table
             symObj = Symbol.from_str(symName)
             idx = symObj.hsh() & (symTable.size - 1)
             link = SymLink(symObj, symTable[idx])
             symTable[idx] = link
         
-    def find_symbol(self, symName):
+    def symbol_find(self, symName):
         """
         Returns a Symbol object if name is found in global
         symbol table, Nil otherwise.
