@@ -167,7 +167,15 @@ class Symbol(Object):
         """
         super().__init__(sz)
         self._py_str = None
-    
+        
+    def resize(self, sz):
+        """
+        Resize the Symbol storage. For efficiency, python a python 
+        bytearray is used instead of the usual python list.  The old 
+        values stored in the object are not preserved.
+        """
+        self._refs = bytearray(sz)
+        
     @classmethod
     def from_str(klass, s):
         """
@@ -197,7 +205,7 @@ class Symbol(Object):
         return hsh_seq(self._refs)
             
     def __str__(self):
-        return self.to_str()
+        return "#" + self.to_str()
         
         
 class SymLink(Object):
