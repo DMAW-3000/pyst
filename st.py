@@ -89,6 +89,12 @@ class Object(object):
         global _Obj_Nil
         self._refs = [_Obj_Nil] * sz
         
+    def get_class(self):
+        """
+        Return the Smalltalk class to which Object belongs
+        """
+        return self._klass
+        
     def __getitem__(self, idx):
         """
         Get one of the Object's child references
