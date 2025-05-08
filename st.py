@@ -36,7 +36,20 @@ def is_nil(x):
     """
     global _Obj_Nil
     return x is _Obj_Nil
-
+    
+    
+def hsh_seq(x):
+    """
+    Create a hash key from a sequence of values
+    """
+    h = 1497032417
+    m = 0xffffffff
+    for c in x:
+        h = (h + c) & m
+        h = (h + (h << 10)) & m
+        h = (h ^ (h >> 6)) & m
+    return h
+    
 
 class Object(object):
     """
@@ -153,10 +166,8 @@ class Symbol(Object):
         Create Smalltalk Symbol from Python str
         """
         sym = klass(len(s))
-        n = 0
-        for c in s:
+        for n,c in enumerate(s):
             sym[n] = ord(c)
-            n += 1
         return sym
             
     def to_str(self):
@@ -172,13 +183,7 @@ class Symbol(Object):
         """
         Return a hash value for the Symbol
         """
-        h = 1497032417
-        m = 0xffffffff
-        for n in range(self.size):
-            h = (h + self[n]) & m
-            h = (h + (h << 10)) & m
-            h = (h ^ (h >> 6)) & m
-        return h
+        return hsh_seq(self._refs)
             
     def __str__(self):
         return self.to_str()

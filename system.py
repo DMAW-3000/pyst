@@ -118,6 +118,7 @@ class Smalltalk(object):
                 metaObj.superClass = superObj
             else:
                 metaObj.superClass = inst.k_class
+                klassObj.superClass = inst.o_nil
             inst.add_subclass(metaObj.superClass, metaObj)
             inst.add_symbol(klassName)
             klassObj.methodDictionary = inst.o_nil
@@ -132,21 +133,37 @@ class Smalltalk(object):
             
     def add_symbol(self, symName):
         """
-        Add a new Symbol to the global symbol table
+        Add a new Symbol to the global symbol table if it
+        does not already exist.
+        """
+        if is_nil(self.find_symbol(symName)):
+            symTable = self.g_sym_table
+            symObj = Symbol.from_str(symName)
+            idx = symObj.hsh() & (symTable.size - 1)
+            link = SymLink(symObj, symTable[idx])
+            symTable[idx] = link
+        
+    def find_symbol(self, symName):
+        """
+        Returns a Symbol object if name is found in global
+        symbol table, Nil otherwise.
         """
         symTable = self.g_sym_table
-        symObj = Symbol.from_str(symName)
-        idx = symObj.hsh() & (symTable.size - 1)
-        linkObj = SymLink(symObj, symTable[idx])
-        symTable[idx] = linkObj
+        idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
+        link = symTable[idx]
+        while not is_nil(link):
+            if symName == index.symbol.to_str():
+                return index.symbol
+            link = link.nextLink
+        return link
         
     def create_meta(self, instObj):
         """
         Create a Metaclass and link it with instance Class
         """
-        numSubclass = instObj.subClasses
         metaObj = Metaclass(instObj)
         instObj._klass = metaObj
+        numSubclass = instObj.subClasses
         if numSubclass > 0:
             metaObj.subClasses = Array(numSubclass)
             metaObj.subClasses[0] = numSubclass
