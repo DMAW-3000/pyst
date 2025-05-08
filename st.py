@@ -21,6 +21,7 @@ def is_obj(x):
     
 _Obj_Nil = None
 
+
 def set_obj_nil(x):
     """
     Set the global Smalltalk Nil instance.
@@ -159,6 +160,7 @@ class Symbol(Object):
         Create a blank Symbol
         """
         super().__init__(sz)
+        self._py_str = None
     
     @classmethod
     def from_str(klass, s):
@@ -168,12 +170,15 @@ class Symbol(Object):
         sym = klass(len(s))
         for n,c in enumerate(s):
             sym[n] = ord(c)
+        sym._py_str = s
         return sym
             
     def to_str(self):
         """
         Return Symbol contents as a Python str
         """
+        if self._py_str is not None:
+            return self._py_str
         s = ""
         for n in range(self.size):
             s += chr(self[n])
