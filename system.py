@@ -148,18 +148,19 @@ class Smalltalk(object):
         Returns a Symbol object if name is found in global
         symbol table, Nil otherwise.
         """
-        symTable = self.g_sym_table
-        idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
-        link = symTable[idx]
+        symTable = self.g_sym_table 
+        link = symTable[hsh_seq(map(ord, symName)) & (symTable.size - 1)]
         while not is_nil(link):
-            if symName == index.symbol.to_str():
-                return index.symbol
+            if symName == link.symbol.to_str():
+                return link.symbol
             link = link.nextLink
         return link
         
     def create_meta(self, instObj):
         """
         Create a Metaclass and link it with instance Class
+        Also create the subclass arrays in both objects
+        so that they match up.
         """
         metaObj = Metaclass(instObj)
         instObj._klass = metaObj
@@ -174,9 +175,10 @@ class Smalltalk(object):
         """
         Add a subclass to a class
         """
-        idx = superObj.subClasses[0] - 1
-        superObj.subClasses[0] = idx
-        superObj.subClasses[idx] = subObj
+        subArray = superObj.subClasses
+        idx = subArray[0] - 1
+        subArray[0] = idx
+        subArray[idx] = subObj
         
     def create_inst_vars(self, superObj, varNames):
         """
