@@ -127,6 +127,13 @@ class Object(object):
         """
         self._refs[idx] = x
         
+    def __del__(self):
+        """
+        Notify when the object is out of scope
+        """
+        print("DEL", self._obj_id, self)
+        OBJ_TABLE.free_obj(self._obj_id)
+        
 
 class UndefinedObject(Object):
     """
