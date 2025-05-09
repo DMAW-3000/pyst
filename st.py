@@ -406,6 +406,35 @@ class Dictionary(Object):
         self[0] = x
         
         
+class BindingDictionary(Object):
+    """
+    Internal representation of a Smalltalk BindingDictionary
+    """
+    
+    def __init__(self, sz):
+        """
+        Create a BindingDictionary object
+        """
+        super().__init__(sz + 2)
+        self.tally = 0
+        
+    @property
+    def tally(self):
+        return self[0]
+        
+    @tally.setter
+    def tally(self, x):
+        self[0] = x
+        
+    @property
+    def environment(self):
+        return self[1]
+        
+    @environment.setter
+    def environment(self, x):
+        self[1] = x
+        
+        
 class Namespace(Object):
     """
     Internal representation of a Smalltalk Namespace
@@ -427,11 +456,11 @@ class Namespace(Object):
         self[0] = x
         
     @property
-    def superspace(self):
+    def environment(self):
         return self[1]
         
-    @superspace.setter
-    def superspace(self, x):
+    @environment.setter
+    def environment(self, x):
         self[1] = x
         
     @property
