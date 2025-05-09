@@ -572,6 +572,7 @@ class Metaclass(Object):
     
     def __init__(self, instKlass):
         super().__init__(6)
+        self.instanceSpec = (12 << 13) | 0x20
         self.instanceClass = instKlass
             
     @property
