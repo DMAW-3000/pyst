@@ -6,6 +6,12 @@ import sys
 
 from obj import *
 
+
+# globals
+_Obj_Nil = None
+Int_Max = sys.maxsize
+
+
 def is_int(x):
     """
     Returns True if x is a SmallInteger,
@@ -19,8 +25,6 @@ def is_obj(x):
     False otherwise.
     """
     return not isinstance(x, int)
-    
-_Obj_Nil = None
 
 def set_obj_nil(x):
     """
@@ -49,8 +53,6 @@ def hsh_seq(x):
         h = (h + ((h << 10) & m)) & m
         h ^= (h >> 6)
     return h
-    
-Int_Max = sys.maxsize
     
 def hsh_scram(x):
     """
@@ -115,6 +117,13 @@ class Object(object):
         """
         return hsh_scram(self._obj_id)
         
+    def is_same(self, other):
+        """
+        Returns True if other Object is identical to this one,
+        False otherwise.
+        """
+        return self._obj_id == other._obj_id
+        
     def __getitem__(self, idx):
         """
         Get one of the Object's child references
@@ -126,6 +135,12 @@ class Object(object):
         Set one of the Object's child references
         """
         self._refs[idx] = x
+        
+    def __len__(self):
+        """
+        Return the number of child references in the Object
+        """
+        return self.size
         
     def __del__(self):
         """
@@ -260,7 +275,7 @@ class Symbol(String):
         return super().to_str()
             
     def __str__(self):
-        return "#" + super().to_str()
+        return "#" + self.to_str()
         
         
 class SymLink(Object):

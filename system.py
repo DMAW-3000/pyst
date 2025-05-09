@@ -144,6 +144,9 @@ class Smalltalk(object):
                                  klassObj.superClass,
                                  klassObj._klass))
             """
+        for s in inst.g_st_dict[5:]:
+            if not is_nil(s):
+                print(s.key, s.key._obj_id, s.value.value)
         
     def symbol_add(self, symName):
         """
@@ -196,12 +199,14 @@ class Smalltalk(object):
         arrSize = dictObj.size - numInst
         mask = arrSize - 1
         idx = keyObj.hsh()
-        for n in range(arrSize):
+        n = 0
+        while n < arrSize:
             idx &= mask
             assoc = dictObj[idx + numInst]
-            if is_nil(assoc) or (assoc.key is keyObj):
+            if is_nil(assoc) or (keyObj.is_same(assoc.value)):
                 return idx + numInst
             idx += 1
+            n += 1
         raise IndexError("Dictionary is too sma1l")
         
     @staticmethod
