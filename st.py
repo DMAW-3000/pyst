@@ -131,7 +131,7 @@ class Object(object):
         """
         Notify when the object is out of scope
         """
-        print("DEL", self._obj_id, self)
+        #print("DEL", self._obj_id, self)
         OBJ_TABLE.free_obj(self._obj_id)
         
 
