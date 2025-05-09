@@ -85,6 +85,7 @@ class Object(object):
         """
         Create a blank object
         """
+        global OBJ_TABLE
         self._py_cache = None
         self._obj_id = OBJ_TABLE.new_obj()
         self._klass = self._Cover
@@ -147,6 +148,7 @@ class Object(object):
         """
         Notify when the object is out of scope
         """
+        global OBJ_TABLE
         #print("DEL", self._obj_id, self)
         OBJ_TABLE.free_obj(self._obj_id)
         
