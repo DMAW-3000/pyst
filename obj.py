@@ -2,6 +2,9 @@
 Object ID manager
 """
 
+import sys
+
+
 import random
 random.seed()
 
@@ -12,7 +15,7 @@ class OBJ_TABLE_BASE(object):
     """
     
     _Min_Id = 3
-    _Max_Id = 0xffffffff
+    _Max_Id = sys.maxsize
     
     def __init__(self):
         """
@@ -64,13 +67,13 @@ class OBJ_TABLE_LINEAR(OBJ_TABLE_BASE):
         objMap = self._obj_map
         objId = self._cur_id
         while objId in objMap:
-            objId += 7
+            objId += 9
             if objId > self._Max_Id:
                 objId = self._Min_Id
         objMap.add(objId)
-        self._cur_id = objId + 7
+        self._cur_id = objId + 9
         if self._cur_id > self._Max_Id:
-            self._cur_id = self._Min_Id
+            self._cur_id = self._Min_Id + (self._cur_id % 9)
         return objId
 
 
