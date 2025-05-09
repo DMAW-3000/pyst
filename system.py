@@ -147,6 +147,7 @@ class Smalltalk(object):
             klassName = klassInfo[0]
             cacheName = klassInfo[2]
             instVars = klassInfo[5]
+            classVars = klassInfo[6]
             klassObj = getattr(inst, "k_" + cacheName)
             metaObj = klassObj._klass
             if metaObj is None:
@@ -162,11 +163,12 @@ class Smalltalk(object):
                 inst.subclass_add(superObj, klassObj)
             klassObj.environment = inst.g_st_dict
             klassObj.instanceVariables = inst.create_inst_vars(superObj, instVars)
-            klassObj.name = inst.symbol_add(klassName)
+            klassObj.classVariables = inst.create_class_vars(klassObj, classVars)
             klassObj.methodDictionary = inst.o_nil
             klassObj.comment = inst.o_nil
             klassObj.category = inst.o_nil
             klassObj.pragmaHandlers = inst.o_nil
+            klassObj.name = inst.name_add_sym(inst.g_st_dict, klassName, klassObj)
 
         for klassInfo in init.Init_Class:
             cacheName = klassInfo[2]
@@ -182,6 +184,7 @@ class Smalltalk(object):
         for s in inst.g_st_dict[5:]:
             if not is_nil(s):
                 print(s.key, s.key.hsh() & 511, s.value.value)
+        print(OBJ_TABLE._obj_map)
         
     def symbol_add(self, symName):
         """
@@ -229,8 +232,7 @@ class Smalltalk(object):
         a newly created Symbol as the key.
         """
         symObj = self.symbol_add(symName)
-        bind = VariableBinding(symObj, itemObj, dictObj)
-        self.dict_add(dictObj, symObj, bind)
+        self.dict_add(dictObj, symObj, VariableBinding(symObj, itemObj, dictObj))
         
     def dict_add(self, dictObj, keyObj, itemObj):
         """
@@ -304,6 +306,21 @@ class Smalltalk(object):
             symObj = self.symbol_find_or_add(s)
             arrObj[numSuper + n] = symObj
         return arrObj
+        
+    def create_class_vars(self, klassObj, varNames):
+        """
+        Create the BindingDictionary for holding the class
+        variable values.
+        """
+        if len(varNames) == 0:
+            return self.o_nil
+        bindDict = BindingDictionary(8)
+        bindDict.environment = klassObj
+        for s in varNames:
+            symObj = self.symbol_find_or_add(s)
+            self.dict_add(bindDict, symObj, self.o_nil)
+        return bindDict
+            
         
         
         
