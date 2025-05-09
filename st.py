@@ -195,9 +195,42 @@ class Array(Object):
     Internal representation of Smalltalk Array
     """
     pass
+    
+    
+class String(Array):
+    """
+    Internal representation of Smalltalk String
+    """
+    
+    def resize(self, sz):
+        """
+        Resize the String storage. For efficiency, a python 
+        bytearray is used instead of the usual python list.  The old 
+        values stored in the object are not preserved.
+        """
+        self._refs = bytearray(sz)
+        
+    @classmethod
+    def from_str(klass, s):
+        """
+        Create Smalltalk String from Python str
+        """
+        strObj = klass(len(s))
+        for n,c in enumerate(s):
+            strObj[n] = ord(c)
+        return strObj
+        
+    def to_str(self):
+        """
+        Return the String contents as a Python str
+        """
+        s = ""
+        for n in range(self.size):
+            s += chr(self[n])
+        return s
         
         
-class Symbol(Object):
+class Symbol(String):
     """
     Internal representation of a Smalltalk Symbol
     """
@@ -209,24 +242,14 @@ class Symbol(Object):
         super().__init__(sz)
         self._py_str = None
         
-    def resize(self, sz):
-        """
-        Resize the Symbol storage. For efficiency, python a python 
-        bytearray is used instead of the usual python list.  The old 
-        values stored in the object are not preserved.
-        """
-        self._refs = bytearray(sz)
-        
     @classmethod
     def from_str(klass, s):
         """
-        Create Smalltalk Symbol from Python str
+        Create a Smalltalk Symbol from a Python str
         """
-        sym = klass(len(s))
-        for n,c in enumerate(s):
-            sym[n] = ord(c)
-        sym._py_str = s
-        return sym
+        symObj = super().from_str(s)
+        symObj._py_str = s
+        return symObj
             
     def to_str(self):
         """
@@ -234,13 +257,10 @@ class Symbol(Object):
         """
         if self._py_str is not None:
             return self._py_str
-        s = ""
-        for n in range(self.size):
-            s += chr(self[n])
-        return s
+        return super().to_str()
             
     def __str__(self):
-        return "#" + self.to_str()
+        return "#" + super().to_str()
         
         
 class SymLink(Object):

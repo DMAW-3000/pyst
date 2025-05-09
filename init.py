@@ -39,4 +39,7 @@ Init_Class = (
     ("Association", True, "assoc", "lookup_key", True, ("value",)),
     ("HomedAssociation", False, "homed_assoc", "assoc", True, ("environment",)),
     ("VariableBinding", True, "variable_bind", "homed_assoc", True, ()),
+    ("CharacterArray", False, "char_array", "arr_collection", False, ()),
+    ("String", True, "string", "char_array", False, ()),
+    ("Symbol", True, "symbol", "string", False, ()),
 )

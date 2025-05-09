@@ -43,6 +43,9 @@ class Smalltalk(object):
         self.k_assoc = None
         self.k_homed_assoc = None
         self.k_variable_bind = None
+        self.k_char_array = None
+        self.k_string = None
+        self.k_symbol = None
         
         # fundamental objects
         self.o_nil = None
@@ -114,6 +117,7 @@ class Smalltalk(object):
         inst.name_add_sym(stDict, "Smalltalk", stDict)
         inst.name_add_sym(stDict, "SymbolTable", inst.g_sym_table)
         inst.name_add_sym(stDict, "KernelInitialized", inst.o_false)
+        inst.name_add_sym(stDict, "Version", String.from_str("1.0"))
         
         # class initialization pass 2
         for klassInfo in init.Init_Class:
@@ -131,7 +135,6 @@ class Smalltalk(object):
                 klassObj.superClass = inst.o_nil
             inst.subclass_add(metaObj.superClass, metaObj)
             klassObj.name = inst.symbol_add(klassName)
-            klassObj.methodDictionary = inst.o_nil
             
             """
             print("%s: %s %d %s %s %s" % (klassName,
@@ -173,7 +176,7 @@ class Smalltalk(object):
         a newly created Symbol as the key.
         """
         symObj = self.symbol_add(symName)
-        bind = VariableBinding(symObj, itemObj, self.o_nil)
+        bind = VariableBinding(symObj, itemObj, dictObj)
         self.dict_add(dictObj, symObj, bind)
         
     def dict_add(self, dictObj, keyObj, itemObj):
@@ -182,7 +185,6 @@ class Smalltalk(object):
         """
         idx = self.dict_index(dictObj, keyObj)
         dictObj[idx] = Association(keyObj, itemObj)
-        print(keyObj, keyObj._obj_id, idx)
         dictObj.tally += 1
         
     @staticmethod
@@ -228,11 +230,11 @@ class Smalltalk(object):
         subArray[0] = idx
         subArray[idx] = subObj
         
-    def create_inst_vars(self, superObj, varNames):
+    @staticmethod
+    def create_inst_vars(superObj, varNames):
         """
         Create the Array for holding instance variables
         """
-        
         if is_nil(superObj):
             numSuper = 0
         
