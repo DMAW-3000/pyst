@@ -11,16 +11,20 @@ class OBJ_TABLE_BASE(object):
     Maintain a unique ID for every Object in the system
     """
     
-    _Obj_Map = set()
     _Min_Id = 3
     _Max_Id = 0xffffffff
     
-    @classmethod
-    def free_obj(klass, objId):
+    def __init__(self):
+        """
+        Create an empty object table
+        """
+        self._obj_map = set()
+    
+    def free_obj(self, objId):
         """
         Remove the Object id from the global set.
         """
-        klass._Obj_Map.discard(objId)
+        self._obj_map.discard(objId)
     
 
 class OBJ_TABLE_RANDOM(OBJ_TABLE_BASE):
@@ -29,40 +33,46 @@ class OBJ_TABLE_RANDOM(OBJ_TABLE_BASE):
     """
     
     _Get_Random = random.randrange
-	
-    @classmethod
-    def new_obj(klass):
+    
+    def new_obj(self):
         """
         Allocate a new ID for the given Object.
         Returns the ID value.
         """
-        objMap = klass._Obj_Map
-        objId = klass._Get_Random(klass._Min_Id, klass._Max_Id)
+        objMap = self._obj_map
+        objId = self._Get_Random(self._Min_Id, self._Max_Id)
         while objId in objMap:
-            objId = klass._Get_Random(klass._Min_Id, klass._Max_Id)
+            objId = klass._Get_Random(self._Min_Id, self._Max_Id)
         objMap.add(objId)
         return objId
         
         
 class OBJ_TABLE_LINEAR(OBJ_TABLE_BASE):
 
-    _Cur_Id = OBJ_TABLE_BASE._Min_Id
+    def __init__(self):
+        """
+        Create an empty object table
+        """
+        super().__init__()
+        self._cur_id = self._Min_Id
 
-    @classmethod
-    def new_obj(klass):
+    def new_obj(self):
         """
         Allocate a new ID for the given Object.
         Returns the ID value.
         """
-        objMap = klass._Obj_Map
-        objId = klass._Cur_Id
+        objMap = self._obj_map
+        objId = self._cur_id
         while objId in objMap:
             objId += 7
-            if objId > klass._Max_Id:
-                objId = klass._Min_Id
+            if objId > self._Max_Id:
+                objId = self._Min_Id
         objMap.add(objId)
+        self._cur_id = objId + 7
+        if self._cur_id > self._Max_Id:
+            self._cur_id = self._Min_Id
         return objId
 
 
 # globals
-OBJ_TABLE = OBJ_TABLE_LINEAR
+OBJ_TABLE = OBJ_TABLE_LINEAR()
