@@ -4,6 +4,7 @@ Common definitions of Smalltalk fundamental types
 
 import sys
 
+from obj import *
 
 def is_int(x):
     """
@@ -36,8 +37,6 @@ def is_nil(x):
     global _Obj_Nil
     return x is _Obj_Nil
     
-Int_Max = sys.maxsize
-    
 def hsh_seq(x):
     """
     Create a hash key from a sequence of values
@@ -50,6 +49,8 @@ def hsh_seq(x):
         h = (h + ((h << 10) & m)) & m
         h ^= (h >> 6)
     return h
+    
+Int_Max = sys.maxsize
     
 def hsh_scram(x):
     """
@@ -82,6 +83,7 @@ class Object(object):
         """
         Create a blank object
         """
+        self._obj_id = OBJ_TABLE.new_obj()
         self._klass = self._Cover
         self._flags = 0
         self.resize(sz)
@@ -111,7 +113,7 @@ class Object(object):
         """
         Return a hash key for the object.
         """
-        return hsh_scram(id(self) >> 3)
+        return hsh_scram(self._obj_id)
         
     def __getitem__(self, idx):
         """
@@ -130,7 +132,15 @@ class UndefinedObject(Object):
     """
     Smalltalk UndefinedObject internal representation
     """
-    pass
+    
+    def __init__(self):
+        """
+        Create a blank object
+        """
+        self._obj_id = 0
+        self._klass = self._Cover
+        self._flags = 0
+        self.resize(0)
     
     
 class CFalse(Object):
@@ -139,7 +149,10 @@ class CFalse(Object):
     """
     
     def __init__(self):
-        super().__init__(1)
+        self._obj_id = 1
+        self._klass = self._Cover
+        self._flags = 0
+        self.resize(1)
         
     @property
     def truthValue(self):
@@ -156,7 +169,10 @@ class CTrue(Object):
     """
     
     def __init__(self):
-        super().__init__(1)
+        self._obj_id = 2
+        self._klass = self._Cover
+        self._flags = 0
+        self.resize(1)
         
     @property
     def truthValue(self):

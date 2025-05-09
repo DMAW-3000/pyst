@@ -141,7 +141,7 @@ class Smalltalk(object):
                                  klassObj.superClass,
                                  klassObj._klass))
             """
-            
+        
     def symbol_add(self, symName):
         """
         Add a new Symbol to the global symbol table if it
@@ -182,7 +182,7 @@ class Smalltalk(object):
         """
         idx = self.dict_index(dictObj, keyObj)
         dictObj[idx] = Association(keyObj, itemObj)
-        print(keyObj, idx)
+        print(keyObj, keyObj._obj_id, idx)
         dictObj.tally += 1
         
     @staticmethod
