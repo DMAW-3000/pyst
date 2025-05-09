@@ -85,6 +85,7 @@ class Object(object):
         """
         Create a blank object
         """
+        self._py_cache = None
         self._obj_id = OBJ_TABLE.new_obj()
         self._klass = self._Cover
         self._flags = 0
@@ -244,18 +245,14 @@ class String(Array):
             s += chr(self[n])
         return s
         
+    def __str__(self):
+        return "\'" + self.to_str() + "\'"
+        
         
 class Symbol(String):
     """
     Internal representation of a Smalltalk Symbol
     """
-    
-    def __init__(self, sz):
-        """
-        Create a blank Symbol
-        """
-        super().__init__(sz)
-        self._py_str = None
         
     @classmethod
     def from_str(klass, s):
@@ -263,19 +260,19 @@ class Symbol(String):
         Create a Smalltalk Symbol from a Python str
         """
         symObj = super().from_str(s)
-        symObj._py_str = s
+        symObj._py_cache = s
         return symObj
             
     def to_str(self):
         """
         Return Symbol contents as a Python str
         """
-        if self._py_str is not None:
-            return self._py_str
+        if self._py_cache is not None:
+            return self._py_cache
         return super().to_str()
             
     def __str__(self):
-        return "#" + self.to_str()
+        return "\'#" + self.to_str() + '\''
         
         
 class SymLink(Object):
