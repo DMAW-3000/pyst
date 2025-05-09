@@ -31,6 +31,18 @@ class Smalltalk(object):
         self.k_metaclass = None
         self.k_link = None
         self.k_sym_link = None
+        self.k_hash_collection = None
+        self.k_dictionary = None
+        self.k_bind_dictionary = None
+        self.k_abs_namespace = None
+        self.k_namespace = None
+        self.k_root_namespace = None
+        self.k_sys_dictionary = None
+        self.k_magnitude = None
+        self.k_lookup_key = None
+        self.k_assoc = None
+        self.k_homed_assoc = None
+        self.k_variable_bind = None
         
         # fundamental objects
         self.o_nil = None
@@ -97,8 +109,11 @@ class Smalltalk(object):
         # create global dictionaries
         inst.g_sym_table = Array(512)
         inst.g_st_dict = stDict = Namespace(512)
+        stDict._klass = inst.k_sys_dictionary
         stDict.name = inst.symbol_add("Smalltalk")
         inst.name_add_sym(stDict, "Smalltalk", stDict)
+        inst.name_add_sym(stDict, "SymbolTable", inst.g_sym_table)
+        inst.name_add_sym(stDict, "KernelInitialized", inst.o_false)
         
         # class initialization pass 2
         for klassInfo in init.Init_Class:
@@ -117,13 +132,15 @@ class Smalltalk(object):
             inst.subclass_add(metaObj.superClass, metaObj)
             klassObj.name = inst.symbol_add(klassName)
             klassObj.methodDictionary = inst.o_nil
-                
+            
+            """
             print("%s: %s %d %s %s %s" % (klassName,
                                  klassObj.name,
                                  klassObj.get_num_inst(), 
                                  klassObj.subClasses,
                                  klassObj.superClass,
                                  klassObj._klass))
+            """
             
     def symbol_add(self, symName):
         """
@@ -156,28 +173,37 @@ class Smalltalk(object):
         a newly created Symbol as the key.
         """
         symObj = self.symbol_add(symName)
-        bind = Association(symObj, itemObj)
+        bind = VariableBinding(symObj, itemObj, self.o_nil)
         self.dict_add(dictObj, symObj, bind)
         
     def dict_add(self, dictObj, keyObj, itemObj):
         """
         Add an item to a Dictionary-like instance.
         """
+        idx = self.dict_index(dictObj, keyObj)
+        dictObj[idx] = Association(keyObj, itemObj)
+        print(keyObj, idx)
+        dictObj.tally += 1
+        
+    @staticmethod
+    def dict_index(dictObj, keyObj):
+        """
+        Find the index for a key in a Dictionary-like instance
+        """
         numInst = dictObj.get_class().get_num_inst()
         arrSize = dictObj.size - numInst
-        idx = (keyObj.hsh() & (arrSize - 1)) + numInst
-        print(keyObj, keyObj.hsh(), idx)
+        mask = arrSize - 1
+        idx = keyObj.hsh()
+        for n in range(arrSize):
+            idx &= mask
+            assoc = dictObj[idx + numInst]
+            if is_nil(assoc) or (assoc.key is keyObj):
+                return idx + numInst
+            idx += 1
+        raise IndexError("Dictionary is too sma1l")
         
-    def dict_find(self, dictObj, keyObj):
-        """
-        Find an Object in a Dictionary-like instance
-        """
-        numInst = dictObj.get_class().get_num_inst()
-        arrSize = dictObj.size - numInst
-        idx = (keyObj.hsh() & (arrSize - 1)) + numInst
-        print(idx)
-        
-    def create_meta(self, instObj):
+    @staticmethod
+    def create_meta(instObj):
         """
         Create a Metaclass and link it with instance Class
         Also create the subclass arrays in both objects
@@ -191,8 +217,9 @@ class Smalltalk(object):
             metaObj.subClasses[0] = numSubclass
             instObj.subClasses = Array(numSubclass)
             instObj.subClasses[0] = numSubclass
-            
-    def subclass_add(self, superObj, subObj):
+    
+    @staticmethod
+    def subclass_add(superObj, subObj):
         """
         Add a subclass to a class
         """
