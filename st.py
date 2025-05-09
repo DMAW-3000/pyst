@@ -4,7 +4,7 @@ Common definitions of Smalltalk fundamental types
 
 import sys
 
-from obj import *
+from obj import OBJ_TABLE
 
 
 # globals
