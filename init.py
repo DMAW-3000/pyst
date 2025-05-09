@@ -43,3 +43,8 @@ Init_Class = (
     ("String", True, "string", "char_array", False, ()),
     ("Symbol", True, "symbol", "string", False, ()),
 )
+
+# the instance vaariable names for Metaclass
+# these end up as the instance variables for Class instances
+Init_Meta_Vars = ("superClass", "methodDictionary", "instanceSpec", "subClasses", "instanceVariables", 
+                  "name", "comment", "category", "environment", "classVariables", "sharedPools", "pragmaHandlers")

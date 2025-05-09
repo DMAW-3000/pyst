@@ -2,6 +2,8 @@
 The entire Smalltalk environment
 """
 
+import pickle
+
 from st import *
 
 class Smalltalk(object):
@@ -15,6 +17,9 @@ class Smalltalk(object):
         """
         Create a blank Smalltalk environment
         """
+        # manage the class covers
+        self.cover_map = {}
+        
         # global dictionaries
         self.g_st_dict = None
         self.g_sym_table = None
@@ -64,13 +69,9 @@ class Smalltalk(object):
         klass._SmalltalkInstance = inst = klass()
             
         # Class initialization pass 1
-        # this establishes the Class tree and
-        # set the cover classes for those Classes that have them.
-        # After this point, Python cover classes have the right
-        # Smalltalk type.
+        # this establishes the Class tree.
         for klassInfo in init.Init_Class:
             klassName = klassInfo[0]
-            hasCover = klassInfo[1]
             cacheName = klassInfo[2]
             superName = klassInfo[3]
             isFixed = klassInfo[4]
@@ -86,16 +87,24 @@ class Smalltalk(object):
             if superObj is not None:
                 superObj.subClasses += 1
             setattr(inst, "k_" + cacheName, klassObj)
-            if hasCover:
+            
+        # class intialization pass 2
+        # set the class covers
+        # After this point, Python cover classes have the right
+        # Smalltalk type except the Class objects created above.
+        metaInstVarNames = None
+        for klassInfo in init.Init_Class:
+            klassName = klassInfo[0]
+            hasCover = klassInfo[1]
+            cacheName = klassInfo[2]
+            instVars = klassInfo[5]
+            klassObj = getattr(inst, "k_" + cacheName)
+            if hasCover and (klassObj is not inst.k_class):
                 coverKlass = globals()[klassName]
+                inst.cover_map[klassName] = coverKlass
                 coverKlass.set_cover(klassObj)
-                
-        # create Class metaclass and fixup
-        klassObj = inst.k_class
-        inst.create_meta(klassObj)
-        klassObj._klass = klassObj
-        klassObj.subClasses = Array(2)
-        klassObj.subClasses[0] = 1
+            if klassObj is inst.k_class:
+                metaInstVarNames = instVars
         
         # create Smalltalk Nil singleton
         inst.o_nil = UndefinedObject()
@@ -118,35 +127,61 @@ class Smalltalk(object):
         inst.name_add_sym(stDict, "SymbolTable", inst.g_sym_table)
         inst.name_add_sym(stDict, "KernelInitialized", inst.o_false)
         inst.name_add_sym(stDict, "Version", String.from_str("1.0"))
+        inst.name_add_sym(stDict, "Features", Array(1))
+        inst.name_add_sym(stDict, "Undeclared", inst.o_nil)
+        inst.name_add_sym(stDict, "SytemExceptions", stDict)
         
-        # class initialization pass 2
+        # create Class metaclass and fixup
+        klassObj = inst.k_class
+        inst.create_meta(klassObj)
+        klassObj.subClasses = Array(2)
+        klassObj.subClasses[0] = 1
+        
+        # fixup Object parent nil link
+        inst.k_object.superClass = inst.o_nil
+        
+        # class initialization pass 3
+        # after this all of the Class objects are
+        # correctly initialized
         for klassInfo in init.Init_Class:
             klassName = klassInfo[0]
             cacheName = klassInfo[2]
+            instVars = klassInfo[5]
             klassObj = getattr(inst, "k_" + cacheName)
-            if klassObj is not inst.k_class:
-                inst.create_meta(klassObj)
             metaObj = klassObj._klass
+            if metaObj is None:
+                metaObj = inst.create_meta(klassObj)
             superObj = klassObj.superClass
-            if superObj is not None:
-                metaObj.superClass = superObj
-            else:
+            if is_nil(superObj):
                 metaObj.superClass = inst.k_class
-                klassObj.superClass = inst.o_nil
+            else:
+                metaObj.superClass = superObj.get_class()
             inst.subclass_add(metaObj.superClass, metaObj)
+            metaObj.instanceVariables = inst.create_inst_vars(inst.o_nil, init.Init_Meta_Vars)
+            if not is_nil(superObj):
+                inst.subclass_add(superObj, klassObj)
+            klassObj.environment = inst.g_st_dict
+            klassObj.instanceVariables = inst.create_inst_vars(superObj, instVars)
             klassObj.name = inst.symbol_add(klassName)
-            
-            """
-            print("%s: %s %d %s %s %s" % (klassName,
+            klassObj.methodDictionary = inst.o_nil
+            klassObj.comment = inst.o_nil
+            klassObj.category = inst.o_nil
+            klassObj.pragmaHandlers = inst.o_nil
+
+        for klassInfo in init.Init_Class:
+            cacheName = klassInfo[2]
+            klassObj = getattr(inst, "k_" + cacheName)
+            print("%s %s %s %s %s" % ( \
                                  klassObj.name,
-                                 klassObj.get_num_inst(), 
+                                 klassObj.instanceVariables, 
                                  klassObj.subClasses,
                                  klassObj.superClass,
-                                 klassObj._klass))
-            """
+                                 klassObj.get_class()))
+            
+            
         for s in inst.g_st_dict[5:]:
             if not is_nil(s):
-                print(s.key, s.key._obj_id, s.value.value)
+                print(s.key, s.key.hsh() & 511, s.value.value)
         
     def symbol_add(self, symName):
         """
@@ -156,8 +191,7 @@ class Smalltalk(object):
         symTable = self.g_sym_table
         symObj = Symbol.from_str(symName)
         idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
-        link = SymLink(symObj, symTable[idx])
-        symTable[idx] = link
+        symTable[idx] = SymLink(symObj, symTable[idx])
         return symObj
         
     def symbol_find(self, symName):
@@ -172,6 +206,22 @@ class Smalltalk(object):
                 return link.symbol
             link = link.nextLink
         return link  # nil
+        
+    def symbol_find_or_add(self, symName):
+        """
+        Returns a Symbol object, either already or existing
+        or created and added to global symbol table.
+        """
+        symTable = self.g_sym_table
+        idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
+        link = symTable[idx]
+        while not is_nil(link):
+            if symName == link.symbol.to_str():
+                return link.symbol
+            link = link.nextLink
+        symObj = Symbol.from_str(symName)
+        symTable[idx] = SymLink(symObj, symTable[idx])
+        return symObj
         
     def name_add_sym(self, dictObj, symName, itemObj):
         """
@@ -214,7 +264,8 @@ class Smalltalk(object):
         """
         Create a Metaclass and link it with instance Class
         Also create the subclass arrays in both objects
-        so that they match up.
+        so that they match up.  Returns the new Metaclass
+        object.
         """
         metaObj = Metaclass(instObj)
         instObj._klass = metaObj
@@ -224,6 +275,7 @@ class Smalltalk(object):
             metaObj.subClasses[0] = numSubclass
             instObj.subClasses = Array(numSubclass)
             instObj.subClasses[0] = numSubclass
+        return metaObj
     
     @staticmethod
     def subclass_add(superObj, subObj):
@@ -235,13 +287,23 @@ class Smalltalk(object):
         subArray[0] = idx
         subArray[idx] = subObj
         
-    @staticmethod
-    def create_inst_vars(superObj, varNames):
+    def create_inst_vars(self, superObj, varNames):
         """
         Create the Array for holding instance variables
         """
         if is_nil(superObj):
             numSuper = 0
+        else:
+            numSuper = superObj.instanceVariables.size
+        numInst = len(varNames)
+        numVar = numSuper + numInst
+        if numVar == 0:
+            return self.o_nil
+        arrObj = Array(numSuper + numInst)
+        for n,s in enumerate(varNames):
+            symObj = self.symbol_find_or_add(s)
+            arrObj[numSuper + n] = symObj
+        return arrObj
         
         
         
