@@ -459,7 +459,7 @@ class Class(Object):
         """
         Create a Class object
         """
-        super().__init__(11)
+        super().__init__(12)
         self.superClass = superKlass
         self.instanceSpec = numInstVars << 13
         if isFixed:
@@ -555,6 +555,14 @@ class Class(Object):
     @sharedPools.setter
     def sharedPools(self, x):
         self[10] = x
+        
+    @property
+    def pragmaHandlers(self):
+        return self[11]
+        
+    @pragmaHandlers.setter
+    def pragmaHandlers(self, x):
+        self[11] = x
         
 
 class Metaclass(Object):

@@ -18,7 +18,7 @@ Init_Class = (
     ("True", False, "true", "boolean", True, ("truthValue",)),
     ("Behavior", False, "behavior", "object", True, ("superClass", "methodDictionary", "instanceSpec", "subClasses", "instanceVariables")), 
     ("ClassDescription", False, "class_desc", "behavior", True, ()),
-    ("Class", True, "class", "class_desc", True, ("superClass", "name", "comment", "category", "environment", "classVariables", "sharedPools")),
+    ("Class", True, "class", "class_desc", True, ("name", "comment", "category", "environment", "classVariables", "sharedPools", "pragmaHandlers")),
     ("Metaclass", True, "metaclass", "class_desc", True, ("instanceClass",)),
     ("Iterable", False, "iterable", "object", True, ()),
     ("Collection", False, "collection", "iterable", True, ()),
