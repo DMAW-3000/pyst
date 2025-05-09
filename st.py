@@ -166,6 +166,9 @@ class UndefinedObject(Object):
         self._klass = self._Cover
         self._flags = 0
         self.resize(0)
+        
+    def __str__(self):
+        return "NIL"
     
     
 class CFalse(Object):
@@ -186,6 +189,9 @@ class CFalse(Object):
     @truthValue.setter
     def truthValue(self, x):
         self[0] = x
+        
+    def __str__(self):
+        return "FALSE"
     
 
 class CTrue(Object):
@@ -206,6 +212,9 @@ class CTrue(Object):
     @truthValue.setter
     def truthValue(self, x):
         self[0] = x
+    
+    def __str__(self):
+        return "TRUE"
         
 
 class Array(Object):
