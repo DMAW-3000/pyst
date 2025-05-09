@@ -57,10 +57,12 @@ def hsh_scram(x):
     """
     global Int_Max
     m = Int_Max
+    x ^= (((x << 33) & m) | (x >> 31))
     x ^= (((x << 10) & m) | (x >> 22))
     x ^= (((x <<  6) & m) | (x >> 26))
     x ^= (((x << 16) & m) | (x >> 16))
     return x
+
 
 class Object(object):
     """
@@ -107,9 +109,9 @@ class Object(object):
         
     def hsh(self):
         """
-        Return a hask key for the object.
+        Return a hash key for the object.
         """
-        return hsh_scram(id(self))
+        return hsh_scram(id(self) >> 3)
         
     def __getitem__(self, idx):
         """
@@ -276,6 +278,27 @@ class Association(Object):
     @value.setter
     def value(self, x):
         self[1] = x
+        
+        
+class Dictionary(Object):
+    """
+    Internal representation of a Smalltalk Dictionary
+    """
+    
+    def __init__(self, sz):
+        """
+        Create a Namespaece object
+        """
+        super().__init__(sz + 1)
+        self.tally = 0
+        
+    @property
+    def tally(self):
+        return self[0]
+        
+    @tally.setter
+    def tally(self, x):
+        self[0] = x
         
         
 class Namespace(Object):
