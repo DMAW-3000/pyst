@@ -280,6 +280,45 @@ class Association(Object):
         self[1] = x
         
         
+class VariableBinding(Object):
+    """
+    Internal representation of a Smalltalk VariableBinding
+    """
+    
+    def __init__(self, keyObj, valueObj, envObj):
+        """
+        Create an Association
+        """
+        super().__init__(3)
+        self.key = keyObj
+        self.value = valueObj
+        self.environment = envObj
+        
+    @property
+    def key(self):
+        return self[0]
+        
+    @key.setter
+    def key(self, x):
+        self[0] = x
+        
+    @property
+    def value(self):
+        return self[1]
+        
+    @value.setter
+    def value(self, x):
+        self[1] = x
+        
+    @property
+    def environment(self):
+        return self[2]
+        
+    @environment.setter
+    def environment(self, x):
+        self[2] = x
+        
+        
 class Dictionary(Object):
     """
     Internal representation of a Smalltalk Dictionary
