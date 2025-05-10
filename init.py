@@ -48,9 +48,19 @@ Init_Class = (
     ("ContextPart", False, "context_part", "object", False, ("parent", "nativeIP", "ip", "sp", "receiver", "method"), (), ()),
     ("BlockContext", True, "blk_context", "context_part", False, ("outerContext,"), (), ()),
     ("MethodContext", True, "meth_context", "context_part", False, ("flags",), (), ()),
+    ("CompiledCode", False, "comp_code", "arr_collection", False, ("literals", "header"), (), ()),
+    ("CompiledMethod", True, "comp_method", "comp_code", False, ("descriptor",), (), ()),
 )
 
 # the instance vaariable names for Metaclass
 # these end up as the instance variables for Class instances
 Init_Meta_Vars = ("superClass", "methodDictionary", "instanceSpec", "subClasses", "instanceVariables", 
                   "name", "comment", "category", "environment", "classVariables", "sharedPools", "pragmaHandlers")
+                  
+
+# the list of Smalltalk source modules that need compiled for rebuild
+Init_Kernel_Mod = (
+    "Builtins.st",
+    "SysDict.st",
+    "Object.st",
+)
