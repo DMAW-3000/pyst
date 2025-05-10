@@ -45,6 +45,8 @@ Init_Class = (
     ("Number", False, "number", "magnitude", True, (), (), ()),
     ("Integer", False, "integer", "number", True, (), (), ("PySymbols",)),
     ("SmallInteger", False, "small_int", "integer", True, (), (), ()),
+    ("ContextPart", False, "context_part", "object", False, ("parent", "nativeIP", "ip", "sp", "receiver", "method"), (), ()),
+    ("BlockContext", True, "blk_context", "context_part", False, ("outerContext,"), (), ()),
 )
 
 # the instance vaariable names for Metaclass
