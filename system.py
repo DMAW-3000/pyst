@@ -5,6 +5,7 @@ The entire Smalltalk environment
 import pickle
 
 from st import *
+from compiler import Compile
 from interp import Interp
 import init
 
@@ -67,7 +68,8 @@ class Smalltalk(object):
         self.o_true = None
         self.o_char = [None] * 256
         
-        # interpeter
+        # interpeter and compiler
+        self.g_compile = None
         self.g_interp = None
     
     @classmethod
@@ -119,6 +121,9 @@ class Smalltalk(object):
             
         # initialize runtime objects
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
+        
+        # intialize compiler
+        inst.g_compile = Compile(inst)
         
         # initialize interpreter
         inst.g_interp = Interp(inst)
