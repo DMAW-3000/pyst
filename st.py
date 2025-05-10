@@ -4,7 +4,7 @@ Common definitions of Smalltalk fundamental types
 
 import sys
 
-from obj import OBJ_TABLE
+from obj import Obj_Table
 
 
 # globals
@@ -85,9 +85,9 @@ class Object(object):
         """
         Create a blank object
         """
-        global OBJ_TABLE
+        global Obj_Table
         self._py_cache = None
-        self._obj_id = OBJ_TABLE.new_obj()
+        self._obj_id = Obj_Table.new_obj()
         self._klass = self._Cover
         self._flags = 0
         self.resize(sz)
@@ -148,9 +148,9 @@ class Object(object):
         """
         Notify when the object is out of scope
         """
-        global OBJ_TABLE
+        global Obj_Table
         #print("DEL", self._obj_id, self)
-        OBJ_TABLE.free_obj(self._obj_id)
+        Obj_Table.free_obj(self._obj_id)
         
 
 class UndefinedObject(Object):

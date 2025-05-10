@@ -9,7 +9,7 @@ import random
 random.seed()
 
 
-class OBJ_TABLE_BASE(object):
+class _ObjTableBase(object):
     """
     Maintain a unique ID for every Object in the system
     """
@@ -30,7 +30,7 @@ class OBJ_TABLE_BASE(object):
         self._obj_map.discard(objId)
     
 
-class OBJ_TABLE_RANDOM(OBJ_TABLE_BASE):
+class _ObjTableRandom(_ObjTableBase):
     """
     Maintain a unique ID for every Object in the system
     """
@@ -50,7 +50,7 @@ class OBJ_TABLE_RANDOM(OBJ_TABLE_BASE):
         return objId
         
         
-class OBJ_TABLE_LINEAR(OBJ_TABLE_BASE):
+class _ObjTableLinear(_ObjTableBase):
 
     def __init__(self):
         """
@@ -78,4 +78,4 @@ class OBJ_TABLE_LINEAR(OBJ_TABLE_BASE):
 
 
 # globals
-OBJ_TABLE = OBJ_TABLE_LINEAR()
+Obj_Table = _ObjTableLinear()
