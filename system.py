@@ -122,7 +122,8 @@ class Smalltalk(object):
         
         # initialize interpreter
         inst.g_interp = Interp(inst)
-        inst.g_interp.run()
+        inst.g_interp.reset()
+        inst.g_interp.exe()
             
         for klassInfo in init.Init_Class:
             cacheName = klassInfo[2]
@@ -134,11 +135,7 @@ class Smalltalk(object):
                                  klassObj.superClass,
                                  klassObj.classVariables))
             
-            
-        for s in inst.g_st_dict[5:]:
-            if not is_nil(s):
-                print(s.key, s.value.value)
-                
+        inst.dict_print(inst.g_st_dict)
         print(inst.dict_find(inst.g_st_dict, inst.symbol_find("Object")).value)
         
     def build_classes_1(self):
@@ -311,7 +308,17 @@ class Smalltalk(object):
                 return idx + numInst
             idx += 1
             n += 1
-        raise IndexError("Dictionary is too sma1l")
+        raise IndexError("Dictionary overflow")
+        
+    @staticmethod
+    def dict_print(dictObj):
+        """
+        Display the contents of a Dictionary-like object
+        """
+        numInst = dictObj.get_class().get_num_inst()
+        for s in dictObj[numInst:]:
+            if not is_nil(s):
+                print(s.key, s.value.value)
         
     @staticmethod
     def create_meta(instObj):
