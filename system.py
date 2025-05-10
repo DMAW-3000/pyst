@@ -192,6 +192,8 @@ class Smalltalk(object):
         for s in inst.g_st_dict[5:]:
             if not is_nil(s):
                 print(s.key, s.key.hsh() & 511, s.value.value)
+                
+        print(inst.dict_find(inst.g_st_dict, inst.symbol_find("Object")).value)
         
     def symbol_add(self, symName):
         """
@@ -250,6 +252,17 @@ class Smalltalk(object):
         dictObj[idx] = Association(keyObj, itemObj)
         dictObj.tally += 1
         
+    def dict_find(self, dictObj, keyObj):
+        """
+        Find an item in a Dictionary-like instance,
+        or return nil.
+        """
+        idx = self.dict_index(dictObj, keyObj)
+        assoc = dictObj[idx]
+        if is_nil(assoc):
+            return assoc
+        return assoc.value
+        
     @staticmethod
     def dict_index(dictObj, keyObj):
         """
@@ -263,7 +276,7 @@ class Smalltalk(object):
         while n < arrSize:
             idx &= mask
             assoc = dictObj[idx + numInst]
-            if is_nil(assoc) or (keyObj.is_same(assoc.value)):
+            if is_nil(assoc) or (keyObj.is_same(assoc.key)):
                 return idx + numInst
             idx += 1
             n += 1
