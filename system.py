@@ -5,6 +5,9 @@ The entire Smalltalk environment
 import pickle
 
 from st import *
+from interp import Interp
+import init
+
 
 class Smalltalk(object):
     """
@@ -54,19 +57,24 @@ class Smalltalk(object):
         self.k_number = None
         self.k_integer = None
         self.k_small_int = None
+        self.k_context_part = None
+        self.k_blk_context = None
+        self.k_method_context = None
         
         # fundamental objects
         self.o_nil = None
         self.o_false = None
         self.o_true = None
         self.o_char = [None] * 256
+        
+        # interpeter
+        self.g_interp = None
     
     @classmethod
     def rebuild(klass):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
-        import init
         
         # create empty system
         klass._SmalltalkInstance = inst = klass()
@@ -177,6 +185,10 @@ class Smalltalk(object):
             
         # initialize runtime objects
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
+        
+        # initialize interpreter
+        inst.g_interp = Interp(inst)
+        inst.g_interp.run()
             
         for klassInfo in init.Init_Class:
             cacheName = klassInfo[2]
@@ -191,7 +203,7 @@ class Smalltalk(object):
             
         for s in inst.g_st_dict[5:]:
             if not is_nil(s):
-                print(s.key, s.key.hsh() & 511, s.value.value)
+                print(s.key, s.value.value)
                 
         print(inst.dict_find(inst.g_st_dict, inst.symbol_find("Object")).value)
         
