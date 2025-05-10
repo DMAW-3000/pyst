@@ -81,41 +81,13 @@ class Smalltalk(object):
             
         # Class initialization pass 1
         # this establishes the Class tree.
-        for klassInfo in init.Init_Class:
-            klassName = klassInfo[0]
-            cacheName = klassInfo[2]
-            superName = klassInfo[3]
-            isFixed = klassInfo[4]
-            instVars = klassInfo[5]
-            if superName is not None:
-                superObj = getattr(inst, "k_" + superName)
-                superVars = superObj.get_num_inst()
-            else:
-                superObj = None
-                superVars = 0
-            klassObj = Class(superObj, len(instVars) + superVars, isFixed)
-            klassObj.subClasses = 0
-            if superObj is not None:
-                superObj.subClasses += 1
-            setattr(inst, "k_" + cacheName, klassObj)
+        inst.build_classes_1()
             
         # class intialization pass 2
         # set the class covers
         # After this point, Python cover classes have the right
         # Smalltalk type except the Class objects created above.
-        metaInstVarNames = None
-        for klassInfo in init.Init_Class:
-            klassName = klassInfo[0]
-            hasCover = klassInfo[1]
-            cacheName = klassInfo[2]
-            instVars = klassInfo[5]
-            klassObj = getattr(inst, "k_" + cacheName)
-            if hasCover and (klassObj is not inst.k_class):
-                coverKlass = globals()[klassName]
-                inst.cover_map[klassName] = coverKlass
-                coverKlass.set_cover(klassObj)
-            if klassObj is inst.k_class:
-                metaInstVarNames = instVars
+        inst.build_classes_2()
         
         # create Smalltalk Nil singleton
         inst.o_nil = UndefinedObject()
@@ -142,46 +114,8 @@ class Smalltalk(object):
         inst.name_add_sym(stDict, "Undeclared", inst.o_nil)
         inst.name_add_sym(stDict, "SytemExceptions", stDict)
         
-        # create Class metaclass and fixup
-        klassObj = inst.k_class
-        inst.create_meta(klassObj)
-        klassObj.subClasses = Array(2)
-        klassObj.subClasses[0] = 1
-        
-        # fixup Object parent nil link
-        inst.k_object.superClass = inst.o_nil
-        
-        # class initialization pass 3
-        # after this all of the Class objects are
-        # correctly initialized
-        for klassInfo in init.Init_Class:
-            klassName = klassInfo[0]
-            cacheName = klassInfo[2]
-            instVars = klassInfo[5]
-            classVars = klassInfo[6]
-            poolNames = klassInfo[7]
-            klassObj = getattr(inst, "k_" + cacheName)
-            metaObj = klassObj._klass
-            if metaObj is None:
-                metaObj = inst.create_meta(klassObj)
-            superObj = klassObj.superClass
-            if is_nil(superObj):
-                metaObj.superClass = inst.k_class
-            else:
-                metaObj.superClass = superObj.get_class()
-            inst.subclass_add(metaObj.superClass, metaObj)
-            metaObj.instanceVariables = inst.create_inst_vars(inst.o_nil, init.Init_Meta_Vars)
-            if not is_nil(superObj):
-                inst.subclass_add(superObj, klassObj)
-            klassObj.environment = inst.g_st_dict
-            klassObj.instanceVariables = inst.create_inst_vars(superObj, instVars)
-            klassObj.classVariables = inst.create_class_vars(klassObj, classVars)
-            klassObj.sharedPools = inst.create_shared_pools(poolNames)
-            klassObj.methodDictionary = inst.o_nil
-            klassObj.comment = inst.o_nil
-            klassObj.category = inst.o_nil
-            klassObj.pragmaHandlers = inst.o_nil
-            klassObj.name = inst.name_add_sym(inst.g_st_dict, klassName, klassObj)
+        # finalize class build
+        inst.build_classes_3()
             
         # initialize runtime objects
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
@@ -206,6 +140,91 @@ class Smalltalk(object):
                 print(s.key, s.value.value)
                 
         print(inst.dict_find(inst.g_st_dict, inst.symbol_find("Object")).value)
+        
+    def build_classes_1(self):
+        """
+        Class rebuild
+        """
+        for klassInfo in init.Init_Class:
+            klassName = klassInfo[0]
+            cacheName = klassInfo[2]
+            superName = klassInfo[3]
+            isFixed = klassInfo[4]
+            instVars = klassInfo[5]
+            if superName is not None:
+                superObj = getattr(self, "k_" + superName)
+                superVars = superObj.get_num_inst()
+            else:
+                superObj = None
+                superVars = 0
+            klassObj = Class(superObj, len(instVars) + superVars, isFixed)
+            klassObj.subClasses = 0
+            if superObj is not None:
+                superObj.subClasses += 1
+            setattr(self, "k_" + cacheName, klassObj)
+            
+    def build_classes_2(self):
+        """
+        Class rebuild
+        """
+        metaInstVarNames = None
+        for klassInfo in init.Init_Class:
+            klassName = klassInfo[0]
+            hasCover = klassInfo[1]
+            cacheName = klassInfo[2]
+            instVars = klassInfo[5]
+            klassObj = getattr(self, "k_" + cacheName)
+            if hasCover and (klassObj is not self.k_class):
+                coverKlass = globals()[klassName]
+                self.cover_map[klassName] = coverKlass
+                coverKlass.set_cover(klassObj)
+            if klassObj is self.k_class:
+                metaInstVarNames = instVars
+                
+    def build_classes_3(self):
+        """
+        Class rebuild
+        """
+        # create Class metaclass and fixup
+        klassObj = self.k_class
+        self.create_meta(klassObj)
+        klassObj.subClasses = Array(2)
+        klassObj.subClasses[0] = 1
+        
+        # fixup Object parent nil link
+        self.k_object.superClass = self.o_nil
+        
+        # class initialization pass 3
+        # after this all of the Class objects are
+        # correctly initialized
+        for klassInfo in init.Init_Class:
+            klassName = klassInfo[0]
+            cacheName = klassInfo[2]
+            instVars = klassInfo[5]
+            classVars = klassInfo[6]
+            poolNames = klassInfo[7]
+            klassObj = getattr(self, "k_" + cacheName)
+            metaObj = klassObj._klass
+            if metaObj is None:
+                metaObj = self.create_meta(klassObj)
+            superObj = klassObj.superClass
+            if is_nil(superObj):
+                metaObj.superClass = self.k_class
+            else:
+                metaObj.superClass = superObj.get_class()
+            self.subclass_add(metaObj.superClass, metaObj)
+            metaObj.instanceVariables = self.create_inst_vars(self.o_nil, init.Init_Meta_Vars)
+            if not is_nil(superObj):
+                self.subclass_add(superObj, klassObj)
+            klassObj.environment = self.g_st_dict
+            klassObj.instanceVariables = self.create_inst_vars(superObj, instVars)
+            klassObj.classVariables = self.create_class_vars(klassObj, classVars)
+            klassObj.sharedPools = self.create_shared_pools(poolNames)
+            klassObj.methodDictionary = self.o_nil
+            klassObj.comment = self.o_nil
+            klassObj.category = self.o_nil
+            klassObj.pragmaHandlers = self.o_nil
+            klassObj.name = self.name_add_sym(self.g_st_dict, klassName, klassObj)
         
     def symbol_add(self, symName):
         """
