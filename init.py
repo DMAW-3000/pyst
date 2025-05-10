@@ -47,6 +47,7 @@ Init_Class = (
     ("SmallInteger", False, "small_int", "integer", True, (), (), ()),
     ("ContextPart", False, "context_part", "object", False, ("parent", "nativeIP", "ip", "sp", "receiver", "method"), (), ()),
     ("BlockContext", True, "blk_context", "context_part", False, ("outerContext,"), (), ()),
+    ("MethodContext", True, "meth_context", "context_part", False, ("flags",), (), ()),
 )
 
 # the instance vaariable names for Metaclass

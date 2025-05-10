@@ -59,7 +59,7 @@ class Smalltalk(object):
         self.k_small_int = None
         self.k_context_part = None
         self.k_blk_context = None
-        self.k_method_context = None
+        self.k_meth_context = None
         
         # fundamental objects
         self.o_nil = None
