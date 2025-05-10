@@ -660,3 +660,75 @@ class Metaclass(Object):
     @instanceClass.setter
     def instanceClass(self, x):
         self[5] = x
+        
+
+class BlockContext(Object):
+    """
+    Internal representation of Smalltalk BlockContext
+    """
+    
+    def __init__(self, parentCtx):
+        """
+        Create a new context
+        """
+        super().__init__(7)
+        self.parent = parentCtx
+        
+    @property
+    def parent(self):
+        return self[0]
+        
+    @parent.setter
+    def parent(self, x):
+        self[0] = x
+  
+    @property
+    def native_ip(self):
+        return self[1]
+        
+    @native_ip.setter
+    def native_ip(self, x):
+        self[1] = x
+        
+    @property
+    def ip(self):
+        return self[2]
+        
+    @ip.setter
+    def ip(self, x):
+        self[2] = x
+  
+    @property
+    def sp(self):
+        return self[3]
+        
+    @sp.setter
+    def sp(self, x):
+        self[3] = x
+        
+    @property
+    def receiver(self):
+        return self[4]
+        
+    @receiver.setter
+    def receiver(self, x):
+        self[4] = x
+        
+    @property
+    def method(self):
+        return self[5]
+        
+    @method.setter
+    def method(self, x):
+        self[5] = x
+        
+    @property
+    def outerContext(self):
+        return self[6]
+        
+    @outerContext.setter
+    def outerContext(self, x):
+        self[6] = x
+        
+    
+        
