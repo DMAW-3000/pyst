@@ -135,7 +135,7 @@ class Smalltalk(object):
                                  klassObj.superClass,
                                  klassObj.classVariables))
             
-        inst.dict_print(inst.g_st_dict)
+        inst.dict_print(inst.g_st_dict, True)
         print(inst.dict_find(inst.g_st_dict, inst.symbol_find("Object")).value)
         
     def build_classes_1(self):
@@ -311,14 +311,17 @@ class Smalltalk(object):
         raise IndexError("Dictionary overflow")
         
     @staticmethod
-    def dict_print(dictObj):
+    def dict_print(dictObj, nameSpace = False):
         """
         Display the contents of a Dictionary-like object
         """
         numInst = dictObj.get_class().get_num_inst()
         for s in dictObj[numInst:]:
             if not is_nil(s):
-                print(s.key, s.value.value)
+                if not nameSpace:
+                    print(s.key, s.value)
+                else:
+                    print(s.key, s.value.value)
         
     @staticmethod
     def create_meta(instObj):
