@@ -51,6 +51,9 @@ class Smalltalk(object):
         self.k_char_array = None
         self.k_string = None
         self.k_symbol = None
+        self.k_number = None
+        self.k_integer = None
+        self.k_small_int = None
         
         # fundamental objects
         self.o_nil = None
@@ -148,6 +151,7 @@ class Smalltalk(object):
             cacheName = klassInfo[2]
             instVars = klassInfo[5]
             classVars = klassInfo[6]
+            poolNames = klassInfo[7]
             klassObj = getattr(inst, "k_" + cacheName)
             metaObj = klassObj._klass
             if metaObj is None:
@@ -164,12 +168,16 @@ class Smalltalk(object):
             klassObj.environment = inst.g_st_dict
             klassObj.instanceVariables = inst.create_inst_vars(superObj, instVars)
             klassObj.classVariables = inst.create_class_vars(klassObj, classVars)
+            klassObj.sharedPools = inst.create_shared_pools(poolNames)
             klassObj.methodDictionary = inst.o_nil
             klassObj.comment = inst.o_nil
             klassObj.category = inst.o_nil
             klassObj.pragmaHandlers = inst.o_nil
             klassObj.name = inst.name_add_sym(inst.g_st_dict, klassName, klassObj)
-
+            
+        # initialize runtime objects
+        inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
+            
         for klassInfo in init.Init_Class:
             cacheName = klassInfo[2]
             klassObj = getattr(inst, "k_" + cacheName)
@@ -178,13 +186,12 @@ class Smalltalk(object):
                                  klassObj.instanceVariables, 
                                  klassObj.subClasses,
                                  klassObj.superClass,
-                                 klassObj.get_class()))
+                                 klassObj.classVariables))
             
             
         for s in inst.g_st_dict[5:]:
             if not is_nil(s):
                 print(s.key, s.key.hsh() & 511, s.value.value)
-        print(OBJ_TABLE._obj_map)
         
     def symbol_add(self, symName):
         """
@@ -233,6 +240,7 @@ class Smalltalk(object):
         """
         symObj = self.symbol_add(symName)
         self.dict_add(dictObj, symObj, VariableBinding(symObj, itemObj, dictObj))
+        return symObj
         
     def dict_add(self, dictObj, keyObj, itemObj):
         """
@@ -320,6 +328,16 @@ class Smalltalk(object):
             symObj = self.symbol_find_or_add(s)
             self.dict_add(bindDict, symObj, self.o_nil)
         return bindDict
+        
+    def create_shared_pools(self, poolNames):
+        """
+        Create the Array of share pools for a class
+        """
+        numPool = len(poolNames)
+        if numPool == 0:
+            return self.o_nil
+        arrObj = Array(numPool)
+        return arrObj
             
         
         
