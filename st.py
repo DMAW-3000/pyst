@@ -499,12 +499,15 @@ class Class(Object):
         """
         super().__init__(12)
         self.superClass = superKlass
-        self.instanceSpec = numInstVars << 13
+        self.instanceSpec = numInstVars << 12
         if isFixed:
-            self.instanceSpec |= 0x20
+            self.instanceSpec |= 0x10
         
     def get_num_inst(self):
-        return self.instanceSpec >> 13
+        return self.instanceSpec >> 12
+        
+    def is_fixed(self):
+        return (self.instanceSpec & 0x10) != 0
         
     @property
     def superClass(self):
