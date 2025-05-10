@@ -802,5 +802,62 @@ class MethodContext(_Context):
     def flags(self, x):
         self[6] = x
         
+        
+class CompiledMethod(Object):
+    """
+    Internal representation of Smalltalk CompiledMethod
+    """
+    
+    def __init__(self, numArg, numTemp, depth):
+        """
+        Create a new Compiled Method
+        """
+        super().__init__(3)
+        self.header = (numArg & 0x1f) | \
+                      ((depth & 0x3f) << 5) | \
+                      ((numTemp & 0x3f) << 11)
+        
+    def get_num_arg(self):
+        """
+        Get number of method arguments
+        """
+        return self.header & 0x1f
+        
+    def get_num_temp(self):
+        """
+        Get number of method temporary variables
+        """
+        return (self.header >> 11) & 0x3f
+        
+    def get_depth(self):
+        """
+        Get stack depth required for method
+        """
+        return (self.header >> 5) & 0x3f
+        
+    @property
+    def literals(self):
+        return self[0]
+        
+    @literals.setter
+    def literals(self, x):
+        self[0] = x
+    
+    @property
+    def header(self):
+        return self[1]
+        
+    @header.setter
+    def header(self, x):
+        self[1] = x
+        
+    @property    
+    def descriptor(self):
+        return self[2]
+        
+    @descriptor.setter
+    def descriptor(self, x):
+        self[2] = x
+        
     
         
