@@ -81,7 +81,7 @@ class Object(object):
         """
         klass._Cover = x
     
-    def __init__(self, sz = 0):
+    def __init__(self, sz):
         """
         Create a blank object
         """
