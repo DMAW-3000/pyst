@@ -2,6 +2,7 @@
 The entire Smalltalk environment
 """
 
+import os
 import pickle
 
 from st import *
@@ -122,8 +123,10 @@ class Smalltalk(object):
         # initialize runtime objects
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
         
-        # intialize compiler
+        # compile the Kernel modules
         inst.g_compile = Compile(inst)
+        for mod in init.Init_Kernel_Mod:
+            inst.g_compile.compile_file(os.path.join("Kernel", mod))
         
         # initialize interpreter
         inst.g_interp = Interp(inst)
@@ -133,15 +136,14 @@ class Smalltalk(object):
         for klassInfo in init.Init_Class:
             cacheName = klassInfo[2]
             klassObj = getattr(inst, "k_" + cacheName)
-            print("%s %s %s %s %s" % ( \
-                                 klassObj.name,
-                                 klassObj.instanceVariables, 
-                                 klassObj.subClasses,
-                                 klassObj.superClass,
-                                 klassObj.classVariables))
+        #    print("%s %s %s %s %s" % ( \
+        #                         klassObj.name,
+        #                         klassObj.instanceVariables, 
+        #                         klassObj.subClasses,
+        #                         klassObj.superClass,
+        #                         klassObj.classVariables))
             
-        inst.dict_print(inst.g_st_dict, True)
-        print(inst.dict_find(inst.g_st_dict, inst.symbol_find("Object")).value)
+        #inst.dict_print(inst.g_st_dict, True)
         
     def build_classes_1(self):
         """
@@ -227,7 +229,7 @@ class Smalltalk(object):
             klassObj.category = self.o_nil
             klassObj.pragmaHandlers = self.o_nil
             klassObj.name = self.name_add_sym(self.g_st_dict, klassName, klassObj)
-        
+    
     def symbol_add(self, symName):
         """
         Add a new Symbol to the global symbol table if it

@@ -60,7 +60,7 @@ Init_Meta_Vars = ("superClass", "methodDictionary", "instanceSpec", "subClasses"
 
 # the list of Smalltalk source modules that need compiled for rebuild
 Init_Kernel_Mod = (
-    "Builtins.st",
-    "SysDict.st",
+    #"Builtins.st",
+    #"SysDict.st",
     "Object.st",
 )

@@ -1,0 +1,95 @@
+"""
+Token definitions for parsing code text
+"""
+
+import ply.lex as lex
+
+states = ( ('dstring', 'exclusive'),
+           ('sstring', 'exclusive'), )
+
+tokens = [
+    'DSTRING',
+    'SSTRING',
+    'LBRACK',
+    'RBRACK',
+    'ASSIGN',
+    'MESSAGEARG',
+    'OPERATOR',
+    'IDENT',
+]
+
+def t_DSTRING(t):
+    r'\"'
+    t.lexer.code_start = t.lexer.lexpos
+    t.lexer.begin('dstring')
+
+def t_dstring_string(t):
+    r'[^\"]'
+
+def t_dstring_dquote(t):
+    r'\"'
+    t.type = 'DSTRING'
+    t.value = t.lexer.lexdata[t.lexer.code_start:t.lexer.lexpos-1]
+    t.lexer.lineno += t.value.count('\n')
+    t.lexer.begin('INITIAL')
+    return t
+    
+def t_SSTRING(t):
+    r'\''
+    t.lexer.code_start = t.lexer.lexpos
+    t.lexer.begin('sstring')
+
+def t_sstring_string(t):
+    r'[^\']'
+
+def t_sstring_squote(t):
+    r'\''
+    t.type = 'SSTRING'
+    t.value = t.lexer.lexdata[t.lexer.code_start:t.lexer.lexpos-1]
+    t.lexer.lineno += t.value.count('\n')
+    t.lexer.begin('INITIAL')
+    return t
+
+def t_sstring_error(t):
+    print("ERROR: ", t)
+
+t_sstring_ignore = '\r'
+
+def t_dstring_error(t):
+    print("ERROR: ", t)
+
+t_dstring_ignore = '\r'
+
+def t_LBRACK(t):
+    r'\['
+    return t
+
+def t_RBRACK(t):
+    r'\]'
+    return t
+    
+def t_ASSIGN(t):
+    r':='
+    return t
+    
+def t_MESSAGEARG(t):
+    r'[a-zA-Z_][a-zA-Z_\d]*:'
+    t.value = t.value.rstrip(':')
+    return t
+    
+def t_OPERATOR(t):
+    r'[\+\-\*\/\,<>=%~&\\][\+\-\*\/\,<>=%~&\\]?'
+    return t
+    
+def t_IDENT(t):
+    r'[a-zA-Z_][a-zA-Z_\d]*'
+    return t
+        
+def t_error(t):
+    print("ERROR: ", t.value[:8])
+
+t_ignore = ' \t\r\n'
+
+
+# global variables
+Lexer = lex.lex()
