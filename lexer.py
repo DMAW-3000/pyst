@@ -1,5 +1,5 @@
 """
-Token definitions for parsing code text
+Token definitions for parsing Smalltalk code text
 """
 
 import ply.lex as lex
@@ -8,15 +8,37 @@ states = ( ('dstring', 'exclusive'),
            ('sstring', 'exclusive'), )
 
 tokens = [
+    'BASENUMBER',
+    'FLTNUMBER',
+    'DECNUMBER',
     'DSTRING',
     'SSTRING',
     'LBRACK',
     'RBRACK',
+    'RSHIFT',
+    'PERIOD',
     'ASSIGN',
     'MESSAGEARG',
     'OPERATOR',
     'IDENT',
 ]
+
+def t_BASENUMBER(t):
+    r'\d+r[\dA-F]+'
+    tstr = t.value.split('r')
+    base = int(tstr[0])
+    t.value = int(tstr[1], base)
+    return t
+
+def t_FLTNUMBER(t):
+    r'-?\d+\.\d+(e-?\d+)*'
+    t.value = float(t.value)
+    return t
+
+def t_DECNUMBER(t):
+    r'-?\d+'
+    t.value = int(t.value)
+    return t
 
 def t_DSTRING(t):
     r'\"'
@@ -68,6 +90,14 @@ def t_RBRACK(t):
     r'\]'
     return t
     
+def t_RSHIFT(t):
+    r'>>'
+    return t
+    
+def t_PERIOD(t):
+    '''\.'''
+    return t
+    
 def t_ASSIGN(t):
     r':='
     return t
@@ -86,7 +116,7 @@ def t_IDENT(t):
     return t
         
 def t_error(t):
-    print("ERROR: ", t.value[:8])
+    print("ERROR: ", t.value)
 
 t_ignore = ' \t\r\n'
 
