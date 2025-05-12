@@ -16,6 +16,7 @@ tokens = [
     'LBRACK',
     'RBRACK',
     'RSHIFT',
+    'CARET',
     'PERIOD',
     'ASSIGN',
     'MESSAGEARG',
@@ -102,6 +103,10 @@ def t_ASSIGN(t):
     r':='
     return t
     
+def t_CARET(t):
+    r'\^'
+    return t
+    
 def t_MESSAGEARG(t):
     r'[a-zA-Z_][a-zA-Z_\d]*:'
     t.value = t.value.rstrip(':')
@@ -116,7 +121,7 @@ def t_IDENT(t):
     return t
         
 def t_error(t):
-    print("ERROR: ", t.value)
+    print("ERROR: ", t.value[0])
 
 t_ignore = ' \t\r\n'
 
