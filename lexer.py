@@ -95,7 +95,7 @@ def t_RSHIFT(t):
     return t
     
 def t_PERIOD(t):
-    '''\.'''
+    r'\.'
     return t
     
 def t_ASSIGN(t):
