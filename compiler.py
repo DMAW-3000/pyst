@@ -5,10 +5,18 @@ Smalltalk bootstrap compiler
 from st import *
 from lexer import Lexer
 
-class CompileError(Exception): pass
+
+class CompileError(Exception): 
+    """
+    Signal a compilation error
+    """
+    pass
+    
 
 class Compile(object):
-
+    """
+    The bootstrap compiler
+    """
     def __init__(self, system):
         """
         Create a blank compiler instance
@@ -19,6 +27,7 @@ class Compile(object):
         
         # helpers
         self._cur_klass = None
+        self._cur_meth = None
 
     def compile_file(self, fileName):
         """
@@ -92,6 +101,7 @@ class Compile(object):
                 tok = Lexer.token()     # >>
                 if tok != "RSHIFT":
                     CompileError("expected >>")
+                self.parse_method()
             break
         
     def parse_class_attr(self):
@@ -128,5 +138,73 @@ class Compile(object):
         varObj = self._nil      # just set to NIL for now, need to parse statement
         self._sys.dict_add(varDict, symObj, varObj)
         print("Class Variable:", symObj, varObj)
+        
+    def parse_method(self):
+        """
+        Parse the definition of a method
+        """
+        # parse method arguments
+        methName = []
+        tok = Lexer.token()             # ident or ident:
+        while tok.type != "LBRACK":
+            if tok.type == "IDENT":
+                methName.append(tok.value)
+                tok = Lexer.token()
+            elif tok.type == "MESSAGEARG":
+                methName.append(tok.value + ':')
+                tok = Lexer.token()     # ident
+                if tok.type != "IDENT":
+                    raise CompileError("expected ident")
+                methName.append(tok.value)
+                tok = Lexer.token()
+        methName = "".join(methName)
+        print("Method:", methName)
+        
+        # create Method and MethodInfo objects
+        self._cur_meth = methObj = CompiledMethod()
+        methObj.descriptor = MethodInfo(methObj)
+        methObj.descriptor.klass = self._cur_klass
+        
+        # skip any comment
+        tok = Lexer.token()
+        while tok.type == "DSTRING":
+            tok = Lexer.token()
+            
+        # parse method attributes
+        while (tok.type == "OPERATOR") and (tok.value == '<'):
+            self.parse_method_attr()
+            tok = Lexer.token()
+            
+        # scan method statements
+        # look for trailing ']'
+        stmtText = tok.value
+        brackCount = 1
+        c = Lexer.lexdata[Lexer.lexpos]
+        while brackCount > 0:
+            if c == ']':
+                brackCount -= 1
+            elif c == '[':
+                brackCount += 1
+            stmtText += c
+            Lexer.lexpos += 1
+            c = Lexer.lexdata[Lexer.lexpos]
+        print(stmtText)
+          
+    def parse_method_attr(self):
+        """
+        Parse a method attribute definition
+        """
+        attrName = Lexer.token()    # name
+        attrValue = Lexer.token()   # value
+        tok = Lexer.token()         # >
+        if (tok.type != "OPERATOR") or (tok.value != '>'):
+            raise CompileError("missing >")
+        if attrName.value == "category":
+            self._cur_meth.descriptor.category = String.from_str(attrValue.value)
+            
+        
+                
+        
+            
         
         
