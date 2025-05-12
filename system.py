@@ -142,8 +142,6 @@ class Smalltalk(object):
         #                         klassObj.subClasses,
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
-            
-        #inst.dict_print(inst.g_st_dict, True)
         
     def build_classes_1(self):
         """
@@ -337,8 +335,14 @@ class Smalltalk(object):
         """
         numInst = dictObj.get_class().get_num_inst()
         for assoc in dictObj[numInst:]:
-            if not is_nil(assoc):
-                print(assoc.key, assoc.value)
+            if not nameSpace:
+                if not is_nil(assoc):
+                    print(assoc.key, assoc.value)
+            else:
+                if not is_nil(assoc):
+                    binding = assoc.value
+                    if not is_nil(binding):
+                        print(binding.key, binding.value)
         
     @staticmethod
     def create_meta(instObj):
