@@ -30,8 +30,6 @@
 |
  ======================================================================"
 
-
-
 nil subclass: Object [
     
     <comment: 'I am the root of the Smalltalk class system. 
@@ -47,7 +45,6 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'initialization'>
 	aspect == #returnFromSnapshot ifFalse: [^self].
-	ContextPart checkPresenceOfJIT.
 	FinalizableObjects := nil
     ]
 
