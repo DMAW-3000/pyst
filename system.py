@@ -279,6 +279,19 @@ class Smalltalk(object):
         self.dict_add(dictObj, symObj, VariableBinding(symObj, itemObj, dictObj))
         return symObj
         
+    def find_global(self, itemName):
+        """
+        Find a global symbol value in the Smalltalk namespace.
+        Returns VariableBinding, or nil if not found.
+        """
+        symObj = self.symbol_find(itemName)
+        if is_nil(symObj):
+            return symObj
+        assoc = self.dict_find(self.g_st_dict, symObj)
+        if is_nil(assoc):
+            return assoc
+        return assoc.value
+        
     def dict_add(self, dictObj, keyObj, itemObj):
         """
         Add an item to a Dictionary-like instance.
@@ -289,14 +302,14 @@ class Smalltalk(object):
         
     def dict_find(self, dictObj, keyObj):
         """
-        Find an item in a Dictionary-like instance,
-        or return nil.
+        Find an item in a Dictionary-like instance.
+        Returns the Association, or nil.
         """
         idx = self.dict_index(dictObj, keyObj)
         assoc = dictObj[idx]
         if is_nil(assoc):
             return assoc
-        return assoc.value
+        return assoc
         
     @staticmethod
     def dict_index(dictObj, keyObj):
@@ -323,12 +336,9 @@ class Smalltalk(object):
         Display the contents of a Dictionary-like object
         """
         numInst = dictObj.get_class().get_num_inst()
-        for s in dictObj[numInst:]:
-            if not is_nil(s):
-                if not nameSpace:
-                    print(s.key, s.value)
-                else:
-                    print(s.key, s.value.value)
+        for assoc in dictObj[numInst:]:
+            if not is_nil(assoc):
+                print(assoc.key, assoc.value)
         
     @staticmethod
     def create_meta(instObj):
