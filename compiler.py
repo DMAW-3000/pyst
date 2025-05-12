@@ -102,7 +102,11 @@ class Compile(object):
                 if tok != "RSHIFT":
                     CompileError("expected >>")
                 self.parse_method()
-            break
+            tok = Lexer.token()
+            if tok.type != "IDENT":
+                raise CompileError("expected ident")
+            parse1 = tok.value
+            tok = Lexer.token()
         
     def parse_class_attr(self):
         """
@@ -183,12 +187,19 @@ class Compile(object):
         while brackCount > 0:
             if c == ']':
                 brackCount -= 1
+                if brackCount > 0:
+                    stmtText += c
             elif c == '[':
                 brackCount += 1
-            stmtText += c
+                stmtText += c
+            else:
+                stmtText += c
             Lexer.lexpos += 1
             c = Lexer.lexdata[Lexer.lexpos]
+        methObj.descriptor.sourceCode = String.from_str(stmtText)
         print(stmtText)
+        Lexer.input(Lexer.lexdata[Lexer.lexpos:])
+        return 
           
     def parse_method_attr(self):
         """
