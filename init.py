@@ -11,7 +11,7 @@ Configuration for creating a new environment
 # 5 = tuple of instance variable names
 
 Init_Class = (
-    ("Object", True, "object", None, False, (), ("Dependencies", "FinalizableObjects"), ("VMPrimitives",)),
+    ("Object", True, "object", None, False, (), ("Dependencies", "FinalizableObjects", "FinalSemaphore"), ("VMPrimitives",)),
     ("UndefinedObject", False, "undef_obj", "object", True, (), (), ()),
     ("Boolean", False, "boolean", "object", True, (), (), ()),
     ("False", False, "false", "boolean", True, ("truthValue",), (), ()),
