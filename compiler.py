@@ -50,12 +50,15 @@ class Compile(object):
             self.parse_class(superName.value, klassName.value)
             
     def parse_class(self, superName, klassName):
+        """
+        Parse the definition of a class
+        """
         # lookup class
         binding = self._sys.find_global(klassName)
         if is_nil(binding):
             raise CompileError("unknown class " + klassName)
         self._cur_klass = binding.value
-        print("Compiling ", self._cur_klass.name)
+        print("Compiling class", self._cur_klass.name)
         
         # get definition body
         tok = Lexer.token()         # [
@@ -92,6 +95,9 @@ class Compile(object):
             break
         
     def parse_class_attr(self):
+        """
+        Parse a class attribute definition
+        """
         attrName = Lexer.token()    # name
         attrValue = Lexer.token()   # value
         tok = Lexer.token()         # >
@@ -103,18 +109,24 @@ class Compile(object):
             self._cur_klass.category = String.from_str(attrValue.value)
         
     def parse_class_var(self, varName):
+        """
+        Parse the initialization statement for a class variable
+        """
         varValue = Lexer.token()       # value
         if varValue.value != 'nil':
             raise CompileError("expected nil")
         tok = Lexer.token()            # .
         if tok.type != "PERIOD":
             raise CompileError("missing .")
-        self._sys.dict_print(self._cur_klass.classVariables, True)
         symObj = self._sys.symbol_find(varName)
         if is_nil(symObj):
             raise CompileError("class var %s not defined" % varName)
-        binding = self._sys.dict_find(self._cur_klass.classVariables, symObj)
-        if is_nil(binding):
+        varDict = self._cur_klass.classVariables
+        assoc = self._sys.dict_find(varDict, symObj)
+        if is_nil(assoc):
             raise CompileError("class var %s not defined" % varName)
+        varObj = self._nil      # just set to NIL for now, need to parse statement
+        self._sys.dict_add(varDict, symObj, varObj)
+        print("Class Variable:", symObj, varObj)
         
         
