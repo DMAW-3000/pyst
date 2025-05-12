@@ -808,11 +808,16 @@ class CompiledMethod(Object):
     Internal representation of Smalltalk CompiledMethod
     """
     
-    def __init__(self, numArg, numTemp, depth):
+    def __init__(self):
         """
         Create a new Compiled Method
         """
         super().__init__(3)
+        
+    def set_hdr(numArg, numTemp, depth):
+        """
+        Set the method header info
+        """
         self.header = (numArg & 0x1f) | \
                       ((depth & 0x3f) << 5) | \
                       ((numTemp & 0x3f) << 11)
@@ -859,5 +864,54 @@ class CompiledMethod(Object):
     def descriptor(self, x):
         self[2] = x
         
+        
+class MethodInfo(Object):
+    """
+    Internal representation of Smalltalk MethodInfo
+    """
+    
+    def __init__(self, linkKlass):
+        super().__init__(5)
+        
+    @property
+    def sourceCode(self):
+        return self[0]
+        
+    @sourceCode.setter
+    def sourceCode(self, x):
+        self[0] = x
+
+    @property
+    def category(self):
+        return self[1]
+        
+    @category.setter
+    def category(self, x):
+        self[1] = x
+        
+    @property
+    def klass(self):
+        return self[2]
+        
+    @klass.setter
+    def klass(self, x):
+        self[2] = x
+  
+    @property
+    def selector(self):
+        return self[3]
+        
+    @selector.setter
+    def selector(self, x):
+        self[3] = x
+    
+    @property
+    def debugInfo(self):
+        return self[4]
+        
+    @debugInfo.setter
+    def debugInfo(self, x):
+        self[4] = x
+
     
         

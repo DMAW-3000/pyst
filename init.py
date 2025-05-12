@@ -50,6 +50,7 @@ Init_Class = (
     ("MethodContext", True, "meth_context", "context_part", False, ("flags",), (), ()),
     ("CompiledCode", False, "comp_code", "arr_collection", False, ("literals", "header"), (), ()),
     ("CompiledMethod", True, "comp_method", "comp_code", False, ("descriptor",), (), ()),
+    ("MethodInfo", True, "meth_info", "object", False, ("sourceCode", "category", "class", "selector", "debugInfo"), (), ()),
 )
 
 # the instance vaariable names for Metaclass
