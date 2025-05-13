@@ -109,22 +109,22 @@ class Compile(object):
                 tok = Lexer.token()     # >>
                 if tok != "RSHIFT":
                     CompileError("expected >>")
-                self.parse_method([], [], True)
+                self.parse_method([], [], True, False)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "OPERATOR") and (parse2.type == "IDENT"):
-                self.parse_method([parse1.value], [parse2.value], True)
+                self.parse_method([parse1.value], [parse2.value], True, True)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "MESSAGEARG") and (parse2.type == "IDENT"):
-                self.parse_method([parse1.value], [parse2.value], True)
+                self.parse_method([parse1.value], [parse2.value], True, False)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "IDENT") and (parse2.type == "LBRACK"):
-                self.parse_method([parse1.value], [], False)
+                self.parse_method([parse1.value], [], False, False)
                 parse1 = None
                 parse2 = None
             else:
@@ -166,7 +166,7 @@ class Compile(object):
         self._sys.dict_add(varDict, symObj, varObj)
         print("Class Variable:", symObj, varObj)
         
-    def parse_method(self, methName, argName, parseBrack):
+    def parse_method(self, methName, argName, parseBrack, opName):
         """
         Parse the definition of a method
         """
@@ -186,7 +186,7 @@ class Compile(object):
                     tok = Lexer.token()
         numArgs = len(argName)
         methName = ":".join(methName)
-        if numArgs > 0:
+        if (numArgs > 0) and not opName:
             methName += ":"
         print("Method:", methName)
         print("Args:", argName)
@@ -216,20 +216,26 @@ class Compile(object):
             
         # scan method statements
         # look for trailing ']'
+        # strip out double quote comments
         if tok.type != "RBRACK":
             stmtText = tok.value
             brackCount = 1
+            comment = False
             c = Lexer.lexdata[Lexer.lexpos]
             while brackCount > 0:
-                if c == ']':
+                if c == '\"':
+                    comment = not comment
+                elif c == ']':
                     brackCount -= 1
-                    if brackCount > 0:
+                    if (brackCount > 0) and not comment:
                         stmtText += c
                 elif c == '[':
                     brackCount += 1
-                    stmtText += c
+                    if not comment:
+                        stmtText += c
                 else:
-                    stmtText += c
+                    if not comment:
+                        stmtText += c
                 Lexer.lexpos += 1
                 c = Lexer.lexdata[Lexer.lexpos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
