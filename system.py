@@ -83,6 +83,12 @@ class Smalltalk(object):
         # interpeter and compiler
         self.g_compile = None
         self.g_interp = None
+        
+        # bytecode disassembly table
+        self.g_dis = disTbl = [None] * 256
+        disTbl[B_PUSH_SELF] = ("PUSH_SELF",)
+        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD_STACK_TOP",)
+        
     
     @classmethod
     def rebuild(klass):
@@ -438,6 +444,17 @@ class Smalltalk(object):
             return self.o_nil
         arrObj = Array(numPool)
         return arrObj
+        
+    def dis_bytecode(self, byteCode):
+        """
+        Disassemble an array of bytecode values.
+        """
+        for b in byteCode:
+            info = self.g_dis[b]
+            if info is None:
+                print("????")
+            else:
+                print(info[0])
         
     def fatal_err(self, s):
         """
