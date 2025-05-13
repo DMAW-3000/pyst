@@ -360,6 +360,14 @@ class Smalltalk(object):
                     binding = assoc.value
                     if not is_nil(binding):
                         print(binding.key, binding.value)
+                        
+    @staticmethod
+    def arr_print(arrObj):
+        """
+        Display the contents of an Array-like object
+        """
+        for item in arrObj:
+            print(item)
         
     @staticmethod
     def create_meta(instObj):
