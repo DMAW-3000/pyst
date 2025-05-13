@@ -24,6 +24,7 @@ class Interp(object):
         self.i_method = self._nil
         self.i_temps = self._nil
         self.i_literals = self._nil
+        self.i_self = self._nil
         
         # the bytecode table
         self.b_table = bTbl = [None] * 256
