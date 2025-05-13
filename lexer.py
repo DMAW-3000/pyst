@@ -13,9 +13,12 @@ tokens = [
     'DECNUMBER',
     'DSTRING',
     'SSTRING',
+    'LPARENS',
+    'RPARENS',
     'LBRACK',
     'RBRACK',
     'RSHIFT',
+    'PIPE',
     'CARET',
     'PERIOD',
     'ASSIGN',
@@ -91,6 +94,14 @@ def t_RBRACK(t):
     r'\]'
     return t
     
+def t_LPARENS(t):
+    r'\('
+    return t
+
+def t_RPARENS(t):
+    r'\)'
+    return t
+    
 def t_RSHIFT(t):
     r'>>'
     return t
@@ -101,6 +112,10 @@ def t_PERIOD(t):
     
 def t_ASSIGN(t):
     r':='
+    return t
+    
+def t_PIPE(t):
+    r'\|'
     return t
     
 def t_CARET(t):
@@ -119,6 +134,9 @@ def t_OPERATOR(t):
 def t_IDENT(t):
     r'[a-zA-Z_][a-zA-Z_\d]*'
     return t
+        
+def t_eof(t):
+    return None
         
 def t_error(t):
     print("ERROR: ", t.value[0])
