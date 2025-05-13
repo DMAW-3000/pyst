@@ -823,7 +823,7 @@ class _Code(Object):
         """
         Get the bytecode array
         """
-        return self._bc_array
+        return self._bc_arr
         
     def set_code(self, x):
         """
