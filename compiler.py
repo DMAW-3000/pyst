@@ -119,7 +119,7 @@ class Compile(object):
                 parse2 = None
                 continue
             elif (parse1.type == "MESSAGEARG") and (parse2.type == "IDENT"):
-                self.parse_method([parse1.value + ':', parse2.value], True)
+                self.parse_method([parse1.value, parse2.value], True)
                 parse1 = None
                 parse2 = None
                 continue
@@ -178,13 +178,13 @@ class Compile(object):
                     methName.append(tok.value)
                     tok = Lexer.token()
                 elif tok.type == "MESSAGEARG":
-                    methName.append(tok.value + ':')
+                    methName.append(tok.value)
                     tok = Lexer.token()     # ident
                     if tok.type != "IDENT":
                         raise CompileError("expected ident")
                     methName.append(tok.value)
                     tok = Lexer.token()
-        methName = "".join(methName)
+        methName = ":".join(methName)
         print("Method:", methName)
         
         # create Method and MethodInfo objects
