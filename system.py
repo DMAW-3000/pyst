@@ -2,6 +2,7 @@
 The entire Smalltalk environment
 """
 
+import sys
 import os
 import pickle
 
@@ -39,6 +40,11 @@ class Smalltalk(object):
         self.k_class_desc = None
         self.k_class = None
         self.k_metaclass = None
+        self.k_iterable = None
+        self.k_collection = None
+        self.k_seq_collection = None
+        self.k_arr_collection = None
+        self.k_array = None
         self.k_link = None
         self.k_sym_link = None
         self.k_hash_collection = None
@@ -157,7 +163,10 @@ class Smalltalk(object):
             isFixed = klassInfo[4]
             instVars = klassInfo[5]
             if superName is not None:
-                superObj = getattr(self, "k_" + superName)
+                superName = "k_" + superName
+                if not hasattr(self, superName):
+                    self.fatal_err("missing class cache " + superName)
+                superObj = getattr(self, superName)
                 superVars = superObj.get_num_inst()
             else:
                 superObj = None
@@ -166,7 +175,10 @@ class Smalltalk(object):
             klassObj.subClasses = 0
             if superObj is not None:
                 superObj.subClasses += 1
-            setattr(self, "k_" + cacheName, klassObj)
+            cacheName = "k_" + cacheName
+            if not hasattr(self, cacheName):
+                self.fatal_err("missing class cache " + cacheName)
+            setattr(self, cacheName, klassObj)
             
     def build_classes_2(self):
         """
@@ -416,6 +428,14 @@ class Smalltalk(object):
             return self.o_nil
         arrObj = Array(numPool)
         return arrObj
+        
+    def fatal_err(self, s):
+        """
+        Print a message and exit.  None of the
+        system state will be saved.
+        """
+        print(s)
+        sys.exit(-1)
             
         
         
