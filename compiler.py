@@ -109,22 +109,22 @@ class Compile(object):
                 tok = Lexer.token()     # >>
                 if tok != "RSHIFT":
                     CompileError("expected >>")
-                self.parse_method([], True)
+                self.parse_method([], [], True)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "OPERATOR") and (parse2.type == "IDENT"):
-                self.parse_method([parse1.value, parse2.value], True)
+                self.parse_method([parse1.value], [parse2.value], True)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "MESSAGEARG") and (parse2.type == "IDENT"):
-                self.parse_method([parse1.value, parse2.value], True)
+                self.parse_method([parse1.value], [parse2.value], True)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "IDENT") and (parse2.type == "LBRACK"):
-                self.parse_method([parse1.value], False)
+                self.parse_method([parse1.value], [], False)
                 parse1 = None
                 parse2 = None
             else:
@@ -166,7 +166,7 @@ class Compile(object):
         self._sys.dict_add(varDict, symObj, varObj)
         print("Class Variable:", symObj, varObj)
         
-    def parse_method(self, methName, parseBrack):
+    def parse_method(self, methName, argName, parseBrack):
         """
         Parse the definition of a method
         """
@@ -182,21 +182,19 @@ class Compile(object):
                     tok = Lexer.token()     # ident
                     if tok.type != "IDENT":
                         raise CompileError("expected ident")
-                    methName.append(tok.value)
+                    argName.append(tok.value)
                     tok = Lexer.token()
-        argLen =  len(methName)
-        if argLen == 1:
-            numArgs = 0
-        else:
-            numArgs = argLen // 2
+        numArgs = len(argName)
         methName = ":".join(methName)
-        print("Method:", methName, numArgs)
+        if numArgs > 0:
+            methName += ":"
+        print("Method:", methName)
+        print("Args:", argName)
         
         
         # create Method and MethodInfo objects
         self._cur_meth = methObj = CompiledMethod()
-        methObj.descriptor = MethodInfo(methObj)
-        methObj.descriptor.klass = self._cur_klass
+        methObj.descriptor = MethodInfo(self._cur_klass)
         
         # skip any comment
         tok = Lexer.token()
