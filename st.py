@@ -849,7 +849,7 @@ class _Code(Object):
         Set one of the Object's child references
         """
         refSize = len(self._refs)
-        if idx > refSize:
+        if idx >= refSize:
             self._bc_arr[idx - refSize] = x
         else:
             self._refs[idx] = x
