@@ -174,6 +174,7 @@ class Compile(object):
         """
         Parse the definition of a method
         """
+        #get remainder of method name
         if parseBrack:
             # parse method arguments
             tok = self._lex.token()             # ident or ident:
@@ -188,16 +189,23 @@ class Compile(object):
                         raise CompileError("expected ident")
                     argName.append(tok.value)
                     tok = self._lex.token()
+                else:
+                    raise CompileError("bad message syntax")
+                    
+        # parse method name into a selector and argument names
+        # create symbol for selector
         numArgs = len(argName)
         methName = ":".join(methName)
         if (numArgs > 0) and not opName:
             methName += ":"
-        print("Method:", methName)
+        methSym = self._sys.symbol_find_or_add(methName)
+        print("Method:", methSym)
         print("Args:", argName)
         
         # create Method and MethodInfo objects
         self._cur_meth = methObj = CompiledMethod()
         methObj.descriptor = MethodInfo(self._cur_klass)
+        methObj.descriptor.selector = methSym
         
         # skip any comment
         tok = self._lex.token()
