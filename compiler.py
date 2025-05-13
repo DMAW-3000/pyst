@@ -232,17 +232,19 @@ class Compile(object):
         # scan method statements
         # look for trailing ']'
         # strip out double quote comments
+        pos = 0
+        remainder = self._lex.lexdata[self._lex.lexpos:]
         if tok.type != "RBRACK":
             stmtText = tok.value
             brackCount = 1
             comment = False
-            c = self._lex.lexdata[self._lex.lexpos]
+            c = remainder[pos]
             while brackCount > 0:
                 if c == '\"':
                     comment = not comment
                 elif c == ']':
                     brackCount -= 1
-                    if (brackCount > 0) and not comment:
+                    if (brackCount > 0) and (not comment):
                         stmtText += c
                 elif c == '[':
                     brackCount += 1
@@ -251,11 +253,11 @@ class Compile(object):
                 else:
                     if not comment:
                         stmtText += c
-                self._lex.lexpos += 1
-                c = self._lex.lexdata[self._lex.lexpos]
+                pos += 1
+                c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
             print(stmtText)
-        self._lex.input(self._lex.lexdata[self._lex.lexpos:])
+        self._lex.input(remainder[pos:])
           
     def parse_method_attr(self):
         """
