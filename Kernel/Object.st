@@ -786,9 +786,9 @@ All classes in the system are subclasses of me.'>
 	 instance variable failed.  Evaluate aBlock for an invalid index."
 
 	<category: 'built ins'>
-	self class isFixed ifTrue: [^SystemExceptions.NotIndexable signalOn: self].
+	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
 	index isInteger 
-	    ifFalse: [^SystemExceptions.WrongClass signalOn: index mustBe: SmallInteger].
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
 	^aBlock value
     ]
 
@@ -797,13 +797,13 @@ All classes in the system are subclasses of me.'>
 	 instance variable failed"
 
 	<category: 'built ins'>
-	self class isFixed ifTrue: [^SystemExceptions.NotIndexable signalOn: self].
+	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
 	index isInteger 
-	    ifFalse: [^SystemExceptions.WrongClass signalOn: index mustBe: SmallInteger].
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
 	index < 1 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index].
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
 	index > self basicSize 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index]
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index]
     ]
 
     checkIndexableBounds: index put: object [
@@ -812,34 +812,34 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	| shape size |
-	self class isFixed ifTrue: [^SystemExceptions.NotIndexable signalOn: self].
-	self isReadOnly ifTrue: [^SystemExceptions.ReadOnlyObject signal].
+	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
+	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signal].
 	index isInteger 
-	    ifFalse: [^SystemExceptions.WrongClass signalOn: index mustBe: SmallInteger].
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
 	index < 1 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index].
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
 	index > self basicSize 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index].
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
 	shape := self class shape.
 	(shape == #float or: [shape == #double]) 
 	    ifTrue: 
-		[SystemExceptions.WrongClass signalOn: object
+		["SystemExceptions." WrongClass signalOn: object
 		    mustBe: 
 			{Float.
 			SmallInteger}].
 	(object isKindOf: Character) 
 	    ifFalse: 
 		[(shape == #character or: [shape == #utf32]) 
-		    ifTrue: [SystemExceptions.WrongClass signalOn: object mustBe: Character]].
+		    ifTrue: ["SystemExceptions." WrongClass signalOn: object mustBe: Character]].
 	shape == #character 
 	    ifTrue: 
-		[^SystemExceptions.ArgumentOutOfRange 
+		[^"SystemExceptions." ArgumentOutOfRange 
 		    signalOn: object
 		    mustBeBetween: (Character value: 0)
 		    and: (Character value: 255)].
 	shape == #utf32 
 	    ifTrue: 
-		[^SystemExceptions.ArgumentOutOfRange 
+		[^"SystemExceptions." ArgumentOutOfRange 
 		    signalOn: object
 		    mustBeBetween: 0 asCharacter
 		    and: 1114111 asCharacter].
@@ -852,7 +852,7 @@ All classes in the system are subclasses of me.'>
 	shape == #uint64 ifTrue: [size := 64].
 	shape == #int64 ifTrue: [size := 63].
 	size isNil ifTrue: [^self primtiveFailed].
-	^SystemExceptions.ArgumentOutOfRange 
+	^"SystemExceptions." ArgumentOutOfRange 
 	    signalOn: object
 	    mustBeBetween: (size odd ifTrue: [-1 bitShift: size] ifFalse: [0])
 	    and: (1 bitShift: size) - 1
@@ -915,7 +915,7 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Object_becomeForward>
-	^SystemExceptions.ReadOnlyObject signal
+	^"SystemExceptions." ReadOnlyObject signal
     ]
 
     become: otherObject [
@@ -932,7 +932,7 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Object_become>
-	^SystemExceptions.ReadOnlyObject signal
+	^"SystemExceptions." ReadOnlyObject signal
     ]
 
     shallowCopy [
@@ -963,7 +963,7 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Object_makeFixed>
-	SystemExceptions.InvalidValue signalOn: self
+	"SystemExceptions." InvalidValue signalOn: self
 	    reason: 'Instances of Integer cannot be tenured!'
     ]
 
@@ -999,11 +999,11 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_instVarAt>
 	index < 1 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index].
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
 	index isInteger 
-	    ifFalse: [^SystemExceptions.WrongClass signalOn: index mustBe: SmallInteger].
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
 	index > (self basicSize + self class instSize) 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index].
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
 	^self basicAt: index - self class instSize
     ]
 
@@ -1013,13 +1013,13 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Object_instVarAtPut>
-	self isReadOnly ifTrue: [^SystemExceptions.ReadOnlyObject signal].
+	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signal].
 	index < 1 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index].
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
 	index isInteger 
-	    ifFalse: [^SystemExceptions.WrongClass signalOn: index mustBe: SmallInteger].
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
 	index > (self basicSize + self class instSize) 
-	    ifTrue: [^SystemExceptions.IndexOutOfRange signalOn: self withIndex: index].
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
 	^self basicAt: index - self class instSize put: value
     ]
 
@@ -1037,7 +1037,7 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Object_makeReadOnly>
-	SystemExceptions.WrongClass signalOn: aBoolean mustBe: Boolean
+	"SystemExceptions." WrongClass signalOn: aBoolean mustBe: Boolean
     ]
 
     makeWeak [
@@ -1057,7 +1057,7 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Object_makeEphemeron>
-	SystemExceptions.InvalidValue signalOn: self
+	"SystemExceptions." InvalidValue signalOn: self
 	    reason: 'ephemerons should have at least one instance variables'
     ]
 
@@ -1069,7 +1069,7 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Object_hash>
-	SystemExceptions.InvalidValue signalOn: self
+	"SystemExceptions." InvalidValue signalOn: self
 	    reason: 'Instances of Integer have no associated OOP!'
     ]
 
@@ -1121,12 +1121,12 @@ All classes in the system are subclasses of me.'>
 	selectorOrMessageOrMethod isSymbol 
 	    ifTrue: 
 		[(self respondsTo: selectorOrMessageOrMethod) 
-		    ifTrue: [^SystemExceptions.WrongArgumentCount signal]
+		    ifTrue: [^"SystemExceptions." WrongArgumentCount signal]
 		    ifFalse: 
 			[self doesNotUnderstand: (Message selector: selectorOrMessageOrMethod
 				    arguments: #())]].
 	(selectorOrMessageOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal].
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
 	^selectorOrMessageOrMethod sendTo: self
     ]
 
@@ -1144,12 +1144,12 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_perform>
 	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal].
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
 	selectorOrMethod isSymbol 
 	    ifFalse: 
-		[SystemExceptions.WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
 	(self respondsTo: selectorOrMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal]
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
 	    ifFalse: 
 		[self 
 		    doesNotUnderstand: (Message selector: selectorOrMethod arguments: {arg1})]
@@ -1169,12 +1169,12 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_perform>
 	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal].
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
 	selectorOrMethod isSymbol 
 	    ifFalse: 
-		[SystemExceptions.WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
 	(self respondsTo: selectorOrMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal]
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
 	    ifFalse: 
 		[self doesNotUnderstand: (Message selector: selectorOrMethod
 			    arguments: 
@@ -1196,12 +1196,12 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_perform>
 	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal].
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
 	selectorOrMethod isSymbol 
 	    ifFalse: 
-		[SystemExceptions.WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
 	(self respondsTo: selectorOrMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal]
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
 	    ifFalse: 
 		[self doesNotUnderstand: (Message selector: selectorOrMethod
 			    arguments: 
@@ -1224,12 +1224,12 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_perform>
 	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal].
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
 	selectorOrMethod isSymbol 
 	    ifFalse: 
-		[SystemExceptions.WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
 	(self respondsTo: selectorOrMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal]
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
 	    ifFalse: 
 		[self doesNotUnderstand: (Message selector: selectorOrMethod
 			    arguments: 
@@ -1253,14 +1253,14 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_performWithArguments>
 	argumentsArray isArray 
-	    ifFalse: [SystemExceptions.WrongClass signalOn: argumentsArray mustBe: Array].
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: argumentsArray mustBe: Array].
 	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal].
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
 	selectorOrMethod isSymbol 
 	    ifFalse: 
-		[SystemExceptions.WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
 	(self respondsTo: selectorOrMethod) 
-	    ifTrue: [SystemExceptions.WrongArgumentCount signal]
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
 	    ifFalse: 
 		[self doesNotUnderstand: (Message selector: selectorOrMethod
 			    arguments: argumentsArray)]
@@ -1338,7 +1338,7 @@ All classes in the system are subclasses of me.'>
 	"Called when a VM primitive fails"
 
 	<category: 'built ins'>
-	SystemExceptions.PrimitiveFailed signal
+	"SystemExceptions." PrimitiveFailed signal
     ]
 
     shouldNotImplement [
@@ -1346,7 +1346,7 @@ All classes in the system are subclasses of me.'>
 	 selector defined by a superclass"
 
 	<category: 'built ins'>
-	SystemExceptions.ShouldNotImplement signal
+	"SystemExceptions." ShouldNotImplement signal
     ]
 
     subclassResponsibility [
@@ -1354,7 +1354,7 @@ All classes in the system are subclasses of me.'>
 	 in a subclass"
 
 	<category: 'built ins'>
-	SystemExceptions.SubclassResponsibility signal
+	"SystemExceptions." SubclassResponsibility signal
     ]
 
     notYetImplemented [
@@ -1362,7 +1362,7 @@ All classes in the system are subclasses of me.'>
 	 but is going to be"
 
 	<category: 'built ins'>
-	SystemExceptions.NotYetImplemented signal
+	"SystemExceptions." NotYetImplemented signal
     ]
 
     doesNotUnderstand: message [
@@ -1378,7 +1378,7 @@ All classes in the system are subclasses of me.'>
 	"Called back when a block performs a bad return."
 
 	<category: 'VM callbacks'>
-	SystemExceptions.BadReturn signal
+	"SystemExceptions." BadReturn signal
     ]
 
     mustBeBoolean [
@@ -1387,7 +1387,7 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'VM callbacks'>
 	| result |
-	result := SystemExceptions.MustBeBoolean signalOn: self.
+	result := "SystemExceptions." MustBeBoolean signalOn: self.
 	result == false ifFalse: [result := true].
 	^result
     ]
@@ -1396,14 +1396,14 @@ All classes in the system are subclasses of me.'>
 	"Called back when all processes are suspended"
 
 	<category: 'VM callbacks'>
-	SystemExceptions.NoRunnableProcess signal
+	"SystemExceptions." NoRunnableProcess signal
     ]
 
     userInterrupt [
 	"Called back when the user presses Ctrl-Break"
 
 	<category: 'VM callbacks'>
-	SystemExceptions.UserInterrupt signal
+	"SystemExceptions." UserInterrupt signal
     ]
 ]
 
