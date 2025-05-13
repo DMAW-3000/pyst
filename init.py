@@ -53,6 +53,8 @@ Init_Class = (
     ("CompiledCode", False, "comp_code", "arr_collection", False, ("literals", "header"), (), ()),
     ("CompiledMethod", True, "comp_method", "comp_code", False, ("descriptor",), (), ()),
     ("MethodInfo", True, "meth_info", "object", False, ("sourceCode", "category", "class", "selector", "debugInfo"), (), ()),
+    ("LookupTable", False, "lookup_table", "dictionary", False, (), (), ()),
+    ("IdentityDictionary", False, "ident_dictionary", "lookup_table", False, (), (), ()),
 )
 
 # the instance vaariable names for Metaclass

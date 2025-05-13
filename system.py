@@ -71,6 +71,8 @@ class Smalltalk(object):
         self.k_comp_code = None
         self.k_comp_method = None
         self.k_meth_info = None
+        self.k_lookup_table = None
+        self.k_ident_dictionary = None
         
         # fundamental objects
         self.o_nil = None
