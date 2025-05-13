@@ -851,7 +851,8 @@ class _Code(Object):
         refSize = len(self._refs)
         if idx > refSize:
             self._bc_arr[idx - refSize] = x
-        self._refs[idx] = x
+        else:
+            self._refs[idx] = x
         
         
 class CompiledMethod(_Code):
