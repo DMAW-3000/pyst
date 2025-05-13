@@ -202,6 +202,11 @@ class Compile(object):
             self.parse_method_attr()
             tok = Lexer.token()
             
+        # parse method temporary variables
+        if tok.type == "PIPE":
+            self.parse_method_temps()
+            tok = Lexer.token()
+            
         # scan method statements
         # look for trailing ']'
         if tok.type != "RBRACK":
@@ -236,7 +241,19 @@ class Compile(object):
         if attrName.value == "category":
             self._cur_meth.descriptor.category = String.from_str(attrValue.value)
             
-        
+    def parse_method_temps(self):
+        """
+        Parse a list of method temporary names
+        """
+        tempNames = []
+        tok = Lexer.token()
+        while tok.type != "PIPE":
+            if tok.type != "IDENT":
+                raise CompileError("expected ident")
+            tempNames.append(tok.value)
+            tok = Lexer.token()
+        print("Temps:", tempNames)
+            
                 
         
             
