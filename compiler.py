@@ -184,8 +184,14 @@ class Compile(object):
                         raise CompileError("expected ident")
                     methName.append(tok.value)
                     tok = Lexer.token()
+        argLen =  len(methName)
+        if argLen == 1:
+            numArgs = 0
+        else:
+            numArgs = argLen // 2
         methName = ":".join(methName)
-        print("Method:", methName)
+        print("Method:", methName, numArgs)
+        
         
         # create Method and MethodInfo objects
         self._cur_meth = methObj = CompiledMethod()
