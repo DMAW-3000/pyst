@@ -256,6 +256,8 @@ class Compile(object):
             raise CompileError("missing >")
         if attrName.value == "category":
             self._cur_meth.descriptor.category = String.from_str(attrValue.value)
+        elif attrName.value == "primitive":
+            print("Primitive:", attrValue.value)
             
     def parse_method_temps(self):
         """
