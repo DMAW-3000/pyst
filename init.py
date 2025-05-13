@@ -9,6 +9,8 @@ Configuration for creating a new environment
 # 3 = superclass cache variable name
 # 4 = True if object is fixed size
 # 5 = tuple of instance variable names
+# 6 = tuple of class variable names
+# 7 = tuple of shared pool names
 
 Init_Class = (
     ("Object", True, "object", None, False, (), ("Dependencies", "FinalizableObjects", "FinalSemaphore"), ("VMPrimitives",)),
