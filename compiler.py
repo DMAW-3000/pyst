@@ -17,6 +17,10 @@ class Compile(object):
     """
     The bootstrap compiler
     """
+    
+    # the default code for empty method declarations
+    _Empty_Bytes = bytearray((B_PUSH_SELF, B_RETURN_METHOD_STACK_TOP))
+    
     def __init__(self, system):
         """
         Create a blank compiler instance
@@ -256,7 +260,16 @@ class Compile(object):
                 pos += 1
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
-            print(stmtText)
+            self.compile_statements(stmtText, argName, tempNames)
+        else:
+            # empty method definition
+            methObj.set_code(self._Empty_Bytes)
+            
+        print("Bytecodes:")
+        self._sys.dis_bytecode(methObj.get_code())
+        print()
+            
+        # setup lexer to continue parsing module text
         self._lex.input(remainder[pos:])
           
     def parse_method_attr(self):
@@ -285,6 +298,15 @@ class Compile(object):
             tempNames.append(tok.value)
             tok = self._lex.token()
         return tempNames
+        
+    def compile_statements(self, text, argNames, tempNames):
+        """
+        Compile a list of Smalltalk statements
+        """
+        # setup
+        #text = "^nil"
+        self._lex.input(text)
+        print(text)
                 
         
             
