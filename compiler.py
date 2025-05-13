@@ -21,9 +21,14 @@ class Compile(object):
         """
         Create a blank compiler instance
         """
+        global Lexer
+        
         # cache system information
         self._sys = system
         self._nil = system.o_nil
+        
+        # the lexer
+        self._lex = Lexer
         
         # helpers
         self._cur_klass = None
@@ -42,17 +47,17 @@ class Compile(object):
         """
         Compile a module of class definitions
         """
-        Lexer.input(text)
+        self._lex.input(text)
         
         # skip leading comments
-        tok = Lexer.token()
+        tok = self._lex.token()
         while tok.type == "DSTRING":
-            tok = Lexer.token()
+            tok = self._lex.token()
             
         # check for class definition
         superName = tok
-        message = Lexer.token()
-        klassName = Lexer.token()
+        message = self._lex.token()
+        klassName = self._lex.token()
         if (superName.type == "IDENT") and \
            (message.type == "MESSAGEARG") and (message.value == "subclass") and \
            (klassName.type == "IDENT"):
@@ -70,15 +75,15 @@ class Compile(object):
         print("Compiling class", self._cur_klass.name)
         
         # get definition body
-        tok = Lexer.token()         # [
+        tok = self._lex.token()         # [
         if tok.type != "LBRACK":
             raise CompileError("missing [")
             
         # check for attributes
-        tok = Lexer.token()         # <
+        tok = self._lex.token()         # <
         while (tok.type == "OPERATOR") and (tok.value == '<'):
             self.parse_class_attr()
-            tok = Lexer.token()
+            tok = self._lex.token()
             
         parse1 = None
         parse2 = None
@@ -89,10 +94,10 @@ class Compile(object):
             raise CompileError("expected ident or operator")
         while True:
             parse1 = tok         # name
-            tok = Lexer.token()         # := or name
+            tok = self._lex.token()         # := or name
             if tok.type == "ASSIGN":
                 self.parse_class_var(parse1.value)
-                tok = Lexer.token()
+                tok = self._lex.token()
             else:
                 parse2 = tok
                 break
@@ -100,13 +105,13 @@ class Compile(object):
         # parse class methods
         while True:
             if parse1 is None:
-                parse1 = Lexer.token()
+                parse1 = self._lex.token()
             if parse2 is None:
-                parse2 = Lexer.token()
+                parse2 = self._lex.token()
             if (parse1 is None) or (parse2 is None):
                 break
             if (parse2.type == "IDENT") and (parse2.value == "class"):
-                tok = Lexer.token()     # >>
+                tok = self._lex.token()     # >>
                 if (tok.type != "OPERATOR") or (tok.value != ">>"):
                     CompileError("expected >>")
                 self.parse_method([], [], True, False)
@@ -134,9 +139,9 @@ class Compile(object):
         """
         Parse a class attribute definition
         """
-        attrName = Lexer.token()    # name
-        attrValue = Lexer.token()   # value
-        tok = Lexer.token()         # >
+        attrName = self._lex.token()    # name
+        attrValue = self._lex.token()   # value
+        tok = self._lex.token()         # >
         if (tok.type != "OPERATOR") or (tok.value != '>'):
             raise CompileError("missing >")
         if attrName.value == "comment":
@@ -148,10 +153,10 @@ class Compile(object):
         """
         Parse the initialization statement for a class variable
         """
-        varValue = Lexer.token()       # value
+        varValue = self._lex.token()       # value
         if varValue.value != 'nil':
             raise CompileError("expected nil")
-        tok = Lexer.token()            # .
+        tok = self._lex.token()            # .
         if tok.type != "PERIOD":
             raise CompileError("missing .")
         symObj = self._sys.symbol_find(varName)
@@ -171,18 +176,18 @@ class Compile(object):
         """
         if parseBrack:
             # parse method arguments
-            tok = Lexer.token()             # ident or ident:
+            tok = self._lex.token()             # ident or ident:
             while tok.type != "LBRACK":
                 if tok.type == "IDENT":
                     methName.append(tok.value)
-                    tok = Lexer.token()
+                    tok = self._lex.token()
                 elif tok.type == "MESSAGEARG":
                     methName.append(tok.value)
-                    tok = Lexer.token()     # ident
+                    tok = self._lex.token()     # ident
                     if tok.type != "IDENT":
                         raise CompileError("expected ident")
                     argName.append(tok.value)
-                    tok = Lexer.token()
+                    tok = self._lex.token()
         numArgs = len(argName)
         methName = ":".join(methName)
         if (numArgs > 0) and not opName:
@@ -190,29 +195,28 @@ class Compile(object):
         print("Method:", methName)
         print("Args:", argName)
         
-        
         # create Method and MethodInfo objects
         self._cur_meth = methObj = CompiledMethod()
         methObj.descriptor = MethodInfo(self._cur_klass)
         
         # skip any comment
-        tok = Lexer.token()
+        tok = self._lex.token()
         while tok.type == "DSTRING":
-            tok = Lexer.token()
+            tok = self._lex.token()
             
         # parse method attributes
         while (tok.type == "OPERATOR") and (tok.value == '<'):
             self.parse_method_attr()
-            tok = Lexer.token()
+            tok = self._lex.token()
             
         # skip more comment
         while tok.type == "DSTRING":
-            tok = Lexer.token()
+            tok = self._lex.token()
             
         # parse method temporary variables
         if tok.type == "PIPE":
             tempNames = self.parse_method_temps()
-            tok = Lexer.token()
+            tok = self._lex.token()
         else:
             tempNames = []
         print("Temps:", tempNames)
@@ -224,7 +228,7 @@ class Compile(object):
             stmtText = tok.value
             brackCount = 1
             comment = False
-            c = Lexer.lexdata[Lexer.lexpos]
+            c = self._lex.lexdata[self._lex.lexpos]
             while brackCount > 0:
                 if c == '\"':
                     comment = not comment
@@ -239,19 +243,19 @@ class Compile(object):
                 else:
                     if not comment:
                         stmtText += c
-                Lexer.lexpos += 1
-                c = Lexer.lexdata[Lexer.lexpos]
+                self._lex.lexpos += 1
+                c = self._lex.lexdata[self._lex.lexpos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
             print(stmtText)
-        Lexer.input(Lexer.lexdata[Lexer.lexpos:])
+        self._lex.input(self._lex.lexdata[self._lex.lexpos:])
           
     def parse_method_attr(self):
         """
         Parse a method attribute definition
         """
-        attrName = Lexer.token()    # name
-        attrValue = Lexer.token()   # value
-        tok = Lexer.token()         # >
+        attrName = self._lex.token()    # name
+        attrValue = self._lex.token()   # value
+        tok = self._lex.token()         # >
         if (tok.type != "OPERATOR") or (tok.value != '>'):
             raise CompileError("missing >")
         if attrName.value == "category":
@@ -264,12 +268,12 @@ class Compile(object):
         Parse a list of method temporary names
         """
         tempNames = []
-        tok = Lexer.token()
+        tok = self._lex.token()
         while tok.type != "PIPE":
             if tok.type != "IDENT":
                 raise CompileError("expected ident")
             tempNames.append(tok.value)
-            tok = Lexer.token()
+            tok = self._lex.token()
         return tempNames
                 
         
