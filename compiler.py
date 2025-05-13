@@ -128,8 +128,7 @@ class Compile(object):
                 parse1 = None
                 parse2 = None
             else:
-                print(parse1, parse2)
-                break
+                raise CompileError("bad method syntax")
         
     def parse_class_attr(self):
         """
@@ -204,6 +203,10 @@ class Compile(object):
         # parse method attributes
         while (tok.type == "OPERATOR") and (tok.value == '<'):
             self.parse_method_attr()
+            tok = Lexer.token()
+            
+        # skip more comment
+        while tok.type == "DSTRING":
             tok = Lexer.token()
             
         # parse method temporary variables
