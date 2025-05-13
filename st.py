@@ -803,7 +803,58 @@ class MethodContext(_Context):
         self[6] = x
         
         
-class CompiledMethod(Object):
+class _Code(Object):
+    """
+    Not a real Smalltalk class, but encapsulates
+    behavior common to method and block compiled
+    objects.
+    """
+    
+    def __init__(self, sz):
+        """
+        Create a new code object.  Extend the usual
+        reference list by an array to hold the objects
+        bytecodes.
+        """
+        super().__init__(sz)
+        self._bc_arr = bytearray(0)
+        
+    def get_code(self):
+        """
+        Get the bytecode array
+        """
+        return self._bc_array
+        
+    def set_code(self, x):
+        """
+        Set the bytecode array
+        """
+        self._bc_arr = x
+        
+    @property
+    def size(self):
+        return len(self._refs) + len(self._bc_arr)
+        
+    def __getitem__(self, idx):
+        """
+        Get one of the Object's child references
+        """
+        refSize = len(self._refs)
+        if idx >= refSize:
+            return self._bc_arr[idx - refSize]
+        return self._refs[idx]
+        
+    def __setitem__(self, idx, x):
+        """
+        Set one of the Object's child references
+        """
+        refSize = len(self._refs)
+        if idx > refSize:
+            self._bc_arr[idx - refSize] = x
+        self._refs[idx] = x
+        
+        
+class CompiledMethod(_Code):
     """
     Internal representation of Smalltalk CompiledMethod
     """
