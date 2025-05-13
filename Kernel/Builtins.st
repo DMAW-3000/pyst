@@ -31,7 +31,6 @@
 |
  ======================================================================"
 
-
 Behavior extend [
     methodsFor: aCategoryString [
         "Calling this method prepares the parser to receive methods
@@ -56,7 +55,6 @@ Object extend [
     ]
 ]
         
-
 Behavior extend [
 
     new [
@@ -105,7 +103,6 @@ Behavior extend [
     ]
 ]
     
-
 Dictionary extend [
     
     Dictionary class >> new [
@@ -126,7 +123,6 @@ Dictionary extend [
 ]
     
     
-
 Class extend [
     
     subclass: classNameString environment: aNamespace [
@@ -159,7 +155,7 @@ Behavior extend [
     shape: aSymbol [
     ]
 ]
-
+
 UndefinedObject extend [
     subclass: classNameString environment: aNamespace [
 	<category: 'class polymorphism'>

@@ -89,6 +89,18 @@ All classes in the system are subclasses of me.'>
 	ObjectMemory addDependent: self
     ]
 
+	initialize [
+        "Subclasses should redefine this method to perform initializations on
+        instance creation"
+    ]
+
+    class [
+        "Answer the class to which the receiver belongs"
+        <primitive: VMpr_Object_class>
+        <category: 'builtin'>
+        self primitiveFailed
+    ]
+
     ~= anObject [
 	"Answer whether the receiver and anObject are not equal"
 
