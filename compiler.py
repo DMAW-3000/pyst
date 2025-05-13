@@ -29,16 +29,16 @@ class Compile(object):
         self._cur_klass = None
         self._cur_meth = None
 
-    def compile_file(self, fileName):
+    def parse_file(self, fileName):
         """
         Compile a file containing class definitions
         """
         f = open(fileName, "rt")
         text = f.read()
         f.close()
-        self.compile_module(text)
+        self.parse_module(text)
         
-    def compile_module(self, text):
+    def parse_module(self, text):
         """
         Compile a module of class definitions
         """
@@ -204,8 +204,11 @@ class Compile(object):
             
         # parse method temporary variables
         if tok.type == "PIPE":
-            self.parse_method_temps()
+            tempNames = self.parse_method_temps()
             tok = Lexer.token()
+        else:
+            tempNames = []
+        print("Temps:", tempNames)
             
         # scan method statements
         # look for trailing ']'
@@ -225,7 +228,7 @@ class Compile(object):
                     stmtText += c
                 Lexer.lexpos += 1
                 c = Lexer.lexdata[Lexer.lexpos]
-            methObj.descriptor.sourceCode = String.from_str(stmtText)
+            #methObj.descriptor.sourceCode = String.from_str(stmtText)
             print(stmtText)
         Lexer.input(Lexer.lexdata[Lexer.lexpos:])
           
@@ -252,8 +255,7 @@ class Compile(object):
                 raise CompileError("expected ident")
             tempNames.append(tok.value)
             tok = Lexer.token()
-        print("Temps:", tempNames)
-            
+        return tempNames
                 
         
             

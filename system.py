@@ -135,7 +135,7 @@ class Smalltalk(object):
         # compile the Kernel modules
         inst.g_compile = Compile(inst)
         for mod in init.Init_Kernel_Mod:
-            inst.g_compile.compile_file(os.path.join("Kernel", mod))
+            inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
         # initialize interpreter
         inst.g_interp = Interp(inst)
