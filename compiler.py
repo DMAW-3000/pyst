@@ -80,33 +80,56 @@ class Compile(object):
             self.parse_class_attr()
             tok = Lexer.token()
             
+        parse1 = None
+        parse2 = None
+        parse3 = None
+            
         # check for class variables
-        if tok.type != "IDENT":
-            raise CompileError("expected ident")
+        if (tok.type != "IDENT") and (tok.type != "OPERATOR"):
+            raise CompileError("expected ident or operator")
         while True:
-            parse1 = tok.value         # name
+            parse1 = tok         # name
             tok = Lexer.token()         # := or name
             if tok.type == "ASSIGN":
-                self.parse_class_var(parse1)
+                self.parse_class_var(parse1.value)
                 tok = Lexer.token()
             else:
+                parse2 = tok
                 break
         
         # parse class methods
-        if tok.type != "IDENT":
-            raise CompileError("expected ident")
         while True:
-            parse2 = tok.value
-            if parse2 == "class":
+            if parse1 is None:
+                parse1 = Lexer.token()
+            if parse2 is None:
+                parse2 = Lexer.token()
+            if (parse1 is None) or (parse2 is None):
+                break
+            if (parse2.type == "IDENT") and (parse2.value == "class"):
                 tok = Lexer.token()     # >>
                 if tok != "RSHIFT":
                     CompileError("expected >>")
-                self.parse_method()
-            tok = Lexer.token()
-            if tok.type != "IDENT":
-                raise CompileError("expected ident")
-            parse1 = tok.value
-            tok = Lexer.token()
+                self.parse_method([], True)
+                parse1 = None
+                parse2 = None
+                continue
+            elif (parse1.type == "OPERATOR") and (parse2.type == "IDENT"):
+                self.parse_method([parse1.value, parse2.value], True)
+                parse1 = None
+                parse2 = None
+                continue
+            elif (parse1.type == "MESSAGEARG") and (parse2.type == "IDENT"):
+                self.parse_method([parse1.value + ':', parse2.value], True)
+                parse1 = None
+                parse2 = None
+                continue
+            elif (parse1.type == "IDENT") and (parse2.type == "LBRACK"):
+                self.parse_method([parse1.value], False)
+                parse1 = None
+                parse2 = None
+            else:
+                print(parse1, parse2)
+                break
         
     def parse_class_attr(self):
         """
@@ -143,24 +166,24 @@ class Compile(object):
         self._sys.dict_add(varDict, symObj, varObj)
         print("Class Variable:", symObj, varObj)
         
-    def parse_method(self):
+    def parse_method(self, methName, parseBrack):
         """
         Parse the definition of a method
         """
-        # parse method arguments
-        methName = []
-        tok = Lexer.token()             # ident or ident:
-        while tok.type != "LBRACK":
-            if tok.type == "IDENT":
-                methName.append(tok.value)
-                tok = Lexer.token()
-            elif tok.type == "MESSAGEARG":
-                methName.append(tok.value + ':')
-                tok = Lexer.token()     # ident
-                if tok.type != "IDENT":
-                    raise CompileError("expected ident")
-                methName.append(tok.value)
-                tok = Lexer.token()
+        if parseBrack:
+            # parse method arguments
+            tok = Lexer.token()             # ident or ident:
+            while tok.type != "LBRACK":
+                if tok.type == "IDENT":
+                    methName.append(tok.value)
+                    tok = Lexer.token()
+                elif tok.type == "MESSAGEARG":
+                    methName.append(tok.value + ':')
+                    tok = Lexer.token()     # ident
+                    if tok.type != "IDENT":
+                        raise CompileError("expected ident")
+                    methName.append(tok.value)
+                    tok = Lexer.token()
         methName = "".join(methName)
         print("Method:", methName)
         
@@ -181,25 +204,25 @@ class Compile(object):
             
         # scan method statements
         # look for trailing ']'
-        stmtText = tok.value
-        brackCount = 1
-        c = Lexer.lexdata[Lexer.lexpos]
-        while brackCount > 0:
-            if c == ']':
-                brackCount -= 1
-                if brackCount > 0:
-                    stmtText += c
-            elif c == '[':
-                brackCount += 1
-                stmtText += c
-            else:
-                stmtText += c
-            Lexer.lexpos += 1
+        if tok.type != "RBRACK":
+            stmtText = tok.value
+            brackCount = 1
             c = Lexer.lexdata[Lexer.lexpos]
-        methObj.descriptor.sourceCode = String.from_str(stmtText)
-        print(stmtText)
+            while brackCount > 0:
+                if c == ']':
+                    brackCount -= 1
+                    if brackCount > 0:
+                        stmtText += c
+                elif c == '[':
+                    brackCount += 1
+                    stmtText += c
+                else:
+                    stmtText += c
+                Lexer.lexpos += 1
+                c = Lexer.lexdata[Lexer.lexpos]
+            methObj.descriptor.sourceCode = String.from_str(stmtText)
+            print(stmtText)
         Lexer.input(Lexer.lexdata[Lexer.lexpos:])
-        return 
           
     def parse_method_attr(self):
         """
