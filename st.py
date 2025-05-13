@@ -872,6 +872,7 @@ class MethodInfo(Object):
     
     def __init__(self, linkKlass):
         super().__init__(5)
+        self.klass = linkKlass
         
     @property
     def sourceCode(self):
