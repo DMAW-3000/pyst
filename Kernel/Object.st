@@ -940,11 +940,11 @@ All classes in the system are subclasses of me.'>
 	 not copied)"
 
 	<category: 'built ins'>
+	<primitive: VMpr_Object_shallowCopy>
 	"This is a primitive for speed.  An alternative implementation is
 	 found below."
 
 	| class aCopy |
-	<primitive: VMpr_Object_shallowCopy>
 	class := self class.
 	class isVariable 
 	    ifTrue: [aCopy := class basicNew: self basicSize]
