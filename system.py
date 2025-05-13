@@ -449,7 +449,7 @@ class Smalltalk(object):
         """
         Disassemble an array of bytecode values.
         """
-        for b in byteCode:
+        for b in byteCode[0::2]:
             info = self.g_dis[b]
             if info is None:
                 print("????")
