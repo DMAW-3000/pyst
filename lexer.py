@@ -17,7 +17,6 @@ tokens = [
     'RPARENS',
     'LBRACK',
     'RBRACK',
-    'RSHIFT',
     'PIPE',
     'CARET',
     'PERIOD',
@@ -100,10 +99,6 @@ def t_LPARENS(t):
 
 def t_RPARENS(t):
     r'\)'
-    return t
-    
-def t_RSHIFT(t):
-    r'>>'
     return t
     
 def t_PERIOD(t):

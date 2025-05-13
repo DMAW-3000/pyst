@@ -107,7 +107,7 @@ class Compile(object):
                 break
             if (parse2.type == "IDENT") and (parse2.value == "class"):
                 tok = Lexer.token()     # >>
-                if tok != "RSHIFT":
+                if (tok.type != "OPERATOR") or (tok.value != ">>"):
                     CompileError("expected >>")
                 self.parse_method([], [], True, False)
                 parse1 = None
