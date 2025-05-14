@@ -240,6 +240,12 @@ class Compile(object):
         else:
             tempNames = []
         print("Temps:", tempNames)
+        
+        # setup environment
+        self._cur_arg = argNames
+        self._cur_temp = tempNames
+        self._cur_literal = []
+        self._cur_bytes = bytearray()
             
         # scan method statements
         # look for trailing ']'
@@ -268,17 +274,16 @@ class Compile(object):
                 pos += 1
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
-            
-            # setup environment
-            self._cur_arg = argNames
-            self._cur_temp = tempNames
-            self._cur_literal = []
-            self._cur_bytes = bytearray()
             result = self.compile_statements(stmtText)
             methObj.set_code(result)
         else:
             # empty method definition
             methObj.set_code(self._Ret_Self_Bytes)
+        
+        if len(self._cur_literal) > 0:
+            methObj.literals = Array.from_seq(self._cur_literal)
+            print("Literals:")
+            self._sys.arr_print(methObj.literals)
             
         byteCode = methObj.get_code()
         print("Bytecodes:", len(byteCode))
@@ -326,8 +331,6 @@ class Compile(object):
         self.compile_load_primitive(result.data.data.data)
         if isinstance(result, ParseReturnStatement):
             self._cur_bytes.extend((B_RETURN_METHOD_STACK_TOP, 0))
-        print(self._cur_literal)
-        print(text)
         return self._cur_bytes
         
     def compile_load_primitive(self, x):
