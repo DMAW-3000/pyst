@@ -375,8 +375,8 @@ class Smalltalk(object):
         """
         Display the contents of an Array-like object
         """
-        for item in arrObj:
-            print(item)
+        for n,x in enumerate(arrObj):
+            print("[%d]" % n, x)
         
     @staticmethod
     def create_meta(instObj):
@@ -458,9 +458,9 @@ class Smalltalk(object):
                 print("????")
             else:
                 if info[1] == 1:
-                    print(info[0], byteCode[(n * 2) + 1])
+                    print("[%d]" % (n * 2), info[0], byteCode[(n * 2) + 1])
                 else:
-                    print(info[0])
+                    print("[%d]" % (n * 2), info[0])
         
     def fatal_err(self, s):
         """
