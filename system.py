@@ -85,9 +85,12 @@ class Smalltalk(object):
         self.g_interp = None
         
         # bytecode disassembly table
+        # each entry is (name, num_arg)
         self.g_dis = disTbl = [None] * 256
-        disTbl[B_PUSH_SELF] = ("PUSH_SELF",)
-        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD_STACK_TOP",)
+        disTbl[B_PUSH_SELF] = ("PUSH_SELF", 0)
+        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD", 0)
+        disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 1)
+        disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 1)
         
     
     @classmethod
@@ -449,12 +452,15 @@ class Smalltalk(object):
         """
         Disassemble an array of bytecode values.
         """
-        for b in byteCode[0::2]:
+        for n,b in enumerate(byteCode[::2]):
             info = self.g_dis[b]
             if info is None:
                 print("????")
             else:
-                print(info[0])
+                if info[1] == 1:
+                    print(info[0], byteCode[(n * 2) + 1])
+                else:
+                    print(info[0])
         
     def fatal_err(self, s):
         """
