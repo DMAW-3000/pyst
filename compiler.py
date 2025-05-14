@@ -6,6 +6,13 @@ from st import *
 from lexer import Lexer
 from sparser import *
 
+METH_NAMES = ("isMetaclass", "postCopy", "isString", "isCharacterArray",
+              "isSymbol", "isString", "isCharacter", "isNumber", "isFloat",
+              "isInteger", "isSmallInteger", "isNamespace", "isClass",
+              "isArray", "isBehavior", "yourself", "identityHash", "hash",
+              "nextInstance",
+              )
+
 
 class CompileError(Exception): 
     """
@@ -274,15 +281,23 @@ class Compile(object):
                 pos += 1
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
-            result = self.compile_statements(stmtText)
-            methObj.set_code(result)
+            if methName in METH_NAMES:
+                result = self.compile_statements(stmtText)
+                methObj.set_code(result)
+            else:
+                print("Defer:")
+                print(stmtText)
         else:
             # empty method definition
             methObj.set_code(self._Ret_Self_Bytes)
+            
+        # set method header values
+        methObj.set_hdr(len(argNames), len(tempNames), 0)
         
+        # create literals Array for method
         if len(self._cur_literal) > 0:
             methObj.literals = Array.from_seq(self._cur_literal)
-            print("Literals:")
+            print("Literals:", len(self._cur_literal))
             self._sys.arr_print(methObj.literals)
             
         byteCode = methObj.get_code()
@@ -325,7 +340,6 @@ class Compile(object):
         Compile a list of Smalltalk statements
         """
         # setup parser
-        text = "^6"
         self._lex.input(text)
         result = self._parse(text, lexer = self._lex, debug = False)
         self.compile_load_primitive(result.data.data.data)
