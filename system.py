@@ -152,10 +152,13 @@ class Smalltalk(object):
         inst.g_interp = Interp(inst)
         inst.g_interp.reset()
         inst.g_interp.exe()
+        
+        #print(inst.g_st_dict.tally, inst.g_st_dict.size)
+        #inst.dict_print(inst.g_st_dict, True)
             
-        for klassInfo in init.Init_Class:
-            cacheName = klassInfo[2]
-            klassObj = getattr(inst, "k_" + cacheName)
+        #for klassInfo in init.Init_Class:
+        #    cacheName = klassInfo[2]
+        #    klassObj = getattr(inst, "k_" + cacheName)
         #    print("%s %s %s %s %s" % ( \
         #                         klassObj.name,
         #                         klassObj.instanceVariables, 
@@ -328,12 +331,8 @@ class Smalltalk(object):
         """
         Find an item in a Dictionary-like instance.
         Returns the Association, or nil.
-        """
-        idx = self.dict_index(dictObj, keyObj)
-        assoc = dictObj[idx]
-        if is_nil(assoc):
-            return assoc
-        return assoc
+        """ 
+        return dictObj[self.dict_index(dictObj, keyObj)]
         
     @staticmethod
     def dict_index(dictObj, keyObj):
