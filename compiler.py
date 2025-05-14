@@ -10,8 +10,7 @@ METH_NAMES = ("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "isSymbol", "isString", "isCharacter", "isNumber", "isFloat",
               "isInteger", "isSmallInteger", "isNamespace", "isClass",
               "isArray", "isBehavior", "yourself", "identityHash", "hash",
-              "nextInstance",
-              )
+              "nextInstance", "isNil", "notNil", "ifNil:", "isCObject")
 
 
 class CompileError(Exception): 
@@ -365,10 +364,11 @@ class Compile(object):
             self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
                 
     def add_literal(self, x):
-        if x in self._cur_literal:
+        try:
             return self._cur_literal.index(x)
-        self._cur_literal.append(x)
-        return len(self._cur_literal) - 1
+        except ValueError:
+            self._cur_literal.append(x)
+            return len(self._cur_literal) - 1
             
 
         
