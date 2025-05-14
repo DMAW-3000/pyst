@@ -221,7 +221,16 @@ class Array(Object):
     """
     Internal representation of Smalltalk Array
     """
-    pass
+    
+    @classmethod
+    def from_seq(klass, x):
+        """
+        Create an Array from a Python sequence
+        """
+        arr = klass(len(x))
+        for n,r in enumerate(x):
+            arr[n] = r
+        return arr
     
     
 class String(Array):
