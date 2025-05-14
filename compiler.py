@@ -182,7 +182,7 @@ class Compile(object):
         self._sys.dict_add(varDict, symObj, varObj)
         print("Class Variable:", symObj, varObj)
         
-    def parse_method(self, methName, argName, parseBrack, opName):
+    def parse_method(self, methName, argNames, parseBrack, opName):
         """
         Parse the definition of a method
         """
@@ -199,20 +199,20 @@ class Compile(object):
                     tok = self._lex.token()     # ident
                     if tok.type != "IDENT":
                         raise CompileError("expected ident")
-                    argName.append(tok.value)
+                    argNames.append(tok.value)
                     tok = self._lex.token()
                 else:
                     raise CompileError("bad message syntax")
                     
         # parse method name into a selector and argument names
         # create symbol for selector
-        numArgs = len(argName)
+        numArgs = len(argNames)
         methName = ":".join(methName)
         if (numArgs > 0) and not opName:
             methName += ":"
         methSym = self._sys.symbol_find_or_add(methName)
         print("Method:", methSym)
-        print("Args:", argName)
+        print("Args:", argNames)
         
         # create Method and MethodInfo objects
         self._cur_meth = methObj = CompiledMethod()
@@ -268,7 +268,13 @@ class Compile(object):
                 pos += 1
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
-            result = self.compile_statements(stmtText, argName, tempNames, [])
+            
+            # setup environment
+            self._cur_arg = argNames
+            self._cur_temp = tempNames
+            self._cur_literal = []
+            self._cur_bytes = bytearray()
+            result = self.compile_statements(stmtText)
             methObj.set_code(result)
         else:
             # empty method definition
@@ -309,24 +315,18 @@ class Compile(object):
             tok = self._lex.token()
         return tempNames
         
-    def compile_statements(self, text, argNames, tempNames, literals):
+    def compile_statements(self, text):
         """
         Compile a list of Smalltalk statements
         """
-        # setup environment
-        self._cur_arg = argNames
-        self._cur_temp = tempNames
-        self._cur_literal = literals
-        self._cur_bytes = bytearray()
-        
         # setup parser
-        text = "^nil"
+        text = "^6"
         self._lex.input(text)
         result = self._parse(text, lexer = self._lex, debug = False)
         self.compile_load_primitive(result.data.data.data)
         if isinstance(result, ParseReturnStatement):
             self._cur_bytes.extend((B_RETURN_METHOD_STACK_TOP, 0))
-        print(literals)
+        print(self._cur_literal)
         print(text)
         return self._cur_bytes
         
@@ -343,6 +343,9 @@ class Compile(object):
                 self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
             elif x == "self":
                 self._cur_bytes.extend((B_PUSH_SELF, 0))
+        elif isinstance(x, int):
+            idx = self.add_literal(x)
+            self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
                 
     def add_literal(self, x):
         if x in self._cur_literal:

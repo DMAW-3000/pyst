@@ -27,10 +27,10 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> exec_statement','statement',1,'p_statement','sparser.py',21),
-  ('statement -> return_statement','statement',1,'p_statement','sparser.py',22),
-  ('return_statement -> CARET exec_statement','return_statement',2,'p_return_statement','sparser.py',26),
-  ('exec_statement -> primitive','exec_statement',1,'p_exec_statement','sparser.py',30),
-  ('primitive -> IDENT','primitive',1,'p_primitive','sparser.py',34),
-  ('primitive -> DECNUMBER','primitive',1,'p_primitive','sparser.py',35),
+  ('statement -> exec_statement','statement',1,'p_statement','sparser.py',23),
+  ('statement -> return_statement','statement',1,'p_statement','sparser.py',24),
+  ('return_statement -> CARET exec_statement','return_statement',2,'p_return_statement','sparser.py',28),
+  ('exec_statement -> primitive','exec_statement',1,'p_exec_statement','sparser.py',32),
+  ('primitive -> IDENT','primitive',1,'p_primitive','sparser.py',36),
+  ('primitive -> DECNUMBER','primitive',1,'p_primitive','sparser.py',37),
 ]
