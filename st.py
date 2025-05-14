@@ -875,7 +875,7 @@ class CompiledMethod(_Code):
         """
         super().__init__(3)
         
-    def set_hdr(numArg, numTemp, depth):
+    def set_hdr(self, numArg, numTemp, depth):
         """
         Set the method header info
         """
