@@ -4,6 +4,7 @@ Smalltalk bootstrap compiler
 
 from st import *
 from lexer import Lexer
+from sparser import *
 
 
 class CompileError(Exception): 
@@ -18,26 +19,33 @@ class Compile(object):
     The bootstrap compiler
     """
     
-    # the default code for empty method declarations
-    _Empty_Bytes = bytearray((B_PUSH_SELF, B_RETURN_METHOD_STACK_TOP))
+    # the default code for pushing self and returning from method
+    _Ret_Self_Bytes = bytearray((B_PUSH_SELF, 0, B_RETURN_METHOD_STACK_TOP, 0))
     
     def __init__(self, system):
         """
         Create a blank compiler instance
         """
-        global Lexer
+        global Lexer, Parser
         
         # cache system information
         self._sys = system
         self._nil = system.o_nil
+        self._true = system.o_true
+        self._false = system.o_false
         
-        # the lexer
+        # the lexer and parser
         self._lex = Lexer
+        self._parse = Parser.parse
         
         # helpers
         self._cur_klass = None
         self._cur_meth = None
-
+        self._cur_arg = None
+        self._cur_temp = None
+        self._cur_literal = None
+        self._cur_bytes = None
+        
     def parse_file(self, fileName):
         """
         Compile a file containing class definitions
@@ -260,13 +268,15 @@ class Compile(object):
                 pos += 1
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
-            self.compile_statements(stmtText, argName, tempNames)
+            result = self.compile_statements(stmtText, argName, tempNames, [])
+            methObj.set_code(result)
         else:
             # empty method definition
-            methObj.set_code(self._Empty_Bytes)
+            methObj.set_code(self._Ret_Self_Bytes)
             
-        print("Bytecodes:")
-        self._sys.dis_bytecode(methObj.get_code())
+        byteCode = methObj.get_code()
+        print("Bytecodes:", len(byteCode))
+        self._sys.dis_bytecode(byteCode)
         print()
             
         # setup lexer to continue parsing module text
@@ -299,16 +309,46 @@ class Compile(object):
             tok = self._lex.token()
         return tempNames
         
-    def compile_statements(self, text, argNames, tempNames):
+    def compile_statements(self, text, argNames, tempNames, literals):
         """
         Compile a list of Smalltalk statements
         """
-        # setup
-        #text = "^nil"
+        # setup environment
+        self._cur_arg = argNames
+        self._cur_temp = tempNames
+        self._cur_literal = literals
+        self._cur_bytes = bytearray()
+        
+        # setup parser
+        text = "^nil"
         self._lex.input(text)
+        result = self._parse(text, lexer = self._lex, debug = False)
+        self.compile_load_primitive(result.data.data.data)
+        if isinstance(result, ParseReturnStatement):
+            self._cur_bytes.extend((B_RETURN_METHOD_STACK_TOP, 0))
+        print(literals)
         print(text)
+        return self._cur_bytes
+        
+    def compile_load_primitive(self, x):
+        if isinstance(x, str):
+            if x == "nil":
+                idx = self.add_literal(self._nil)
+                self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+            elif x == "true":
+                idx = self.add_literal(self._true)
+                self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+            elif x == "false":
+                idx = self.add_literal(self._false)
+                self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+            elif x == "self":
+                self._cur_bytes.extend((B_PUSH_SELF, 0))
                 
-        
+    def add_literal(self, x):
+        if x in self._cur_literal:
+            return self._cur_literal.index(x)
+        self._cur_literal.append(x)
+        return len(self._cur_literal) - 1
             
-        
+
         
