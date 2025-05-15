@@ -67,5 +67,5 @@ Init_Meta_Vars = ("superClass", "methodDictionary", "instanceSpec", "subClasses"
 Init_Kernel_Mod = (
     #"Builtins.st",
     #"SysDict.st",
-    "Object.st",
+    "Object-test.st",
 )
