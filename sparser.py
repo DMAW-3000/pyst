@@ -39,12 +39,12 @@ def p_exec_statement(p):
     p[0] = ParseExecStatement(p[1])
     
 def p_unary_message(p):
-    r'''unary_message : IDENT IDENT'''
+    r'''unary_message : literal IDENT'''
     p[0] = ParseMessage(p[1], p[2])
     
 def p_literal(p):
     r'''literal : IDENT
-                  | DECNUMBER'''
+                | DECNUMBER'''
     p[0] = ParseLiteral(p[1])
 
 # globals

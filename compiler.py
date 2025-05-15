@@ -371,7 +371,7 @@ class Compile(object):
             self.compile_load_literal(s.value)
             
     def compile_message(self, recv, name):
-        self.compile_load_literal(recv)
+        self.compile_load_literal(recv.value)
         sym = self._sys.symbol_find_or_add(name[0])
         idx = self.add_literal(sym)
         self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx, B_SEND, 0))
