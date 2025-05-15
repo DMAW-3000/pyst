@@ -356,13 +356,13 @@ class Compile(object):
             
         # add ^self if no explicit return provided
         if not isinstance(result, ParseReturnStatement):
-            self._cur_bytes.extend(self._Ret_Self_Bytes)
+            self.emit_bytes(*self._Ret_Self_Bytes)
         
         return self._cur_bytes
         
     def compile_ret_statement(self, s):
         self.compile_exec_statement(s.data)
-        self._cur_bytes.extend((B_RETURN_METHOD_STACK_TOP, 0))
+        self.emit_bytes(B_RETURN_METHOD_STACK_TOP, 0)
         
     def compile_exec_statement(self, s):
         if isinstance(s, ParseMessage):
@@ -374,37 +374,46 @@ class Compile(object):
         self.compile_load_literal(recv.value)
         sym = self._sys.symbol_find_or_add(name[0])
         idx = self.add_literal(sym)
-        self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx, B_SEND, 0))
+        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)
         
     def compile_load_literal(self, x):
         if isinstance(x, str):
             if x == "nil":
                 idx = self.add_literal(self._nil)
-                self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             elif x == "true":
                 idx = self.add_literal(self._true)
-                self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             elif x == "false":
                 idx = self.add_literal(self._false)
-                self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             elif x == "self":
-                self._cur_bytes.extend((B_PUSH_SELF, 0))
+                self.emit_bytes(B_PUSH_SELF, 0)
             else:
                 sym = self._sys.symbol_find_or_add(x)
                 idx = self.add_literal(sym)
-                self._cur_bytes.extend((B_PUSH_LIT_VARIABLE, idx))
+                self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
         elif isinstance(x, int):
             idx = self.add_literal(x)
-            self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         else:
             raise CompileError("unknown literal type %s" % x)
                 
     def add_literal(self, x):
+        """
+        Add a new literal reference to the current context
+        """
         try:
             return self._cur_literal.index(x)
         except ValueError:
             self._cur_literal.append(x)
             return len(self._cur_literal) - 1
+            
+    def emit_bytes(self, *bc):
+        """
+        Append the bytecodes to the current code block
+        """
+        self._cur_bytes.extend((bc))
             
 
         
