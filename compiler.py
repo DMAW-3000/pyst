@@ -8,9 +8,10 @@ from sparser import *
 
 METH_NAMES = ("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "isSymbol", "isString", "isCharacter", "isNumber", "isFloat",
-              "isInteger", "isSmallInteger", "isNamespace", "isClass",
+              "isInteger", "isSmallInteger", "isNamespace", "isClass", "dependencies",
               "isArray", "isBehavior", "yourself", "identityHash", "hash",
-              "nextInstance", "isNil", "notNil", "ifNil:", "isCObject")
+              "nextInstance", "isNil", "notNil", "ifNil:", "isCObject",
+              "doesNotUnderstand:")
 
 
 class CompileError(Exception): 
@@ -283,14 +284,15 @@ class Compile(object):
             if methName in METH_NAMES:
                 result = self.compile_statements(stmtText)
                 methObj.set_code(result)
-            else:
-                print("Defer:")
                 print(stmtText)
+            else:
+                print(">> Defer")
         else:
             # empty method definition
             methObj.set_code(self._Ret_Self_Bytes)
             
         # set method header values
+        # TODO: set depth
         methObj.set_hdr(len(argNames), len(tempNames), 0)
         
         # create literals Array for method
@@ -341,12 +343,22 @@ class Compile(object):
         # setup parser
         self._lex.input(text)
         result = self._parse(text, lexer = self._lex, debug = False)
-        self.compile_load_primitive(result.data.data.data)
         if isinstance(result, ParseReturnStatement):
-            self._cur_bytes.extend((B_RETURN_METHOD_STACK_TOP, 0))
+            self.compile_ret_statement(result.data)
+        elif isinstance(result, ParseExecStatement):
+            self.compile_exec_statement(result.data)
+        else:
+            raise CompileError("unknown statement type %s" % result.data)
         return self._cur_bytes
         
-    def compile_load_primitive(self, x):
+    def compile_ret_statement(self, s):
+        self.compile_exec_statement(s.data)
+        self._cur_bytes.extend((B_RETURN_METHOD_STACK_TOP, 0))
+        
+    def compile_exec_statement(self, s):
+        self.compile_load_literal(s.value)
+        
+    def compile_load_literal(self, x):
         if isinstance(x, str):
             if x == "nil":
                 idx = self.add_literal(self._nil)
@@ -359,9 +371,15 @@ class Compile(object):
                 self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
             elif x == "self":
                 self._cur_bytes.extend((B_PUSH_SELF, 0))
+            else:
+                sym = self._sys.symbol_find_or_add(x)
+                idx = self.add_literal(sym)
+                self._cur_bytes.extend((B_PUSH_LIT_VARIABLE, idx))
         elif isinstance(x, int):
             idx = self.add_literal(x)
             self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx))
+        else:
+            raise CompileError("unknown literal type %s" % x)
                 
     def add_literal(self, x):
         try:

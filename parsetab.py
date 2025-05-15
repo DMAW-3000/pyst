@@ -6,7 +6,7 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ASSIGN BASENUMBER CARET DECNUMBER DSTRING FLTNUMBER IDENT LBRACK LPARENS MESSAGEARG OPERATOR PERIOD PIPE RBRACK RPARENS SSTRINGstatement : exec_statement\n                  | return_statementreturn_statement : CARET exec_statementexec_statement : primitiveprimitive : IDENT\n                  | DECNUMBER'
+_lr_signature = 'ASSIGN BASENUMBER CARET DECNUMBER DSTRING FLTNUMBER IDENT LBRACK LPARENS MESSAGEARG OPERATOR PERIOD PIPE RBRACK RPARENS SSTRINGstatement : exec_statement\n                  | return_statementreturn_statement : CARET exec_statementexec_statement : literalliteral : IDENT\n                  | DECNUMBER'
     
 _lr_action_items = {'CARET':([0,],[5,]),'IDENT':([0,5,],[6,6,]),'DECNUMBER':([0,5,],[7,7,]),'$end':([1,2,3,4,6,7,8,],[0,-1,-2,-4,-5,-6,-3,]),}
 
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement':([0,],[1,]),'exec_statement':([0,5,],[2,8,]),'return_statement':([0,],[3,]),'primitive':([0,5,],[4,4,]),}
+_lr_goto_items = {'statement':([0,],[1,]),'exec_statement':([0,5,],[2,8,]),'return_statement':([0,],[3,]),'literal':([0,5,],[4,4,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -30,7 +30,7 @@ _lr_productions = [
   ('statement -> exec_statement','statement',1,'p_statement','sparser.py',23),
   ('statement -> return_statement','statement',1,'p_statement','sparser.py',24),
   ('return_statement -> CARET exec_statement','return_statement',2,'p_return_statement','sparser.py',28),
-  ('exec_statement -> primitive','exec_statement',1,'p_exec_statement','sparser.py',32),
-  ('primitive -> IDENT','primitive',1,'p_primitive','sparser.py',36),
-  ('primitive -> DECNUMBER','primitive',1,'p_primitive','sparser.py',37),
+  ('exec_statement -> literal','exec_statement',1,'p_exec_statement','sparser.py',32),
+  ('literal -> IDENT','literal',1,'p_literal','sparser.py',36),
+  ('literal -> DECNUMBER','literal',1,'p_literal','sparser.py',37),
 ]
