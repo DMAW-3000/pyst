@@ -7,6 +7,10 @@ from ply import yacc
 from lexer import tokens
 
 
+class ParseStatementList(object):
+    def __init__(self, x):
+        self.data = x
+
 class ParseStatement(object):
     def __init__(self, x):
         self.data = x
@@ -30,6 +34,10 @@ class ParseExprMessage(ParseMessage):
 class ParseLiteral(object):
     def __init__(self, x):
         self.value = x
+        
+def p_statement_list(p):
+    r'''statement_list : statement'''
+    p[0] = ParseStatementList(p[1:])
 
 def p_statement(p):
     r'''statement : exec_statement

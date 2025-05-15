@@ -347,18 +347,30 @@ class Compile(object):
         
         # get list of statements
         result = self._parse(text, lexer = self._lex, debug = False)
-        if isinstance(result, ParseReturnStatement):
-            self.compile_ret_statement(result.data)
-        elif isinstance(result, ParseExecStatement):
-            self.compile_exec_statement(result.data)
-        else:
-            raise CompileError("unknown statement type %s" % result)
+        if not isinstance(result, ParseStatementList):
+            raise CompileError("bad statements")
+            
+        # compile each statement
+        for s in result.data:
+            self.compile_statement(s)
+            
+            # discard stack top if result not used
+            if not isinstance(s, ParseReturnStatement):
+                self.emit_bytes(B_POP_STACK_TOP, 0)
             
         # add ^self if no explicit return provided
-        if not isinstance(result, ParseReturnStatement):
+        if not isinstance(result.data[-1], ParseReturnStatement):
             self.emit_bytes(*self._Ret_Self_Bytes)
         
         return self._cur_bytes
+        
+    def compile_statement(self, s):
+        if isinstance(s, ParseReturnStatement):
+            self.compile_ret_statement(s.data)
+        elif isinstance(s, ParseExecStatement):
+            self.compile_exec_statement(s.data)
+        else:
+            raise CompileError("unknown statement type %s" % s)
         
     def compile_ret_statement(self, s):
         self.compile_exec_statement(s.data)
