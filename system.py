@@ -454,12 +454,12 @@ class Smalltalk(object):
         for n,b in enumerate(byteCode[::2]):
             info = self.g_dis[b]
             if info is None:
-                print("????")
+                prList = ["????"]
             else:
+                prList = ["[%d]" % (n * 2), info[0]]
                 if info[1] == 1:
-                    print("[%d]" % (n * 2), info[0], byteCode[(n * 2) + 1])
-                else:
-                    print("[%d]" % (n * 2), info[0])
+                    prList.append(byteCode[(n * 2) + 1])
+            print(*prList)
         
     def fatal_err(self, s):
         """
