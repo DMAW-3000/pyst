@@ -10,10 +10,10 @@ METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "isSymbol", "isString", "isCharacter", "isNumber", "isFloat",
               "isInteger", "isSmallInteger", "isNamespace", "isClass", "dependencies",
               "isArray", "isBehavior", "yourself", "identityHash", "hash",
-              "nextInstance", "isNil", "notNil", "ifNil:", "isCObject",
-              "doesNotUnderstand:", "class", "primitiveFailed", "shouldNotImplement",
+              "nextInstance", "isNil", "notNil", "ifNil:", "isCObject", "~=", "~~",
+              "class", "primitiveFailed", "shouldNotImplement", "isMemberOf:",
               "subclassResponsibility", "notYetImplemented", "badReturnError",
-              "noRunnableProcess", "userInterrupt", "isMetaClass"))
+              "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",))
 
 
 class CompileError(Exception): 
@@ -352,7 +352,7 @@ class Compile(object):
         elif isinstance(result, ParseExecStatement):
             self.compile_exec_statement(result.data)
         else:
-            raise CompileError("unknown statement type %s" % result.data)
+            raise CompileError("unknown statement type %s" % result)
             
         # add ^self if no explicit return provided
         if not isinstance(result, ParseReturnStatement):
@@ -365,16 +365,28 @@ class Compile(object):
         self.emit_bytes(B_RETURN_METHOD_STACK_TOP, 0)
         
     def compile_exec_statement(self, s):
-        if isinstance(s, ParseMessage):
-            self.compile_message(s.recv, s.name)
+        if isinstance(s, ParseUnaryMessage):
+            self.compile_unary_message(s.recv, s.name)
+        elif isinstance(s, ParseExprMessage):
+            self.compile_expr_message(s.recv, s.name, s.send)
         elif isinstance(s, ParseLiteral):
             self.compile_load_literal(s.value)
+        else:
+            raise CompileError("bad statement syntax %s" % s)
             
-    def compile_message(self, recv, name):
+    def compile_unary_message(self, recv, name):
         self.compile_load_literal(recv.value)
-        sym = self._sys.symbol_find_or_add(name[0])
+        sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)
+        
+    def compile_expr_message(self, recv, name, send):
+        self.compile_load_literal(recv.value)
+        sym = self._sys.symbol_find_or_add(name)
+        idx = self.add_literal(sym)
+        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        self.compile_exec_statement(send.data)
+        self.emit_bytes(B_SEND, 1)
         
     def compile_load_literal(self, x):
         if isinstance(x, str):
