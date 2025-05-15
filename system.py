@@ -92,6 +92,7 @@ class Smalltalk(object):
         disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 1)
         disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 1)
         disTbl[B_SEND] = ("SEND", 1)
+        disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 0)
         
     
     @classmethod
