@@ -6,12 +6,14 @@ from st import *
 from lexer import Lexer
 from sparser import *
 
-METH_NAMES = ("isMetaclass", "postCopy", "isString", "isCharacterArray",
+METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "isSymbol", "isString", "isCharacter", "isNumber", "isFloat",
               "isInteger", "isSmallInteger", "isNamespace", "isClass", "dependencies",
               "isArray", "isBehavior", "yourself", "identityHash", "hash",
               "nextInstance", "isNil", "notNil", "ifNil:", "isCObject",
-              "doesNotUnderstand:")
+              "doesNotUnderstand:", "class", "primitiveFailed", "shouldNotImplement",
+              "subclassResponsibility", "notYetImplemented", "badReturnError",
+              "noRunnableProcess", "userInterrupt", "isMetaClass"))
 
 
 class CompileError(Exception): 
@@ -342,6 +344,8 @@ class Compile(object):
         """
         # setup parser
         self._lex.input(text)
+        
+        # get list of statements
         result = self._parse(text, lexer = self._lex, debug = False)
         if isinstance(result, ParseReturnStatement):
             self.compile_ret_statement(result.data)
@@ -349,6 +353,11 @@ class Compile(object):
             self.compile_exec_statement(result.data)
         else:
             raise CompileError("unknown statement type %s" % result.data)
+            
+        # add ^self if no explicit return provided
+        if not isinstance(result, ParseReturnStatement):
+            self._cur_bytes.extend(self._Ret_Self_Bytes)
+        
         return self._cur_bytes
         
     def compile_ret_statement(self, s):
@@ -356,7 +365,16 @@ class Compile(object):
         self._cur_bytes.extend((B_RETURN_METHOD_STACK_TOP, 0))
         
     def compile_exec_statement(self, s):
-        self.compile_load_literal(s.value)
+        if isinstance(s, ParseMessage):
+            self.compile_message(s.recv, s.name)
+        elif isinstance(s, ParseLiteral):
+            self.compile_load_literal(s.value)
+            
+    def compile_message(self, recv, name):
+        self.compile_load_literal(recv)
+        sym = self._sys.symbol_find_or_add(name[0])
+        idx = self.add_literal(sym)
+        self._cur_bytes.extend((B_PUSH_LIT_CONSTANT, idx, B_SEND, 0))
         
     def compile_load_literal(self, x):
         if isinstance(x, str):
