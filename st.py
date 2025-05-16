@@ -237,14 +237,6 @@ class String(Array):
     """
     Internal representation of Smalltalk String
     """
-    
-    def resize(self, sz):
-        """
-        Resize the String storage. For efficiency, a python 
-        bytearray is used instead of the usual python list.  The old 
-        values stored in the object are not preserved.
-        """
-        self._refs = bytearray(sz)
         
     @classmethod
     def from_str(klass, s):
@@ -282,6 +274,14 @@ class Symbol(String):
         symObj = super().from_str(s)
         symObj._py_cache = s
         return symObj
+        
+    def resize(self, sz):
+        """
+        Resize the Symbol storage. For efficiency, a python 
+        bytearray is used instead of the usual python list.  The old 
+        values stored in the object are not preserved.
+        """
+        self._refs = bytearray(sz)
             
     def to_str(self):
         """
