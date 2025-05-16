@@ -59,7 +59,7 @@ def p_unary_message(p):
     p[0] = ParseUnaryMessage(p[1], p[2])
     
 def p_expr_message(p):
-    r'''expr_message : literal OPERATOR exec_statement'''
+    r'''expr_message : exec_statement OPERATOR exec_statement'''
     p[0] = ParseExprMessage(p[1], p[2], p[3])
     
 def p_literal(p):
@@ -71,10 +71,8 @@ def p_literal(p):
 # token precedence rules for the parser
 # tokens are listed from lowest to highest precedence   
 precedence = (
-    ('left', 'ASSIGN'),
-    ('left', 'IDENT'),
     ('left', 'OPERATOR'),
-    ('left', 'DECNUMBER'),
+    ('left', 'IDENT')
 )
 
 # globals

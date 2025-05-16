@@ -393,7 +393,7 @@ class Compile(object):
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)
         
     def compile_expr_message(self, recv, name, send):
-        self.compile_load_literal(recv.value)
+        self.compile_exec_statement(recv.data)
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
