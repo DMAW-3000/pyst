@@ -283,7 +283,7 @@ class Compile(object):
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
             if methName in METH_NAMES:
-                result = self.compile_statements(stmtText)
+                result = self.compile_str(stmtText)
                 methObj.set_code(result)
                 print(stmtText)
             else:
@@ -337,9 +337,9 @@ class Compile(object):
             tok = self._lex.token()
         return tempNames
         
-    def compile_statements(self, text):
+    def compile_str(self, text):
         """
-        Compile a list of Smalltalk statements
+        Compile a python string of Smalltalk statements
         """
         # setup parser
         self._lex.input(text)
@@ -349,8 +349,16 @@ class Compile(object):
         if not isinstance(result, ParseStatementList):
             raise CompileError("bad statements")
             
+        # compile
+        self.compile_statement_list(result.data)
+        return self._cur_bytes
+        
+    def compile_statement_list(self, slist):
+        """
+        Compile a list of statments
+        """
         # compile each statement
-        for s in result.data:
+        for s in slist:
             self.compile_statement(s)
             
             # discard stack top if result not used
@@ -358,12 +366,13 @@ class Compile(object):
                 self.emit_bytes(B_POP_STACK_TOP, 0)
             
         # add ^self if no explicit return provided
-        if not isinstance(result.data[-1], ParseReturnStatement):
+        if not isinstance(slist[-1], ParseReturnStatement):
             self.emit_bytes(*self._Ret_Self_Bytes)
         
-        return self._cur_bytes
-        
     def compile_statement(self, s):
+        """
+        Compile a single statement
+        """
         if isinstance(s, ParseReturnStatement):
             self.compile_ret_statement(s.data)
         elif isinstance(s, ParseExecStatement):
