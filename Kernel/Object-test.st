@@ -59,13 +59,6 @@ All classes in the system are subclasses of me.'>
         instance creation"
     ]
 
-    class [
-        "Answer the class to which the receiver belongs"
-        <primitive: VMpr_Object_class>
-        <category: 'builtin'>
-        self primitiveFailed
-    ]
-
     ~= anObject [
 	"Answer whether the receiver and anObject are not equal"
 
