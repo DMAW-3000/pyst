@@ -93,9 +93,13 @@ def p_argument_message(p):
     p[0] = ParseArgumentMessage(p[1], p[2])
     
 def p_message_arg_list(p):
-    r'''message_arg_list : message_arg'''
+    r'''message_arg_list : message_arg_list message_arg
+                         | message_arg'''
     if len(p) == 2:
         p[0] = [p[1]]
+    else:
+        p[1].append(p[2])
+        p[0] = p[1]
     
 def p_message_arg(p):
     r'''message_arg : MESSAGEARG literal'''

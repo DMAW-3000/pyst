@@ -16,7 +16,8 @@ METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",
               "isMeta", "halt:", "inspect", "examine", "changed", "displayOn:",
               "respondsTo:", "become:", "becomeForward:", "postStore", "at:", "basicAt:",
-              "reconstructOriginalObject", "dependencies:", "halt"))
+              "reconstructOriginalObject", "dependencies:", "halt", "asOop",
+              "makeEphemeron", "makeReadOnly:", "makeFixed"))
 
 
 class CompileError(Exception): 
@@ -459,16 +460,34 @@ class Compile(object):
         """
         Comple sending a message with named arguments
         """
+        # get receiver
         if isinstance(recv, ParseUnaryMessage):
             self.compile_unary_message(recv.recv, recv.name)
         else:
-            self.compile_load_literal(recv.value) 
+            self.compile_load_literal(recv.value)
+
+        # build up argument names and value
+        argNames = []
+        argValues = []
+        numArgs = len(args)
         for a in args:
-            sym = self._sys.symbol_find_or_add(a.name + ':')
-            idx = self.add_literal(sym)
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
-            self.compile_load_literal(a.value.value)
-            self.emit_bytes(B_SEND, 1)
+            argNames.append(a.name)
+            argValues.append(a.value)
+            
+        # push selector
+        selName = ":".join(argNames)
+        if numArgs > 1:
+            selName += ":"
+        sym = self._sys.symbol_find_or_add(selName)
+        idx = self.add_literal(sym)
+        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        
+        # get and push argument values
+        for a in argValues:
+            self.compile_load_literal(a.value)
+            
+        # send message
+        self.emit_bytes(B_SEND, numArgs)
         
     def compile_load_literal(self, x):
         """
