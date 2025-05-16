@@ -387,7 +387,10 @@ class Compile(object):
             raise CompileError("bad statement syntax %s" % s)
             
     def compile_unary_message(self, recv, name):
-        self.compile_load_literal(recv.value)
+        if isinstance(recv, ParseUnaryMessage):
+            self.compile_unary_message(recv.recv, recv.name)
+        else:
+            self.compile_load_literal(recv.value)
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)
