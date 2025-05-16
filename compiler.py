@@ -17,7 +17,8 @@ METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "isMeta", "halt:", "inspect", "examine", "changed", "displayOn:",
               "respondsTo:", "become:", "becomeForward:", "postStore", "at:", "basicAt:",
               "reconstructOriginalObject", "dependencies:", "halt", "asOop",
-              "makeEphemeron", "makeReadOnly:", "makeFixed"))
+              "makeEphemeron", "makeReadOnly:", "makeFixed", "instVarNamed:",
+              "instVarNamed:put:"))
 
 
 class CompileError(Exception): 
@@ -475,16 +476,19 @@ class Compile(object):
             argValues.append(a.value)
             
         # push selector
-        selName = ":".join(argNames)
-        if numArgs > 1:
-            selName += ":"
+        selName = ":".join(argNames) + ":"
         sym = self._sys.symbol_find_or_add(selName)
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         
         # get and push argument values
         for a in argValues:
-            self.compile_load_literal(a.value)
+            if isinstance(a, ParseLiteral):
+                self.compile_load_literal(a.value)
+            elif isinstance(a, ParseExecStatement):
+                self.compile_exec_statement(a.data)
+            else:
+                raise CompileError("bad message argument syntax")
             
         # send message
         self.emit_bytes(B_SEND, numArgs)

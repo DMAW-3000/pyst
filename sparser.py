@@ -72,11 +72,16 @@ def p_assign_statement(p):
     p[0] = ParseAssignStatement(p[1], p[3])
     
 def p_exec_statement(p):
-    r'''exec_statement : argument_message
+    r'''exec_statement : sub_statement
+                       | argument_message
                        | expr_message
                        | unary_message
                        | literal'''
     p[0] = ParseExecStatement(p[1])
+    
+def p_sub_statement(p):
+    r'''sub_statement : LPARENS exec_statement RPARENS'''
+    p[0] = p[2]
     
 def p_unary_message(p):
     r'''unary_message : unary_message IDENT
@@ -102,7 +107,8 @@ def p_message_arg_list(p):
         p[0] = p[1]
     
 def p_message_arg(p):
-    r'''message_arg : MESSAGEARG literal'''
+    r'''message_arg : MESSAGEARG sub_statement
+                    | MESSAGEARG literal'''
     p[0] = ParseMessageArg(p[1], p[2])
     
 def p_literal(p):
@@ -124,6 +130,7 @@ precedence = (
     ('left', 'ASSIGN'),
     ('left', 'IDENT'),
     ('left', 'MESSAGEARG'),
+    ('left', 'LPARENS', 'RPARENS'),
     ('left', 'SSTRING'),
 )
 
