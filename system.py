@@ -147,15 +147,14 @@ class Smalltalk(object):
         # initialize runtime objects
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
         
+        # initialize interpreter
+        inst.g_interp = Interp(inst)
+        inst.g_interp.reset()
+        
         # compile the Kernel modules
         inst.g_compile = Compile(inst)
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
-        
-        # initialize interpreter
-        inst.g_interp = Interp(inst)
-        inst.g_interp.reset()
-        inst.g_interp.exe()
         
         #print(inst.g_st_dict.tally, inst.g_st_dict.size)
         #inst.dict_print(inst.g_st_dict, True)

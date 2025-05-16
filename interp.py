@@ -33,13 +33,9 @@ class Interp(object):
         """
         Prepare for execution
         """
-        self.i_context = BlockContext(self._nil)
+        self.i_self = self._nil
+        self.i_context = self._nil
+        self.i_method = self._nil
         
-    def exe(self):
-        """
-        Start execution
-        """
-        oldCtx = self.i_context
-        newCtx = MethodContext(oldCtx)
         
         
