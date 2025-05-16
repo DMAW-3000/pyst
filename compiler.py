@@ -16,7 +16,7 @@ METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",
               "isMeta", "halt:", "inspect", "examine", "changed", "displayOn:",
               "respondsTo:", "become:", "becomeForward:", "postStore", "at:", "basicAt:",
-              "reconstructOriginalObject"))
+              "reconstructOriginalObject", "dependencies:"))
 
 
 class CompileError(Exception): 
@@ -364,7 +364,7 @@ class Compile(object):
             self.compile_statement(s)
             
             # discard stack top if result not used
-            if not isinstance(s, ParseReturnStatement):
+            if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
                 self.emit_bytes(B_POP_STACK_TOP, 0)
             
         # add ^self if no explicit return provided
@@ -379,12 +379,36 @@ class Compile(object):
             self.compile_ret_statement(s.data)
         elif isinstance(s, ParseExecStatement):
             self.compile_exec_statement(s.data)
+        elif isinstance(s, ParseAssignStatement):
+            self.compile_assign_statement(s.var, s.data)
         else:
             raise CompileError("unknown statement type %s" % s)
         
     def compile_ret_statement(self, s):
+        """
+        Compile a ^ return statement
+        """
+        # generate statement
         self.compile_exec_statement(s.data)
+        
+        # add return instruction
         self.emit_bytes(B_RETURN_METHOD_STACK_TOP, 0)
+        
+    def compile_assign_statement(self, var, s):
+        """
+        Compile a := assignment statement
+        """
+        # generate value
+        self.compile_exec_statement(s.data)
+        
+        # assign value
+        idx = self.find_local(var)
+        if idx is not None:
+            self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
+        else:
+            sym = self._sys.symbol_find_or_add(var)
+            idx = self.add_literal(sym)
+            self.emit_bytes(B_STORE_LIT_VARIABLE, idx)
         
     def compile_exec_statement(self, s):
         if isinstance(s, ParseUnaryMessage):

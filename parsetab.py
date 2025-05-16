@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'leftDECNUMBERleftOPERATORleftASSIGNleftIDENTleftMESSAGEARGASSIGN BASENUMBER CARET DECNUMBER DSTRING FLTNUMBER IDENT LBRACK LPARENS MESSAGEARG OPERATOR PERIOD PIPE RBRACK RPARENS SSTRINGstatement_list : statementstatement : exec_statement\n                  | return_statementreturn_statement : CARET exec_statementexec_statement : argument_message\n                       | expr_message\n                       | unary_message\n                       | literalunary_message : unary_message IDENT\n                      | literal IDENTexpr_message : exec_statement OPERATOR exec_statementargument_message : unary_message message_arg_list\n                         | literal message_arg_listmessage_arg_list : message_argmessage_arg : MESSAGEARG literalliteral : IDENT\n                | DECNUMBER'
+_lr_signature = 'leftDECNUMBERleftOPERATORleftASSIGNleftIDENTleftMESSAGEARGASSIGN BASENUMBER CARET DECNUMBER DSTRING FLTNUMBER IDENT LBRACK LPARENS MESSAGEARG OPERATOR PERIOD PIPE RBRACK RPARENS SSTRINGstatement_list : statementstatement : exec_statement\n                  | assign_statement\n                  | return_statementreturn_statement : CARET exec_statementassign_statement : IDENT ASSIGN exec_statementexec_statement : argument_message\n                       | expr_message\n                       | unary_message\n                       | literalunary_message : unary_message IDENT\n                      | literal IDENTexpr_message : exec_statement OPERATOR exec_statementargument_message : unary_message message_arg_list\n                         | literal message_arg_listmessage_arg_list : message_argmessage_arg : MESSAGEARG literalliteral : IDENT\n                | DECNUMBER'
     
-_lr_action_items = {'CARET':([0,],[9,]),'IDENT':([0,7,8,9,10,11,12,14,16,18,],[10,14,18,10,-16,-17,10,-9,10,-10,]),'DECNUMBER':([0,9,12,16,],[11,11,11,11,]),'$end':([1,2,3,4,5,6,7,8,10,11,13,14,15,17,18,19,20,21,],[0,-1,-2,-3,-5,-6,-7,-8,-16,-17,-12,-9,-14,-13,-10,-4,-11,-15,]),'OPERATOR':([3,5,6,7,8,10,11,13,14,15,17,18,19,20,21,],[12,-5,-6,-7,-8,-16,-17,-12,-9,-14,-13,-10,12,-11,-15,]),'MESSAGEARG':([7,8,10,11,14,18,],[16,16,-16,-17,-9,-10,]),}
+_lr_action_items = {'IDENT':([0,8,9,10,11,12,13,15,17,19,20,22,],[10,15,19,-18,22,-19,22,-11,22,-12,22,-18,]),'CARET':([0,],[11,]),'DECNUMBER':([0,11,13,17,20,],[12,12,12,12,12,]),'$end':([1,2,3,4,5,6,7,8,9,10,12,14,15,16,18,19,21,22,23,24,25,],[0,-1,-2,-3,-4,-7,-8,-9,-10,-18,-19,-14,-11,-16,-15,-12,-5,-18,-13,-17,-6,]),'OPERATOR':([3,6,7,8,9,10,12,14,15,16,18,19,21,22,23,24,25,],[13,-7,-8,-9,-10,-18,-19,-14,-11,-16,-15,-12,13,-18,-13,-17,13,]),'MESSAGEARG':([8,9,10,12,15,19,22,],[17,17,-18,-19,-11,-12,-18,]),'ASSIGN':([10,],[20,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement_list':([0,],[1,]),'statement':([0,],[2,]),'exec_statement':([0,9,12,],[3,19,20,]),'return_statement':([0,],[4,]),'argument_message':([0,9,12,],[5,5,5,]),'expr_message':([0,9,12,],[6,6,6,]),'unary_message':([0,9,12,],[7,7,7,]),'literal':([0,9,12,16,],[8,8,8,21,]),'message_arg_list':([7,8,],[13,17,]),'message_arg':([7,8,],[15,15,]),}
+_lr_goto_items = {'statement_list':([0,],[1,]),'statement':([0,],[2,]),'exec_statement':([0,11,13,20,],[3,21,23,25,]),'assign_statement':([0,],[4,]),'return_statement':([0,],[5,]),'argument_message':([0,11,13,20,],[6,6,6,6,]),'expr_message':([0,11,13,20,],[7,7,7,7,]),'unary_message':([0,11,13,20,],[8,8,8,8,]),'literal':([0,11,13,17,20,],[9,9,9,24,9,]),'message_arg_list':([8,9,],[14,18,]),'message_arg':([8,9,],[16,16,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,21 +27,23 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement_list","S'",1,None,None,None),
-  ('statement_list -> statement','statement_list',1,'p_statement_list','sparser.py',52),
-  ('statement -> exec_statement','statement',1,'p_statement','sparser.py',56),
-  ('statement -> return_statement','statement',1,'p_statement','sparser.py',57),
-  ('return_statement -> CARET exec_statement','return_statement',2,'p_return_statement','sparser.py',61),
-  ('exec_statement -> argument_message','exec_statement',1,'p_exec_statement','sparser.py',65),
-  ('exec_statement -> expr_message','exec_statement',1,'p_exec_statement','sparser.py',66),
-  ('exec_statement -> unary_message','exec_statement',1,'p_exec_statement','sparser.py',67),
-  ('exec_statement -> literal','exec_statement',1,'p_exec_statement','sparser.py',68),
-  ('unary_message -> unary_message IDENT','unary_message',2,'p_unary_message','sparser.py',72),
-  ('unary_message -> literal IDENT','unary_message',2,'p_unary_message','sparser.py',73),
-  ('expr_message -> exec_statement OPERATOR exec_statement','expr_message',3,'p_expr_message','sparser.py',77),
-  ('argument_message -> unary_message message_arg_list','argument_message',2,'p_argument_message','sparser.py',81),
-  ('argument_message -> literal message_arg_list','argument_message',2,'p_argument_message','sparser.py',82),
-  ('message_arg_list -> message_arg','message_arg_list',1,'p_message_arg_list','sparser.py',86),
-  ('message_arg -> MESSAGEARG literal','message_arg',2,'p_message_arg','sparser.py',91),
-  ('literal -> IDENT','literal',1,'p_literal','sparser.py',95),
-  ('literal -> DECNUMBER','literal',1,'p_literal','sparser.py',96),
+  ('statement_list -> statement','statement_list',1,'p_statement_list','sparser.py',57),
+  ('statement -> exec_statement','statement',1,'p_statement','sparser.py',61),
+  ('statement -> assign_statement','statement',1,'p_statement','sparser.py',62),
+  ('statement -> return_statement','statement',1,'p_statement','sparser.py',63),
+  ('return_statement -> CARET exec_statement','return_statement',2,'p_return_statement','sparser.py',67),
+  ('assign_statement -> IDENT ASSIGN exec_statement','assign_statement',3,'p_assign_statement','sparser.py',71),
+  ('exec_statement -> argument_message','exec_statement',1,'p_exec_statement','sparser.py',75),
+  ('exec_statement -> expr_message','exec_statement',1,'p_exec_statement','sparser.py',76),
+  ('exec_statement -> unary_message','exec_statement',1,'p_exec_statement','sparser.py',77),
+  ('exec_statement -> literal','exec_statement',1,'p_exec_statement','sparser.py',78),
+  ('unary_message -> unary_message IDENT','unary_message',2,'p_unary_message','sparser.py',82),
+  ('unary_message -> literal IDENT','unary_message',2,'p_unary_message','sparser.py',83),
+  ('expr_message -> exec_statement OPERATOR exec_statement','expr_message',3,'p_expr_message','sparser.py',87),
+  ('argument_message -> unary_message message_arg_list','argument_message',2,'p_argument_message','sparser.py',91),
+  ('argument_message -> literal message_arg_list','argument_message',2,'p_argument_message','sparser.py',92),
+  ('message_arg_list -> message_arg','message_arg_list',1,'p_message_arg_list','sparser.py',96),
+  ('message_arg -> MESSAGEARG literal','message_arg',2,'p_message_arg','sparser.py',101),
+  ('literal -> IDENT','literal',1,'p_literal','sparser.py',105),
+  ('literal -> DECNUMBER','literal',1,'p_literal','sparser.py',106),
 ]

@@ -19,6 +19,11 @@ class ParseExecStatement(ParseStatement): pass
 
 class ParseReturnStatement(ParseStatement): pass
 
+class ParseAssignStatement(ParseStatement):
+    def __init__(self, var, x):
+        super().__init__(x)
+        self.var = var
+
 class ParseMessage(object):
     def __init__(self, recv):
         self.recv = recv
@@ -54,12 +59,17 @@ def p_statement_list(p):
 
 def p_statement(p):
     r'''statement : exec_statement
+                  | assign_statement
                   | return_statement'''
     p[0] = p[1] 
     
 def p_return_statement(p):
     r'''return_statement : CARET exec_statement'''
     p[0] = ParseReturnStatement(p[2])
+    
+def p_assign_statement(p):
+    r'''assign_statement : IDENT ASSIGN exec_statement'''
+    p[0] = ParseAssignStatement(p[1], p[3])
     
 def p_exec_statement(p):
     r'''exec_statement : argument_message
