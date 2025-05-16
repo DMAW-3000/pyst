@@ -16,7 +16,7 @@ METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",
               "isMeta", "halt:", "inspect", "examine", "changed", "displayOn:",
               "respondsTo:", "become:", "becomeForward:", "postStore", "at:", "basicAt:",
-              "reconstructOriginalObject", "dependencies:"))
+              "reconstructOriginalObject", "dependencies:", "halt"))
 
 
 class CompileError(Exception): 
@@ -418,6 +418,9 @@ class Compile(object):
             self.emit_bytes(B_STORE_LIT_VARIABLE, idx)
         
     def compile_exec_statement(self, s):
+        """
+        Compile a plain statement
+        """
         if isinstance(s, ParseUnaryMessage):
             self.compile_unary_message(s.recv, s.name)
         elif isinstance(s, ParseExprMessage):
@@ -430,6 +433,9 @@ class Compile(object):
             raise CompileError("bad statement syntax %s" % s)
             
     def compile_unary_message(self, recv, name):
+        """
+        Compile sending a unary message
+        """
         if isinstance(recv, ParseUnaryMessage):
             self.compile_unary_message(recv.recv, recv.name)
         else:
@@ -439,6 +445,9 @@ class Compile(object):
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)
         
     def compile_expr_message(self, recv, name, send):
+        """
+        Compile sending a binary expression message
+        """
         self.compile_exec_statement(recv.data)
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
@@ -447,6 +456,9 @@ class Compile(object):
         self.emit_bytes(B_SEND, 1)
         
     def compile_arg_message(self, recv, args):
+        """
+        Comple sending a message with named arguments
+        """
         if isinstance(recv, ParseUnaryMessage):
             self.compile_unary_message(recv.recv, recv.name)
         else:
@@ -487,12 +499,19 @@ class Compile(object):
                     idx = self.add_literal(sym)
                     self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
         # small integer
-        # TODO: check for overflow of int type
         elif isinstance(x, int):
+            if x > Int_Max:
+                raise CompileError("integer value %d too large" % x)
             idx = self.add_literal(x)
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        # string constant
+        elif isinstance(x, tuple):
+            chars = tuple(map(ord, x))
+            idx = self.add_literal(String.from_seq(chars))
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         # unknown type
         else:
+            print(x)
             raise CompileError("unknown literal type %s" % x)
                 
     def add_literal(self, x):

@@ -102,9 +102,14 @@ def p_message_arg(p):
     p[0] = ParseMessageArg(p[1], p[2])
     
 def p_literal(p):
-    r'''literal : IDENT
+    r'''literal : string_literal
+                | IDENT
                 | DECNUMBER'''
     p[0] = ParseLiteral(p[1])
+    
+def p_string_literal(p):
+    r'''string_literal : SSTRING'''
+    p[0] = tuple(p[1])
     
     
 # token precedence rules for the parser
@@ -115,6 +120,7 @@ precedence = (
     ('left', 'ASSIGN'),
     ('left', 'IDENT'),
     ('left', 'MESSAGEARG'),
+    ('left', 'SSTRING'),
 )
 
 # globals
