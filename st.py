@@ -165,7 +165,7 @@ class UndefinedObject(Object):
         self._obj_id = 0
         self._klass = self._Cover
         self._flags = 0
-        self.resize(0)
+        self.resize(1)
         
     def __str__(self):
         return "NIL"
