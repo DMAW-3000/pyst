@@ -14,7 +14,9 @@ METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "class", "primitiveFailed", "shouldNotImplement", "isMemberOf:",
               "subclassResponsibility", "notYetImplemented", "badReturnError",
               "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",
-              "isMeta"))
+              "isMeta", "halt:", "inspect", "examine", "changed", "displayOn:",
+              "respondsTo:", "become:", "becomeForward:", "postStore", "at:", "basicAt:",
+              "reconstructOriginalObject"))
 
 
 class CompileError(Exception): 
@@ -389,6 +391,8 @@ class Compile(object):
             self.compile_unary_message(s.recv, s.name)
         elif isinstance(s, ParseExprMessage):
             self.compile_expr_message(s.recv, s.name, s.send)
+        elif isinstance(s, ParseArgumentMessage):
+            self.compile_arg_message(s.recv, s.args)
         elif isinstance(s, ParseLiteral):
             self.compile_load_literal(s.value)
         else:
@@ -410,6 +414,18 @@ class Compile(object):
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         self.compile_exec_statement(send.data)
         self.emit_bytes(B_SEND, 1)
+        
+    def compile_arg_message(self, recv, args):
+        if isinstance(recv, ParseUnaryMessage):
+            self.compile_unary_message(recv.recv, recv.name)
+        else:
+            self.compile_load_literal(recv.value) 
+        for a in args:
+            sym = self._sys.symbol_find_or_add(a.name + ':')
+            idx = self.add_literal(sym)
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            self.compile_load_literal(a.value.value)
+            self.emit_bytes(B_SEND, 1)
         
     def compile_load_literal(self, x):
         """

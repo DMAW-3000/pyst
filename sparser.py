@@ -20,16 +20,29 @@ class ParseExecStatement(ParseStatement): pass
 class ParseReturnStatement(ParseStatement): pass
 
 class ParseMessage(object):
-    def __init__(self, recv, name):
+    def __init__(self, recv):
         self.recv = recv
-        self.name = name
 
-class ParseUnaryMessage(ParseMessage): pass
+class ParseUnaryMessage(ParseMessage):
+    def __init__(self, recv, name):
+        super().__init__(recv)
+        self.name = name
         
 class ParseExprMessage(ParseMessage):
     def __init__(self, recv, name, send):
-        super().__init__(recv, name)
+        super().__init__(recv)
+        self.name = name
         self.send = send
+        
+class ParseArgumentMessage(ParseMessage):
+    def __init__(self, recv, args):
+        super().__init__(recv)
+        self.args = args
+        
+class ParseMessageArg(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
 
 class ParseLiteral(object):
     def __init__(self, x):
@@ -49,7 +62,8 @@ def p_return_statement(p):
     p[0] = ParseReturnStatement(p[2])
     
 def p_exec_statement(p):
-    r'''exec_statement : expr_message
+    r'''exec_statement : argument_message
+                       | expr_message
                        | unary_message
                        | literal'''
     p[0] = ParseExecStatement(p[1])
@@ -63,6 +77,20 @@ def p_expr_message(p):
     r'''expr_message : exec_statement OPERATOR exec_statement'''
     p[0] = ParseExprMessage(p[1], p[2], p[3])
     
+def p_argument_message(p):
+    r'''argument_message : unary_message message_arg_list
+                         | literal message_arg_list'''
+    p[0] = ParseArgumentMessage(p[1], p[2])
+    
+def p_message_arg_list(p):
+    r'''message_arg_list : message_arg'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    
+def p_message_arg(p):
+    r'''message_arg : MESSAGEARG literal'''
+    p[0] = ParseMessageArg(p[1], p[2])
+    
 def p_literal(p):
     r'''literal : IDENT
                 | DECNUMBER'''
@@ -72,8 +100,11 @@ def p_literal(p):
 # token precedence rules for the parser
 # tokens are listed from lowest to highest precedence   
 precedence = (
+    ('left', 'DECNUMBER'),
     ('left', 'OPERATOR'),
-    ('left', 'IDENT')
+    ('left', 'ASSIGN'),
+    ('left', 'IDENT'),
+    ('left', 'MESSAGEARG'),
 )
 
 # globals
