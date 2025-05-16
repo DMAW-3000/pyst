@@ -34,6 +34,9 @@ class Compile(object):
     # the default code for pushing self and returning from method
     _Ret_Self_Bytes = bytearray((B_PUSH_SELF, 0, B_RETURN_METHOD_STACK_TOP, 0))
     
+    # reserved keywords
+    _Keyword_Names = set(("self", "nil", "true", "false"))
+    
     def __init__(self, system):
         """
         Create a blank compiler instance
@@ -398,6 +401,10 @@ class Compile(object):
         """
         Compile a := assignment statement
         """
+        # check variable name
+        if var in self._Keyword_Names:
+            raise CompileError("assign to %s not allowed" % var)
+        
         # generate value
         self.compile_exec_statement(s.data)
         
