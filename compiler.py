@@ -13,7 +13,8 @@ METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
               "nextInstance", "isNil", "notNil", "ifNil:", "isCObject", "~=", "~~",
               "class", "primitiveFailed", "shouldNotImplement", "isMemberOf:",
               "subclassResponsibility", "notYetImplemented", "badReturnError",
-              "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",))
+              "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",
+              "isMeta"))
 
 
 class CompileError(Exception): 
@@ -50,8 +51,7 @@ class Compile(object):
         # helpers
         self._cur_klass = None
         self._cur_meth = None
-        self._cur_arg = None
-        self._cur_temp = None
+        self._cur_local = None
         self._cur_literal = None
         self._cur_bytes = None
         
@@ -251,8 +251,7 @@ class Compile(object):
         print("Temps:", tempNames)
         
         # setup environment
-        self._cur_arg = argNames
-        self._cur_temp = tempNames
+        self._cur_local = argNames + tempNames
         self._cur_literal = []
         self._cur_bytes = bytearray()
             
@@ -404,8 +403,16 @@ class Compile(object):
         self.emit_bytes(B_SEND, 1)
         
     def compile_load_literal(self, x):
+        """
+        Compile the code to load a literal value
+        onto the stack.
+        """
+        # keyeord or variable name
         if isinstance(x, str):
-            if x == "nil":
+            # keywords
+            if x == "self":
+                self.emit_bytes(B_PUSH_SELF, 0)
+            elif x == "nil":
                 idx = self.add_literal(self._nil)
                 self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             elif x == "true":
@@ -414,15 +421,21 @@ class Compile(object):
             elif x == "false":
                 idx = self.add_literal(self._false)
                 self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
-            elif x == "self":
-                self.emit_bytes(B_PUSH_SELF, 0)
+            # variable name
             else:
-                sym = self._sys.symbol_find_or_add(x)
-                idx = self.add_literal(sym)
-                self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
+                idx = self.find_local(x)
+                if idx is not None:
+                    self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
+                else:
+                    sym = self._sys.symbol_find_or_add(x)
+                    idx = self.add_literal(sym)
+                    self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
+        # small integer
+        # TODO: check for overflow of int type
         elif isinstance(x, int):
             idx = self.add_literal(x)
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        # unknown type
         else:
             raise CompileError("unknown literal type %s" % x)
                 
@@ -441,6 +454,18 @@ class Compile(object):
         Append the bytecodes to the current code block
         """
         self._cur_bytes.extend((bc))
+        
+    def find_local(self, name):
+        """
+        Find the index of a argument or temporary
+        variable name, or None if not local.
+        """
+        try:
+            idx = self._cur_local.index(name)
+        except:
+            idx = None
+        return idx
+
             
 
         
