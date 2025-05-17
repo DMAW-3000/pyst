@@ -55,6 +55,7 @@ Init_Class = (
     ("MethodInfo", True, "meth_info", "object", False, ("sourceCode", "category", "class", "selector", "debugInfo"), (), ()),
     ("LookupTable", False, "lookup_table", "dictionary", False, (), (), ()),
     ("IdentityDictionary", False, "ident_dictionary", "lookup_table", False, (), (), ()),
+    ("MethodDictionary", True, "meth_dictionary", "ident_dictionary", False, ("mutex",), (), ()),
 )
 
 # the instance vaariable names for Metaclass

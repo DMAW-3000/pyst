@@ -443,6 +443,35 @@ class BindingDictionary(Object):
     def environment(self, x):
         self[1] = x
         
+     
+class MethodDictionary(Object):
+    """
+    Internal representation of a Smalltalk IdentityDictionary
+    """
+    
+    def __init__(self, sz):
+        """
+        Create a MethodDictionary object
+        """
+        super().__init__(sz + 2)
+        self.tally = 0
+        
+    @property
+    def tally(self):
+        return self[0]
+        
+    @tally.setter
+    def tally(self, x):
+        self[0] = x
+        
+    @property
+    def mutex(self):
+        return self[1]
+        
+    @mutex.setter
+    def mutex(self, x):
+        self[1] = x
+    
         
 class Namespace(Object):
     """
