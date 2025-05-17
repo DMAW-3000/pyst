@@ -825,7 +825,7 @@ class _Code(Object):
         bytecodes.
         """
         super().__init__(sz)
-        self._bc_arr = bytearray(0)
+        self._bc_arr = bytearray(1)
         
     def get_code(self):
         """
