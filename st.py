@@ -778,6 +778,13 @@ class MethodContext(_Context):
     """
     Internal representation of Smalltalk MethodContext
     """
+    
+    def __init__(self):
+        """
+        Create a new context
+        """
+        super().__init__()
+        self.flags = 0
         
     @property
     def parent(self):
