@@ -685,6 +685,31 @@ class _Context(Object):
         Create a new context
         """
         super().__init__(7)
+        self.sp = self.size - 1
+        
+    def push(self, x):
+        """
+        Push a new item onto the context stack
+        """
+        self._refs.append(x)
+        self.sp += 1
+        
+    def pop(self):
+        """
+        Pop an item from the context stack
+        """
+        x = self._refs.pop()
+        self.sp -= 1
+        return x
+        
+    def expand(self, n):
+        """
+        Increase the context stack space a number
+        of slots.
+        """
+        global _Obj_Nil
+        self._refs.extend([_Obj_Nil] * n)
+        self.sp += n
         
 
 class BlockContext(_Context):
@@ -861,7 +886,7 @@ class _Code(Object):
             self._bc_arr[idx - refSize] = x
         else:
             self._refs[idx] = x
-        
+     
         
 class CompiledMethod(_Code):
     """
