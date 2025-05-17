@@ -680,12 +680,11 @@ class _Context(Object):
     common behavior of context objects.
     """
     
-    def __init__(self, parentCtx):
+    def __init__(self):
         """
         Create a new context
         """
         super().__init__(7)
-        self.parent = parentCtx
         
 
 class BlockContext(_Context):
