@@ -453,7 +453,7 @@ class MethodDictionary(Object):
         """
         Create a MethodDictionary object
         """
-        super().__init__(sz + 2)
+        super().__init__((sz * 2) + 2)
         self.tally = 0
         
     @property
