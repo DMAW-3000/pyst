@@ -26,6 +26,7 @@ class Interp(object):
         bTbl[B_PUSH_SELF] = self.b_push_self
         bTbl[B_PUSH_LIT_CONSTANT] = self.b_push_lit_const
         bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
+        bTbl[B_SEND] = self.b_send
         
     def reset(self):
         """
@@ -160,6 +161,14 @@ class Interp(object):
         """
         ctx.push(ctx.method.literals[arg])
         return 2
+        
+    def b_send(self, ctx, arg):
+        """
+        Execute the generic send message bytecode
+        """
+        print("SEND")
+        self.send_message(arg)
+        return 0
         
     def b_meth_ret(self, ctx, arg):
         """
