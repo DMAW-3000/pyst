@@ -24,6 +24,7 @@ class Interp(object):
         # the bytecode table
         self.b_table = bTbl = [None] * 256
         bTbl[B_PUSH_SELF] = self.b_push_self
+        bTbl[B_PUSH_LIT_CONSTANT] = self.b_push_lit_const
         bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
         
     def reset(self):
@@ -151,6 +152,13 @@ class Interp(object):
         Execute push self bytecode
         """
         ctx.push(ctx.receiver)
+        return 2
+        
+    def b_push_lit_const(self, ctx, arg):
+        """
+        Execute push literal constant bytecode
+        """
+        ctx.push(ctx.method.literals[arg])
         return 2
         
     def b_meth_ret(self, ctx, arg):
