@@ -14,7 +14,7 @@ Configuration for creating a new environment
 
 Init_Class = (
     ("Object", True, "object", None, False, (), ("Dependencies", "FinalizableObjects", "FinalSemaphore"), ("VMPrimitives",)),
-    ("UndefinedObject", False, "undef_obj", "object", True, (), (), ()),
+    ("UndefinedObject", True, "undef_obj", "object", True, (), (), ()),
     ("Boolean", False, "boolean", "object", True, (), (), ()),
     ("False", False, "false", "boolean", True, ("truthValue",), (), ()),
     ("True", False, "true", "boolean", True, ("truthValue",), (), ()),
