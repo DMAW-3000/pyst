@@ -170,6 +170,9 @@ class Smalltalk(object):
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
         
+        obj = Object(10)
+        inst.g_interp.send_message_extern(obj, "initialize", ())
+        
     def build_classes_1(self):
         """
         Class rebuild
@@ -395,11 +398,12 @@ class Smalltalk(object):
         Find the index for a key in a IdentityDictionary-like 
         instance
         """
+        global Int_Max
         numInst = dictObj.get_class().get_num_inst()
         arrSize = dictObj.size - numInst
-        idx = keyObj.hsh()
+        idx = (keyObj.hsh() << 1) & Int_Max
         mask = arrSize - 1
-        arrSize //= 2
+        arrSize >>= 1
         while arrSize > 0:
             idx &= mask
             item = dictObj[idx + numInst]
