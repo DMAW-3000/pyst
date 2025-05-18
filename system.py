@@ -157,7 +157,7 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        #print(inst.g_st_dict.tally, inst.g_st_dict.size)
+        #print("ST Dictionary:", inst.g_st_dict.tally)
         #inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
@@ -346,15 +346,14 @@ class Smalltalk(object):
         numInst = dictObj.get_class().get_num_inst()
         arrSize = dictObj.size - numInst
         mask = arrSize - 1
-        idx = keyObj.hsh()
-        n = 0
-        while n < arrSize:
+        idx = keyObj.hsh() 
+        while arrSize > 0:
             idx &= mask
             assoc = dictObj[idx + numInst]
             if is_nil(assoc) or (keyObj.is_same(assoc.key)):
                 return idx + numInst
             idx += 1
-            n += 1
+            arrSize -= 1
         raise IndexError("Dictionary overflow")
         
     @staticmethod
@@ -363,15 +362,52 @@ class Smalltalk(object):
         Display the contents of a Dictionary-like object
         """
         numInst = dictObj.get_class().get_num_inst()
-        for assoc in dictObj[numInst:]:
+        for n,assoc in enumerate(dictObj[numInst:]):
             if not nameSpace:
                 if not is_nil(assoc):
-                    print(assoc.key, assoc.value)
+                    print("[%d]" % n, assoc.key, assoc.value)
             else:
                 if not is_nil(assoc):
                     binding = assoc.value
                     if not is_nil(binding):
-                        print(binding.key, binding.value)
+                        print("[%d]" % n, binding.key, binding.value)
+                        
+    def identdict_add(self, dictObj, keyObj, itemObj):
+        """
+        Add an item to a IdentityDictionary-like instance.
+        """
+        idx = self.identdict_index(dictObj, keyObj)
+        dictObj[idx - 1] = keyObj
+        dictObj[idx] = itemObj
+        dictObj.tally += 1
+        
+    def identdict_find(self, dictObj, keyObj):
+        """
+        Find an item in an IdentityDictionary-like instance,
+        or nil if not found.
+        """
+        idx = self.identdict_index(dictObj, keyObj)
+        return dictObj[idx]
+                        
+    @staticmethod
+    def identdict_index(dictObj, keyObj):
+        """
+        Find the index for a key in a IdentityDictionary-like 
+        instance
+        """
+        numInst = dictObj.get_class().get_num_inst()
+        arrSize = dictObj.size - numInst
+        idx = keyObj.hsh()
+        mask = arrSize - 1
+        arrSize //= 2
+        while arrSize > 0:
+            idx &= mask
+            item = dictObj[idx + numInst]
+            if is_nil(item) or keyObj.is_same(item):
+                return idx + numInst + 1
+            idx += 2
+            arrSize -= 1
+        raise IndexError("IdentityDictionary overflow")
                         
     @staticmethod
     def arr_print(arrObj):
