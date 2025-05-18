@@ -648,7 +648,7 @@ class Class(Object):
             s = str(self.name)
         else:
             s = '????'
-        return "Class(" + s + ")"
+        return "CLASS(" + s + ")"
         
 
 class Metaclass(Object):
@@ -997,7 +997,7 @@ class CompiledMethod(_Code):
             s = str(self.descriptor.selector)
         else:
             s = '????'
-        return "Method(" + s + ")"
+        return "METHOD(" + s + ")"
         
         
 class MethodInfo(Object):
