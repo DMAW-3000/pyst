@@ -426,19 +426,45 @@ class VariableBinding(Object):
         self[2] = x
         
         
-class Dictionary(Object):
+class _Dict(Object):
+    """
+    Not a real Smalltalk class but hold functionality
+    common to dictionary objects.
+    """
+    
+    @classmethod
+    def new_n(klass, n):
+        """
+        Create a dictionary with the number of initial
+        slots.  This should be a power of 2.
+        """
+        return klass(klass.size_n(n))
+        
+    @staticmethod
+    def size_n(n):
+        raise NotImplementedError("_Dict subclass responsibility")
+        
+        
+class Dictionary(_Dict):
     """
     Internal representation of a Smalltalk Dictionary
     """
     
     _Cover = None
     
+    @staticmethod
+    def size_n(n):
+        """
+        Return the size needed for the number of slots.
+        This should be a power of 2.
+        """
+        return n + 1
+    
     def __init__(self, sz):
         """
-        Create a Dictionary object.  Size is the number
-        of initial storage slots and should be a power of 2.
+        Create a Dictionary object.
         """
-        super().__init__(sz + 1)
+        super().__init__(sz)
         self.tally = 0
         
     @property
@@ -450,19 +476,26 @@ class Dictionary(Object):
         self[0] = x
         
         
-class BindingDictionary(Object):
+class BindingDictionary(_Dict):
     """
     Internal representation of a Smalltalk BindingDictionary
     """
     
     _Cover = None
     
+    @staticmethod
+    def size_n(n):
+        """
+        Return the size needed for the number of slots.
+        This should be a power of 2.
+        """
+        return n + 2
+    
     def __init__(self, sz):
         """
-        Create a BindingDictionary object.  Size is the number
-        of initial storage slots and should be a power of 2.
+        Create a BindingDictionary object.
         """
-        super().__init__(sz + 2)
+        super().__init__(sz)
         self.tally = 0
         
     @property
@@ -482,19 +515,26 @@ class BindingDictionary(Object):
         self[1] = x
         
      
-class MethodDictionary(Object):
+class MethodDictionary(_Dict):
     """
     Internal representation of a Smalltalk IdentityDictionary
     """
     
     _Cover = None
     
+    @staticmethod
+    def size_n(n):
+        """
+        Return the size needed for the number of slots.
+        This should be a power of 2.
+        """
+        return (n << 1) + 2
+    
     def __init__(self, sz):
         """
-        Create a MethodDictionary object.  Size is the number
-        of initial storage slots and should be a power of 2.
+        Create a MethodDictionary object.
         """
-        super().__init__((sz * 2) + 2)
+        super().__init__(sz)
         self.tally = 0
         
     @property
@@ -514,19 +554,27 @@ class MethodDictionary(Object):
         self[1] = x
     
         
-class Namespace(Object):
+class Namespace(_Dict):
     """
     Internal representation of a Smalltalk Namespace
     """
     
     _Cover = None
     
+    @staticmethod
+    def size_n(n):
+        """
+        Return the size needed for the number of slots.
+        This should be a power of 2.
+        """
+        return n + 5
+    
     def __init__(self, sz):
         """
         Create a Namespace object.  Size is the number
         of initial storage slots and should be a power of 2.
         """
-        super().__init__(sz + 5)
+        super().__init__(sz)
         self.tally = 0
         
     @property

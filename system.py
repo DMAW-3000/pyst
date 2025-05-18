@@ -131,7 +131,7 @@ class Smalltalk(object):
         
         # create global dictionaries
         inst.g_sym_table = Array(512)
-        inst.g_st_dict = stDict = Namespace(512)
+        inst.g_st_dict = stDict = Namespace.new_n(512)
         stDict._klass = inst.k_sys_dictionary
         stDict.name = inst.symbol_add("Smalltalk")
         inst.name_add_sym(stDict, "Smalltalk", stDict)
@@ -478,7 +478,7 @@ class Smalltalk(object):
         """
         if len(varNames) == 0:
             return self.o_nil
-        bindDict = BindingDictionary(8)
+        bindDict = BindingDictionary.new_n(8)
         bindDict.environment = klassObj
         for s in varNames:
             symObj = self.symbol_find_or_add(s)
