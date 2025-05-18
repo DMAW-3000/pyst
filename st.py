@@ -643,6 +643,13 @@ class Class(Object):
     def pragmaHandlers(self, x):
         self[11] = x
         
+    def __str__(self):
+        if not is_nil(self.name):
+            s = str(self.name)
+        else:
+            s = '????'
+        return "Class(" + s + ")"
+        
 
 class Metaclass(Object):
     """
@@ -984,6 +991,13 @@ class CompiledMethod(_Code):
     @descriptor.setter
     def descriptor(self, x):
         self[2] = x
+        
+    def __str__(self):
+        if (not is_nil(self.descriptor)) and (not is_nil(self.descriptor.selector)):
+            s = str(self.descriptor.selector)
+        else:
+            s = '????'
+        return "Method(" + s + ")"
         
         
 class MethodInfo(Object):

@@ -157,8 +157,8 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        #print("ST Dictionary:", inst.g_st_dict.tally)
-        #inst.dict_print(inst.g_st_dict, True)
+        print("ST Dictionary:", inst.g_st_dict.tally)
+        inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
         #    cacheName = klassInfo[2]
