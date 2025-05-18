@@ -23,6 +23,8 @@ class Interp(object):
         
         # the bytecode table
         self.b_table = bTbl = [None] * 256
+        bTbl[B_PUSH_SELF] = self.b_push_self
+        bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
         
     def reset(self):
         """
@@ -89,6 +91,9 @@ class Interp(object):
         # allocate a new context and link to old
         newCtx = MethodContext()
         newCtx.parent = oldCtx
+        newCtx.receiver = recvObj
+        newCtx.method = methObj
+        newCtx.ip = 0
         
         # push args onto new stack
         for a in argList:
@@ -100,10 +105,45 @@ class Interp(object):
             newCtx.expand(numTemp)
         
         # transfer control to new context
-        newCtx.receiver = recvObj
-        newCtx.method = methObj
-        newCtx.ip = 0
         self.i_context = newCtx
+        
+    def step(self):
+        """
+        Fetch and execute the next bytecode
+        """
+        ctx = self.i_context
+        ip = ctx.ip
+        code = ctx.method.get_code()
+        op = self.b_table[code[ip]]
+        if op is None:
+            raise RuntimeError("unknown bytecode %d" % code[ip])
+        op(code[ip + 1])
+        ctx.ip = ip + 2        
+        
+    def b_push_self(self, arg):
+        """
+        Execute push self bytecode
+        """
+        ctx = self.i_context
+        ctx.push(ctx.receiver)
+        
+    def b_meth_ret(self, arg):
+        """
+        Execute method return bytecode
+        """
+        # get sender parent context
+        oldCtx = self.i_context
+        newCtx = oldCtx.parent
+        
+        # pop return value from current stack
+        # and push onto sender's stack
+        newCtx.push(oldCtx.pop())
+        
+        # return control to sender
+        self.i_context = newCtx
+        
+        
+
 
 
         
