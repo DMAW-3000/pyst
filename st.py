@@ -72,6 +72,9 @@ class Object(object):
     Smalltalk base Object definition.
     """
     
+    # this will point to the Smalltalk class representing
+    # this python class after init is complete.
+    # each Object subclass will have its own _Cover
     _Cover = None
     
     @classmethod
@@ -158,6 +161,8 @@ class UndefinedObject(Object):
     Smalltalk UndefinedObject internal representation
     """
     
+    _Cover = None
+    
     def __init__(self):
         """
         Create a blank object
@@ -175,6 +180,8 @@ class CFalse(Object):
     """
     Internal representation of Smalltalk False
     """
+    
+    _Cover = None
     
     def __init__(self):
         self._obj_id = 1
@@ -199,6 +206,8 @@ class CTrue(Object):
     Internal representation of Smalltalk True
     """
     
+    _Cover = None
+    
     def __init__(self):
         self._obj_id = 2
         self._klass = self._Cover
@@ -222,6 +231,8 @@ class Array(Object):
     Internal representation of Smalltalk Array
     """
     
+    _Cover = None
+    
     @classmethod
     def from_seq(klass, x):
         """
@@ -240,6 +251,8 @@ class String(Array):
     """
     Internal representation of Smalltalk String
     """
+    
+    _Cover = None
         
     @classmethod
     def from_str(klass, s):
@@ -268,6 +281,8 @@ class Symbol(String):
     """
     Internal representation of a Smalltalk Symbol
     """
+    
+    _Cover = None
         
     @classmethod
     def from_str(klass, s):
@@ -303,6 +318,8 @@ class SymLink(Object):
     Internal representation of SymLink object
     """
     
+    _Cover = None
+    
     def __init__(self, symObj, linkObj):
         """
         Create an new SymLink
@@ -333,6 +350,8 @@ class Association(Object):
     Internal representation of a Smalltalk Association
     """
     
+    _Cover = None
+    
     def __init__(self, keyObj, valueObj):
         """
         Create an Association
@@ -362,6 +381,8 @@ class VariableBinding(Object):
     """
     Internal representation of a Smalltalk VariableBinding
     """
+    
+    _Cover = None
     
     def __init__(self, keyObj, valueObj, envObj):
         """
@@ -402,6 +423,8 @@ class Dictionary(Object):
     Internal representation of a Smalltalk Dictionary
     """
     
+    _Cover = None
+    
     def __init__(self, sz):
         """
         Create a Namespaece object
@@ -422,6 +445,8 @@ class BindingDictionary(Object):
     """
     Internal representation of a Smalltalk BindingDictionary
     """
+    
+    _Cover = None
     
     def __init__(self, sz):
         """
@@ -452,6 +477,8 @@ class MethodDictionary(Object):
     Internal representation of a Smalltalk IdentityDictionary
     """
     
+    _Cover = None
+    
     def __init__(self, sz):
         """
         Create a MethodDictionary object
@@ -480,6 +507,8 @@ class Namespace(Object):
     """
     Internal representation of a Smalltalk Namespace
     """
+    
+    _Cover = None
     
     def __init__(self, sz):
         """
@@ -533,6 +562,8 @@ class Class(Object):
     """
     Internal representation of a Smalltalk Class
     """
+    
+    _Cover = None
     
     def __init__(self, superKlass, numInstVars, isFixed):
         """
@@ -659,6 +690,8 @@ class Metaclass(Object):
     The internal representation of Smalltalk Metaclass
     """
     
+    _Cover = None
+    
     def __init__(self, instKlass):
         super().__init__(6)
         self.instanceSpec = (12 << 13) | 0x20
@@ -756,6 +789,8 @@ class BlockContext(_Context):
     """
     Internal representation of Smalltalk BlockContext
     """
+    
+    _Cover = None
         
     @property
     def parent(self):
@@ -818,6 +853,8 @@ class MethodContext(_Context):
     """
     Internal representation of Smalltalk MethodContext
     """
+    
+    _Cover = None
     
     def __init__(self):
         """
@@ -940,6 +977,8 @@ class CompiledMethod(_Code):
     Internal representation of Smalltalk CompiledMethod
     """
     
+    _Cover = None
+    
     def __init__(self):
         """
         Create a new Compiled Method
@@ -1008,6 +1047,8 @@ class MethodInfo(Object):
     """
     Internal representation of Smalltalk MethodInfo
     """
+    
+    _Cover = None
     
     def __init__(self, linkKlass):
         super().__init__(5)
