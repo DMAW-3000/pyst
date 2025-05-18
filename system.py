@@ -157,8 +157,8 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        print("ST Dictionary:", inst.g_st_dict.tally)
-        inst.dict_print(inst.g_st_dict, True)
+        #print("ST Dictionary:", inst.g_st_dict.tally)
+        #inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
         #    cacheName = klassInfo[2]
@@ -170,8 +170,8 @@ class Smalltalk(object):
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
         
-        obj = Object(10)
-        inst.g_interp.send_message_extern(obj, "initialize", ())
+        x = inst.g_interp.send_message_extern(inst.o_true, "initialize", ())
+        print(x)
         
     def build_classes_1(self):
         """
@@ -218,6 +218,10 @@ class Smalltalk(object):
                 coverKlass.set_cover(klassObj)
             if klassObj is self.k_class:
                 metaInstVarNames = instVars
+        self.cover_map["False"] = self.k_false
+        CFalse.set_cover(self.k_false)
+        self.cover_map["True"] = self.k_true
+        CTrue._Cover = self.k_true
                 
     def build_classes_3(self):
         """
