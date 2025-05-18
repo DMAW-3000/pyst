@@ -125,8 +125,7 @@ class Object(object):
         """
         Returns True if Object is nil, False otherwise.
         """
-        global _Obj_Nil
-        return self is _Obj_Nil
+        return self._obj_id == 0
         
     def __getitem__(self, idx):
         """
@@ -738,7 +737,7 @@ class Class(Object):
         self[11] = x
         
     def __str__(self):
-        if not is_nil(self.name):
+        if not self.name.is_nil():
             s = str(self.name)
         else:
             s = '????'
@@ -1096,7 +1095,8 @@ class CompiledMethod(_Code):
         self[2] = x
         
     def __str__(self):
-        if (not is_nil(self.descriptor)) and (not is_nil(self.descriptor.selector)):
+        if (not self.descriptor.is_nil()) and \
+           (not self.descriptor.selector.is_nil()):
             s = str(self.descriptor.selector)
         else:
             s = '????'
