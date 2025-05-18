@@ -47,7 +47,7 @@ class Interp(object):
         
         # find selector symbol
         selObj = self._sys.symbol_find(selName)
-        if is_nil(selObj):
+        if selObj.is_nil():
             raise NameError("unknown selector %s" % selName)
         
         # push receiver, selector, and args onto current stack
@@ -96,12 +96,12 @@ class Interp(object):
         while True:
             #print("meth lookup", klassObj)
             methDict = klassObj.methodDictionary
-            if not is_nil(methDict):
+            if not methDict.is_nil():
                 methObj = self._sys.identdict_find(methDict, selObj)
-                if not is_nil(methObj):
+                if not methObj.is_nil():
                     break
             superObj = klassObj.superClass
-            if is_nil(superObj):
+            if superObj.is_nil():
                 raise NameError("unknown method %s" % selObj)
             klassObj = superObj        
         
@@ -132,7 +132,7 @@ class Interp(object):
         Start executing bytecodes from current location
         until the control returns to the root context.
         """
-        while not is_nil(self.i_context.parent):
+        while not self.i_context.parent.is_nil():
             self.step()
         
     def step(self):

@@ -170,7 +170,7 @@ class Smalltalk(object):
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
         
-        x = inst.g_interp.send_message_extern(inst.o_true, "initialize", ())
+        x = inst.g_interp.send_message_extern(inst.o_true, "notNil", ())
         print(x)
         
     def build_classes_1(self):
@@ -250,13 +250,13 @@ class Smalltalk(object):
             if metaObj is None:
                 metaObj = self.create_meta(klassObj)
             superObj = klassObj.superClass
-            if is_nil(superObj):
+            if superObj.is_nil():
                 metaObj.superClass = self.k_class
             else:
                 metaObj.superClass = superObj.get_class()
             self.subclass_add(metaObj.superClass, metaObj)
             metaObj.instanceVariables = self.create_inst_vars(self.o_nil, init.Init_Meta_Vars)
-            if not is_nil(superObj):
+            if not superObj.is_nil():
                 self.subclass_add(superObj, klassObj)
             klassObj.environment = self.g_st_dict
             klassObj.instanceVariables = self.create_inst_vars(superObj, instVars)
@@ -286,7 +286,7 @@ class Smalltalk(object):
         """
         symTable = self.g_sym_table 
         link = symTable[hsh_seq(map(ord, symName)) & (symTable.size - 1)]
-        while not is_nil(link):
+        while not link.is_nil():
             if symName == link.symbol.to_str():
                 return link.symbol
             link = link.nextLink
@@ -300,7 +300,7 @@ class Smalltalk(object):
         symTable = self.g_sym_table
         idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
         link = symTable[idx]
-        while not is_nil(link):
+        while not link.is_nil():
             if symName == link.symbol.to_str():
                 return link.symbol
             link = link.nextLink
@@ -323,10 +323,10 @@ class Smalltalk(object):
         Returns VariableBinding, or nil if not found.
         """
         symObj = self.symbol_find(itemName)
-        if is_nil(symObj):
+        if symObj.is_nil():
             return symObj
         assoc = self.dict_find(self.g_st_dict, symObj)
-        if is_nil(assoc):
+        if assoc.is_nil():
             return assoc
         return assoc.value
         
@@ -357,7 +357,7 @@ class Smalltalk(object):
         while arrSize > 0:
             idx &= mask
             assoc = dictObj[idx + numInst]
-            if is_nil(assoc) or (keyObj.is_same(assoc.key)):
+            if assoc.is_nil() or (keyObj.is_same(assoc.key)):
                 return idx + numInst
             idx += 1
             arrSize -= 1
@@ -371,12 +371,12 @@ class Smalltalk(object):
         numInst = dictObj.get_class().get_num_inst()
         for n,assoc in enumerate(dictObj[numInst:]):
             if not nameSpace:
-                if not is_nil(assoc):
+                if not assoc.is_nil():
                     print("[%d]" % n, assoc.key, assoc.value)
             else:
-                if not is_nil(assoc):
+                if not assoc.is_nil():
                     binding = assoc.value
-                    if not is_nil(binding):
+                    if not binding.is_nil():
                         print("[%d]" % n, binding.key, binding.value)
                         
     def identdict_add(self, dictObj, keyObj, itemObj):
@@ -411,7 +411,7 @@ class Smalltalk(object):
         while arrSize > 0:
             idx &= mask
             item = dictObj[idx + numInst]
-            if is_nil(item) or keyObj.is_same(item):
+            if item.is_nil() or keyObj.is_same(item):
                 return idx + numInst + 1
             idx += 2
             arrSize -= 1
@@ -457,7 +457,7 @@ class Smalltalk(object):
         """
         Create the Array for holding instance variables
         """
-        if is_nil(superObj):
+        if superObj.is_nil():
             numSuper = 0
         else:
             numSuper = superObj.instanceVariables.size

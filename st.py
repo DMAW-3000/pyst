@@ -33,14 +33,6 @@ def set_obj_nil(x):
     global _Obj_Nil
     _Obj_Nil = x
     
-def is_nil(x):
-    """
-    Returns True if x is Nil,
-    False otherwise.
-    """
-    global _Obj_Nil
-    return x is _Obj_Nil
-    
 def hsh_seq(x):
     """
     Create a hash key from a sequence of values
@@ -128,6 +120,13 @@ class Object(object):
         False otherwise.
         """
         return self._obj_id == other._obj_id
+        
+    def is_nil(self):
+        """
+        Returns True if Object is nil, False otherwise.
+        """
+        global _Obj_Nil
+        return self is _Obj_Nil
         
     def __getitem__(self, idx):
         """

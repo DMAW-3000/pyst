@@ -97,7 +97,7 @@ class Compile(object):
         """
         # lookup class
         binding = self._sys.find_global(klassName)
-        if is_nil(binding):
+        if binding.is_nil():
             raise CompileError("unknown class " + klassName)
         self._cur_klass = binding.value
         print("Compiling class", self._cur_klass.name)
@@ -188,11 +188,11 @@ class Compile(object):
         if tok.type != "PERIOD":
             raise CompileError("missing .")
         symObj = self._sys.symbol_find(varName)
-        if is_nil(symObj):
+        if symObj.is_nil():
             raise CompileError("class var %s not defined" % varName)
         varDict = self._cur_klass.classVariables
         assoc = self._sys.dict_find(varDict, symObj)
-        if is_nil(assoc):
+        if assoc.is_nil():
             raise CompileError("class var %s not defined" % varName)
         varObj = self._nil      # just set to NIL for now, need to parse statement
         self._sys.dict_add(varDict, symObj, varObj)
@@ -313,7 +313,7 @@ class Compile(object):
         # TODO: gst uses initial method dict size of 32 items
         # for now just make the dict big until I can add grow methods
         methDict = self._cur_klass.methodDictionary
-        if is_nil(methDict):
+        if methDict.is_nil():
             self._cur_klass.methodDictionary = methDict = MethodDictionary(256)
         self._sys.identdict_add(methDict, methSym, methObj)
             
