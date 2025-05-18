@@ -71,7 +71,6 @@ class Interp(object):
             argList.append(pop())
             n -= 1
         argList.reverse()
-        print(argList)
         
         # pop the message selector and receiver
         selObj = pop()
@@ -105,9 +104,7 @@ class Interp(object):
         newCtx.method = methObj
         newCtx.ip = 0
         self.i_context = newCtx
-        
-        for x in newCtx:
-            print(x)
+
 
         
         
