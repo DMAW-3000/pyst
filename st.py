@@ -231,6 +231,9 @@ class Array(Object):
         for n,r in enumerate(x):
             arr[n] = r
         return arr
+        
+    def __str__(self):
+        return "ARRAY(%d)" % self.size
     
     
 class String(Array):
