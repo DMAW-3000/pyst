@@ -292,7 +292,7 @@ class Symbol(String):
         return super().to_str()
             
     def __str__(self):
-        return "\'#" + self.to_str() + '\''
+        return "#\'" + self.to_str() + '\''
         
         
 class SymLink(Object):
