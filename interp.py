@@ -54,8 +54,13 @@ class Interp(object):
         for a in argValues:
             psh(a)
             
-        # send message
+        # send message and run
         self.send_message(len(argValues))
+        self.step()
+        self.exec()
+        
+        # pop return value from stack
+        return self.i_context.pop()
         
     def send_message(self, numArgs):
         """
@@ -63,8 +68,12 @@ class Interp(object):
         message selector, and argument values have been
         pushed to the current stack.
         """
+        # get old context
+        # adjust ip so the next bytecode is ready
+        # after return
         oldCtx = self.i_context
         pop = oldCtx.pop
+        oldCtx.ip += 2
         
         # pop the message arguments
         argList = []
@@ -93,7 +102,6 @@ class Interp(object):
         newCtx.parent = oldCtx
         newCtx.receiver = recvObj
         newCtx.method = methObj
-        newCtx.ip = 0
         
         # push args onto new stack
         for a in argList:
@@ -107,6 +115,14 @@ class Interp(object):
         # transfer control to new context
         self.i_context = newCtx
         
+    def exec(self):
+        """
+        Start executing bytecodes from current location
+        until the control returns to the root context.
+        """
+        while not is_nil(self.i_context.parent):
+            self.step()
+        
     def step(self):
         """
         Fetch and execute the next bytecode
@@ -117,30 +133,30 @@ class Interp(object):
         op = self.b_table[code[ip]]
         if op is None:
             raise RuntimeError("unknown bytecode %d" % code[ip])
-        op(code[ip + 1])
-        ctx.ip = ip + 2        
+        inc = op(ctx, code[ip + 1])
+        ctx.ip = ip + inc       
         
-    def b_push_self(self, arg):
+    def b_push_self(self, ctx, arg):
         """
         Execute push self bytecode
         """
-        ctx = self.i_context
         ctx.push(ctx.receiver)
+        return 2
         
-    def b_meth_ret(self, arg):
+    def b_meth_ret(self, ctx, arg):
         """
         Execute method return bytecode
         """
         # get sender parent context
-        oldCtx = self.i_context
-        newCtx = oldCtx.parent
+        newCtx = ctx.parent
         
         # pop return value from current stack
         # and push onto sender's stack
-        newCtx.push(oldCtx.pop())
+        newCtx.push(ctx.pop())
         
         # return control to sender
         self.i_context = newCtx
+        return 0
         
         
 
