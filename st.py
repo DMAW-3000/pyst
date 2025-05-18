@@ -724,6 +724,7 @@ class _Context(Object):
         Create a new context
         """
         super().__init__(7)
+        self.ip = 0
         self.sp = 6
         
     def push(self, x):
