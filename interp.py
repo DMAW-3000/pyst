@@ -87,11 +87,21 @@ class Interp(object):
         selObj = pop()
         recvObj = pop()
     
-        # lookup method object
-        methDict = recvObj.get_class().methodDictionary
-        methObj = self._sys.identdict_find(methDict, selObj)
-        if is_nil(methObj):
-            raise NameError("unknown method %s" % selObj)
+        # lookup method object from selector symbol
+        # search from receiver's class through its
+        # superclasses until Object's nil superclass
+        klassObj = recvObj.get_class()
+        while True:
+            #print("meth lookup", klassObj)
+            methDict = klassObj.methodDictionary
+            if not is_nil(methDict):
+                methObj = self._sys.identdict_find(methDict, selObj)
+                if not is_nil(methObj):
+                    break
+            superObj = klassObj.superClass
+            if is_nil(superObj):
+                raise NameError("unknown method %s" % selObj)
+            klassObj = superObj        
         
         # check number of arguments
         if numArgs != methObj.get_num_arg():
