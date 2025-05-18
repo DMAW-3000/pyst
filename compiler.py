@@ -162,7 +162,7 @@ class Compile(object):
                 parse2 = None
             else:
                 raise CompileError("bad method syntax")
-        
+                
     def parse_class_attr(self):
         """
         Parse a class attribute definition
@@ -308,6 +308,14 @@ class Compile(object):
             methObj.literals = Array.from_seq(self._cur_literal)
             print("Literals:", len(self._cur_literal))
             self._sys.arr_print(methObj.literals)
+            
+        # add method to class dictionary
+        # TODO: gst uses initial method dict size of 32 items
+        # for now just make the dict big until I can add grow methods
+        methDict = self._cur_klass.methodDictionary
+        if is_nil(methDict):
+            self._cur_klass.methodDictionary = methDict = MethodDictionary(128)
+        self._sys.identdict_add(methDict, methSym, methObj)
             
         byteCode = methObj.get_code()
         print("Bytecodes:", len(byteCode))
@@ -534,7 +542,6 @@ class Compile(object):
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         # unknown type
         else:
-            print(x)
             raise CompileError("unknown literal type %s" % x)
                 
     def add_literal(self, x):
