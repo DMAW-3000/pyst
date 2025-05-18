@@ -165,7 +165,8 @@ class UndefinedObject(Object):
     
     def __init__(self):
         """
-        Create a blank object
+        Create an UndefinedObject innstance.  This should only
+        be called once.  The new object has special ID '0'.
         """
         self._obj_id = 0
         self._klass = self._Cover
@@ -184,6 +185,10 @@ class CFalse(Object):
     _Cover = None
     
     def __init__(self):
+        """
+        Create a False object innstance.  This should only
+        be called once.  The new object has special ID '1'.
+        """
         self._obj_id = 1
         self._klass = self._Cover
         self._flags = 0
@@ -209,6 +214,10 @@ class CTrue(Object):
     _Cover = None
     
     def __init__(self):
+        """
+        Create a True object innstance.  This should only
+        be called once.  The new object has special ID '2'.
+        """
         self._obj_id = 2
         self._klass = self._Cover
         self._flags = 0
@@ -427,7 +436,8 @@ class Dictionary(Object):
     
     def __init__(self, sz):
         """
-        Create a Namespaece object
+        Create a Dictionary object.  Size is the number
+        of initial storage slots and should be a power of 2.
         """
         super().__init__(sz + 1)
         self.tally = 0
@@ -450,7 +460,8 @@ class BindingDictionary(Object):
     
     def __init__(self, sz):
         """
-        Create a BindingDictionary object
+        Create a BindingDictionary object.  Size is the number
+        of initial storage slots and should be a power of 2.
         """
         super().__init__(sz + 2)
         self.tally = 0
@@ -481,7 +492,8 @@ class MethodDictionary(Object):
     
     def __init__(self, sz):
         """
-        Create a MethodDictionary object
+        Create a MethodDictionary object.  Size is the number
+        of initial storage slots and should be a power of 2.
         """
         super().__init__((sz * 2) + 2)
         self.tally = 0
@@ -512,7 +524,8 @@ class Namespace(Object):
     
     def __init__(self, sz):
         """
-        Create a Namespaece object
+        Create a Namespace object.  Size is the number
+        of initial storage slots and should be a power of 2.
         """
         super().__init__(sz + 5)
         self.tally = 0
