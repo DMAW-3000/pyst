@@ -79,8 +79,6 @@ class Interp(object):
         # after return
         oldCtx = self.i_context
         pop = oldCtx.pop
-        oldCtx.ip += 2
-        print("old ip:", oldCtx.ip)
         
         # pop the message arguments
         argList = []
@@ -163,7 +161,7 @@ class Interp(object):
         if op is None:
             raise RuntimeError("unknown bytecode %d" % code[ip])
         inc = op(ctx, code[ip + 1])
-        ctx.ip = ctx.ip + inc
+        ctx.ip = ip + inc
     
     def b_push_self(self, ctx, arg):
         """
@@ -184,7 +182,7 @@ class Interp(object):
         Execute the generic send message bytecode
         """
         self.send_message(arg)
-        return 0
+        return 2
         
     def b_meth_ret(self, ctx, arg):
         """
