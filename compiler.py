@@ -162,6 +162,10 @@ class Compile(object):
                 parse2 = None
             else:
                 raise CompileError("bad method syntax")
+        
+        print("Meth Dict:")
+        self._sys.identdict_print(self._cur_klass.methodDictionary)
+        print()
                 
     def parse_class_attr(self):
         """

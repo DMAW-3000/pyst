@@ -157,7 +157,7 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        print("ST Dictionary:", inst.g_st_dict.tally)
+        print("ST Dictionary:")
         inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
@@ -369,6 +369,7 @@ class Smalltalk(object):
         Display the contents of a Dictionary-like object
         """
         numInst = dictObj.get_class().get_num_inst()
+        print("Tally %d (%d)" % (dictObj.tally, dictObj.size - numInst))
         for n,assoc in enumerate(dictObj[numInst:]):
             if not nameSpace:
                 if not assoc.is_nil():
@@ -423,6 +424,7 @@ class Smalltalk(object):
         Display the contents of a IdentityDictionary-like object
         """
         numInst = dictObj.get_class().get_num_inst()
+        print("Tally: %d (%d)" % (dictObj.tally, (dictObj.size - numInst) >> 1))
         for n,key in enumerate(dictObj[numInst::2]):
             if not key.is_nil():
                 print("[%d]" % n, key, dictObj[(n * 2) + numInst + 1])
