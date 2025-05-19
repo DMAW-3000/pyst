@@ -385,20 +385,20 @@ class Smalltalk(object):
         """
         Add an item to a IdentityDictionary-like instance.
         """
-        if dictObj.tally / (dictObj.size >> 1) > 0.4:
+        tly = dictObj.tally
+        if tly / (dictObj.size >> 1) > 0.4:
             self.identdict_grow(dictObj)
         idx = self.identdict_index(dictObj, keyObj)
         dictObj[idx - 1] = keyObj
         dictObj[idx] = itemObj
-        dictObj.tally += 1
+        dictObj.tally = tly + 1
         
     def identdict_find(self, dictObj, keyObj):
         """
         Find an item in an IdentityDictionary-like instance,
         or nil if not found.
         """
-        idx = self.identdict_index(dictObj, keyObj)
-        return dictObj[idx]
+        return dictObj[self.identdict_index(dictObj, keyObj)]
                         
     @staticmethod
     def identdict_index(dictObj, keyObj):
