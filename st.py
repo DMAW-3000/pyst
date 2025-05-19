@@ -474,6 +474,9 @@ class Dictionary(_Dict):
     def tally(self, x):
         self[0] = x
         
+    def __str__(self):
+        return "DICT(%d)" % self.tally
+        
         
 class BindingDictionary(_Dict):
     """
@@ -513,6 +516,9 @@ class BindingDictionary(_Dict):
     def environment(self, x):
         self[1] = x
         
+    def __str__(self):
+        return "BINDDICT(%d)" % self.tally
+        
      
 class MethodDictionary(_Dict):
     """
@@ -551,6 +557,9 @@ class MethodDictionary(_Dict):
     @mutex.setter
     def mutex(self, x):
         self[1] = x
+        
+    def __str__(self):
+        return "METHDICT(%d)" % self.tally
     
         
 class Namespace(_Dict):
@@ -615,6 +624,9 @@ class Namespace(_Dict):
     @sharedPools.setter
     def sharedPools(self, x):
         self[4] = x
+        
+    def __str__(self):
+        return "NAMESPACE(%d)" % self.tally
         
         
 class Class(Object):
