@@ -318,7 +318,7 @@ class Compile(object):
         # for now just make the dict big until I can add grow methods
         methDict = self._cur_klass.methodDictionary
         if methDict.is_nil():
-            self._cur_klass.methodDictionary = methDict = MethodDictionary.new_n(256)
+            self._cur_klass.methodDictionary = methDict = MethodDictionary.new_n(32)
         self._sys.identdict_add(methDict, methSym, methObj)
             
         byteCode = methObj.get_code()

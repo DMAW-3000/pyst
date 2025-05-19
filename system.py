@@ -5,6 +5,7 @@ The entire Smalltalk environment
 import sys
 import os
 import pickle
+from copy import copy
 
 from st import *
 from compiler import Compile
@@ -384,6 +385,8 @@ class Smalltalk(object):
         """
         Add an item to a IdentityDictionary-like instance.
         """
+        if dictObj.tally / (dictObj.size >> 1) > 0.4:
+            self.identdict_grow(dictObj)
         idx = self.identdict_index(dictObj, keyObj)
         dictObj[idx - 1] = keyObj
         dictObj[idx] = itemObj
@@ -418,6 +421,23 @@ class Smalltalk(object):
             arrSize -= 1
         raise IndexError("IdentityDictionary overflow")
         
+    def identdict_grow(self, dictObj):
+        """
+        Increase the capacity of a IdentityDictionary-like object
+        and re-hash the items.
+        """
+        numInst = dictObj.get_class().get_num_inst()
+        oldArrSize = dictObj.size - numInst
+        oldDict = copy(dictObj._refs)
+        dictObj.resize((oldArrSize << 1) + numInst)
+        for n,r in enumerate(oldDict[:numInst]):
+            dictObj[n] = r
+        for n,key in enumerate(oldDict[numInst::2]):
+            if not key.is_nil():
+                idx = self.identdict_index(dictObj, key)
+                dictObj[idx - 1] = key
+                dictObj[idx] = oldDict[(n << 1) + numInst + 1]
+        
     @staticmethod
     def identdict_print(dictObj):
         """
@@ -427,7 +447,7 @@ class Smalltalk(object):
         print("Tally: %d (%d)" % (dictObj.tally, (dictObj.size - numInst) >> 1))
         for n,key in enumerate(dictObj[numInst::2]):
             if not key.is_nil():
-                print("[%d]" % n, key, dictObj[(n * 2) + numInst + 1])
+                print("[%d]" % n, key, dictObj[(n << 1) + numInst + 1])
                         
     @staticmethod
     def arr_print(arrObj):
