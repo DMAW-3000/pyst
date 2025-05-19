@@ -556,12 +556,14 @@ class Compile(object):
     def add_literal(self, x):
         """
         Add a new literal reference to the current context
+        and return its index into the literals array.
         """
         try:
-            return self._cur_literal.index(x)
+            idx = self._cur_literal.index(x)
         except ValueError:
             self._cur_literal.append(x)
-            return len(self._cur_literal) - 1
+            idx = len(self._cur_literal) - 1
+        return idx
             
     def emit_bytes(self, *bc):
         """
