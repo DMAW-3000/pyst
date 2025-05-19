@@ -842,6 +842,8 @@ class _Context(Object):
         """
         Pop an item from the context stack
         """
+        if self.size == 7:
+            raise IndexError("stack underflow")
         x = self._refs.pop()
         self.sp -= 1
         return x
