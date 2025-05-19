@@ -157,8 +157,8 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        #print("ST Dictionary:", inst.g_st_dict.tally)
-        #inst.dict_print(inst.g_st_dict, True)
+        print("ST Dictionary:", inst.g_st_dict.tally)
+        inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
         #    cacheName = klassInfo[2]
@@ -416,6 +416,16 @@ class Smalltalk(object):
             idx += 2
             arrSize -= 1
         raise IndexError("IdentityDictionary overflow")
+        
+    @staticmethod
+    def identdict_print(dictObj):
+        """
+        Display the contents of a IdentityDictionary-like object
+        """
+        numInst = dictObj.get_class().get_num_inst()
+        for n,key in enumerate(dictObj[numInst::2]):
+            if not key.is_nil():
+                print("[%d]" % n, key, dictObj[(n * 2) + numInst + 1])
                         
     @staticmethod
     def arr_print(arrObj):
