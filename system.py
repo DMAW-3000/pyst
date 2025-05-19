@@ -546,7 +546,8 @@ class Smalltalk(object):
         
     def dis_bytecode(self, byteCode):
         """
-        Disassemble an array of bytecode values.
+        Disassemble an array of bytecode values and
+        display the results.
         """
         for n,b in enumerate(byteCode[::2]):
             info = self.g_dis[b]
@@ -557,6 +558,18 @@ class Smalltalk(object):
                 if info[1] == 1:
                     prList.append(byteCode[(n * 2) + 1])
             print(*prList)
+            
+    def dis_byte(self, b):
+        """
+        Disassemble a single byte opcode and resturn
+        the result as a str.
+        """
+        info = self.g_dis[b]
+        if info is None:
+            prStr = "????"
+        else:
+            prStr = info[0]
+        return prStr
         
     def fatal_err(self, s):
         """
