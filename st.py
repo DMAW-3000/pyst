@@ -1197,9 +1197,6 @@ B_SAME_OBJECT_SPECIAL       = 24
 B_JAVA_AS_INT_SPECIAL       = 25
 B_JAVA_AS_LONG_SPECIAL      = 26
 
-B_NEW_COLON_SPECIAL         = 32
-B_THIS_CONTEXT_SPECIAL      = 33
-
 B_SEND                      = 28
 B_SEND_SUPER                = 29
 B_SEND_IMMEDIATE            = 30
