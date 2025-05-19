@@ -150,8 +150,10 @@ class Smalltalk(object):
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
         
         # initialize interpreter
-        inst.g_interp = Interp(inst, debug)
+        inst.g_interp = Interp(inst)
         inst.g_interp.reset()
+        if debug:
+            inst.g_interp.set_debug(inst.debug_hook_pre, inst.debug_hook_post)
         
         # compile the Kernel modules
         inst.g_compile = Compile(inst)
@@ -570,6 +572,90 @@ class Smalltalk(object):
         else:
             prStr = info[0]
         return prStr
+        
+    def debug_hook_pre(self):
+        """
+        Debug bytecode before execution
+        """
+        self.context_print_byte()
+        self.debug_user_input()
+        
+    def debug_hook_post(self):
+        """
+        Debug bytecode after execution
+        """
+        self.context_print_state(self.g_interp.i_context)
+        
+    def debug_user_input(self):
+        """
+        Get user input and process debugger command
+        """
+        while True:
+            line = input(">>")
+            if len(line) < 1:
+                print()
+                continue
+            c = line[0]
+            if c == 's':
+                break
+            elif c == 'c':
+                self.g_interp.set_debug(None, None)
+                break
+            elif c == 'd':
+                self.context_print_byte()
+                print()
+                continue
+            elif c == '0':
+                self.context_print_state(self.g_interp.i_context)
+                print()
+                continue
+            elif c == '1':
+                parent = self.g_interp.i_context.parent
+                if not parent.is_nil():
+                    self.context_print_state(parent)
+                else:
+                    print("NO CONTEXT")
+            elif c == 'h':
+                print("s = step")
+                print("c = continue")
+                print("d = disassemble current bytecode")
+                print("h = help")
+                print("q = quit immediately")
+                print()
+                continue
+            elif c == 'q':
+                sys.exit(0)
+            else:
+                print("???\n")
+                continue
+                
+    def context_print_byte(self):
+        """
+        Display the next bytecode to be executed in the current
+        context.
+        """
+        ctx = self.g_interp.i_context
+        ip = ctx.ip
+        code = ctx.method.get_code()
+        selName = ctx.method.descriptor.selector
+        print("%s[%d]:" % (selName, ip), self.dis_byte(code[ip]), code[ip + 1])
+    
+    @staticmethod
+    def context_print_state(ctx):
+        """
+        Display the state of the context
+        """
+        meth = ctx.method
+        if meth.is_nil():
+            methName = meth
+        else:
+            methName = meth.descriptor.selector
+        print("Method:", methName)
+        print("Recv:", ctx.receiver)
+        print("\nStack (%d):" % (ctx.sp - 6,))
+        for n,r in enumerate(ctx[7:]):
+            print("[%d]" % n, r)
+        print()
         
     def fatal_err(self, s):
         """

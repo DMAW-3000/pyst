@@ -10,7 +10,7 @@ class Interp(object):
     Interpreter definition
     """
     
-    def __init__(self, system, debug):
+    def __init__(self, system):
         """
         Create a new interpeter
         """
@@ -22,7 +22,8 @@ class Interp(object):
         self.i_context = self._nil
         
         # debugging support
-        self.i_debug = debug
+        self.i_debug_pre = None
+        self.i_debug_post = None
         
         # the bytecode handler table
         self.b_table = bTbl = [None] * 256
@@ -130,18 +131,25 @@ class Interp(object):
         # transfer control to new context
         self.i_context = newCtx
         
+    def set_debug(self, preHook, postHook):
+        """
+        Set callbacks to be invoked before and after
+        every bytecode instruction.
+        """
+        self.i_debug_pre = preHook
+        self.i_debug_post = postHook
+        
     def exec(self):
         """
         Start executing bytecodes from current location
         until the control returns to the root context.
         """
         while not self.i_context.parent.is_nil():
-            if self.i_debug:
-                self.context_print_byte()
-                self.debug_user_input()
+            if self.i_debug_pre is not None:
+                self.i_debug_pre()
             self.step()
-            if self.i_debug:
-                self.context_print_state(self.i_context)
+            if self.i_debug_post is not None:
+                self.i_debug_post()
         
     def step(self):
         """
@@ -155,51 +163,6 @@ class Interp(object):
             raise RuntimeError("unknown bytecode %d" % code[ip])
         inc = op(ctx, code[ip + 1])
         ctx.ip = ip + inc
-        
-    def debug_user_input(self):
-        """
-        Get user input and process command
-        """
-        while True:
-            line = input(">>")
-            if len(line) < 1:
-                print()
-                continue
-            c = line[0]
-            if c == 's':
-                break
-            elif c == 'c':
-                self.i_debug = False
-                break
-            elif c == 'h':
-                print("s = step")
-                print("c = continue")
-                print("h = help")
-                print()
-                continue
-            else:
-                print("???\n")
-                continue
-                
-    def context_print_byte(self):
-        """
-        Display the next bytecode to be executed in the current
-        context.
-        """
-        ctx = self.i_context
-        ip = ctx.ip
-        code = ctx.method.get_code()
-        selName = ctx.method.descriptor.selector
-        print("%s[%d]:" % (selName, ip), self._sys.dis_byte(code[ip]), code[ip + 1])
-        
-    def context_print_state(self, ctx):
-        """
-        Display the state of the context
-        """
-        print("Stack(%d):" % (ctx.sp - 6,))
-        for n,r in enumerate(ctx[7:]):
-            print("[%d]" % n, r)
-        print()
     
     def b_push_self(self, ctx, arg):
         """
