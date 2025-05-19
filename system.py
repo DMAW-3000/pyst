@@ -283,7 +283,7 @@ class Smalltalk(object):
     def symbol_find(self, symName):
         """
         Returns a Symbol object if name is found in global
-        symbol table, Nil otherwise.
+        symbol table, nil otherwise.
         """
         symTable = self.g_sym_table 
         link = symTable[hsh_seq(map(ord, symName)) & (symTable.size - 1)]
@@ -295,8 +295,8 @@ class Smalltalk(object):
         
     def symbol_find_or_add(self, symName):
         """
-        Returns a Symbol object, either already or existing
-        or created and added to global symbol table.
+        Returns a Symbol object, either already existing
+        or new one created and added to global symbol table.
         """
         symTable = self.g_sym_table
         idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
