@@ -25,7 +25,7 @@ class Smalltalk(object):
         Create a blank Smalltalk environment
         """
         # manage the class covers
-        self.cover_map = {}
+        self.g_cover_map = {}
         
         # global dictionaries
         self.g_st_dict = None
@@ -215,13 +215,13 @@ class Smalltalk(object):
             klassObj = getattr(self, "k_" + cacheName)
             if hasCover and (klassObj is not self.k_class):
                 coverKlass = globals()[klassName]
-                self.cover_map[klassName] = coverKlass
+                self.g_cover_map[klassName] = coverKlass
                 coverKlass.set_cover(klassObj)
             if klassObj is self.k_class:
                 metaInstVarNames = instVars
-        self.cover_map["False"] = self.k_false
+        self.g_cover_map["False"] = self.k_false
         CFalse.set_cover(self.k_false)
-        self.cover_map["True"] = self.k_true
+        self.g_cover_map["True"] = self.k_true
         CTrue._Cover = self.k_true
                 
     def build_classes_3(self):
