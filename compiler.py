@@ -163,9 +163,9 @@ class Compile(object):
             else:
                 raise CompileError("bad method syntax")
         
-        print("Meth Dict:")
-        self._sys.identdict_print(self._cur_klass.methodDictionary)
-        print()
+        #print("Meth Dict:")
+        #self._sys.identdict_print(self._cur_klass.methodDictionary)
+        #print()
                 
     def parse_class_attr(self):
         """
@@ -576,7 +576,7 @@ class Compile(object):
         """
         try:
             idx = self._cur_local.index(name)
-        except:
+        except ValueError:
             idx = None
         return idx
 
