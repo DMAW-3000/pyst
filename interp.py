@@ -1,5 +1,5 @@
 """
-Interpreter
+Bytecode interpreter
 """
 
 from st import *
@@ -10,7 +10,7 @@ class Interp(object):
     Interpreter definition
     """
     
-    def __init__(self, system):
+    def __init__(self, system, debug):
         """
         Create a new interpeter
         """
@@ -21,7 +21,10 @@ class Interp(object):
         # the interpreter global state
         self.i_context = self._nil
         
-        # the bytecode table
+        # debugging support
+        self.i_debug = debug
+        
+        # the bytecode handler table
         self.b_table = bTbl = [None] * 256
         bTbl[B_PUSH_SELF] = self.b_push_self
         bTbl[B_PUSH_LIT_CONSTANT] = self.b_push_lit_const
@@ -56,9 +59,9 @@ class Interp(object):
         for a in argValues:
             psh(a)
             
-        # send message and run
+        # send message and run until control
+        # returns to this root context
         self.send_message(len(argValues))
-        self.step()
         self.exec()
         
         # pop return value from stack
@@ -133,7 +136,12 @@ class Interp(object):
         until the control returns to the root context.
         """
         while not self.i_context.parent.is_nil():
+            if self.i_debug:
+                self.context_print_byte()
+                self.debug_user_input()
             self.step()
+            if self.i_debug:
+                self.context_print_state(self.i_context)
         
     def step(self):
         """
@@ -146,8 +154,53 @@ class Interp(object):
         if op is None:
             raise RuntimeError("unknown bytecode %d" % code[ip])
         inc = op(ctx, code[ip + 1])
-        ctx.ip = ip + inc       
+        ctx.ip = ip + inc
         
+    def debug_user_input(self):
+        """
+        Get user input and process command
+        """
+        while True:
+            line = input(">>")
+            if len(line) < 1:
+                print()
+                continue
+            c = line[0]
+            if c == 's':
+                break
+            elif c == 'c':
+                self.i_debug = False
+                break
+            elif c == 'h':
+                print("s = step")
+                print("c = continue")
+                print("h = help")
+                print()
+                continue
+            else:
+                print("???\n")
+                continue
+                
+    def context_print_byte(self):
+        """
+        Display the next bytecode to be executed in the current
+        context.
+        """
+        ctx = self.i_context
+        ip = ctx.ip
+        code = ctx.method.get_code()
+        selName = ctx.method.descriptor.selector
+        print("%s[%d]:" % (selName, ip), self._sys.dis_byte(code[ip]), code[ip + 1])
+        
+    def context_print_state(self, ctx):
+        """
+        Display the state of the context
+        """
+        print("Stack(%d):" % (ctx.sp - 6,))
+        for n,r in enumerate(ctx[7:]):
+            print("[%d]" % n, r)
+        print()
+    
     def b_push_self(self, ctx, arg):
         """
         Execute push self bytecode
@@ -166,7 +219,6 @@ class Interp(object):
         """
         Execute the generic send message bytecode
         """
-        print("SEND")
         self.send_message(arg)
         return 0
         

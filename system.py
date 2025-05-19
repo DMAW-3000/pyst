@@ -100,7 +100,7 @@ class Smalltalk(object):
         disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 1)
     
     @classmethod
-    def rebuild(klass):
+    def rebuild(klass, debug):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
@@ -150,7 +150,7 @@ class Smalltalk(object):
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
         
         # initialize interpreter
-        inst.g_interp = Interp(inst)
+        inst.g_interp = Interp(inst, debug)
         inst.g_interp.reset()
         
         # compile the Kernel modules
