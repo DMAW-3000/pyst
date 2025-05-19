@@ -335,9 +335,11 @@ class Smalltalk(object):
         """
         Add an item to a Dictionary-like instance.
         """
-        idx = self.dict_index(dictObj, keyObj)
-        dictObj[idx] = Association(keyObj, itemObj)
-        dictObj.tally += 1
+        tly = dictObj.tally
+        if tly / dictObj.size > 0.4:
+            self.dict_grow(dictObj)
+        dictObj[self.dict_index(dictObj, keyObj)] = Association(keyObj, itemObj)
+        dictObj.tally = tly + 1
         
     def dict_find(self, dictObj, keyObj):
         """
@@ -363,6 +365,21 @@ class Smalltalk(object):
             idx += 1
             arrSize -= 1
         raise IndexError("Dictionary overflow")
+        
+    def dict_grow(self, dictObj):
+        """
+        Increase the capacity of a Dictionary-like object
+        and re-hash the items.
+        """
+        numInst = dictObj.get_class().get_num_inst()
+        oldArrSize = dictObj.size - numInst
+        oldDict = copy(dictObj._refs)
+        dictObj.resize((oldArrSize << 1) + numInst)
+        for n,r in enumerate(oldDict[:numInst]):
+            dictObj[n] = r
+        for assoc in oldDict[numInst:]:
+            if not assoc.is_nil(): 
+                dictObj[self.dict_index(dictObj, assoc.key)] = assoc
         
     @staticmethod
     def dict_print(dictObj, nameSpace = False):
@@ -415,7 +432,7 @@ class Smalltalk(object):
         while arrSize > 0:
             idx &= mask
             item = dictObj[idx + numInst]
-            if item.is_nil() or keyObj.is_same(item):
+            if item.is_nil() or item.is_same(keyObj):
                 return idx + numInst + 1
             idx += 2
             arrSize -= 1
