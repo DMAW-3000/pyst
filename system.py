@@ -130,17 +130,21 @@ class Smalltalk(object):
         inst.o_false = CFalse()
         inst.o_true = CTrue()
         
-        # create global dictionaries
+        # create global symbol table
         inst.g_sym_table = Array(512)
+        
+        # create the global namespace dictionary ("Smalltalk")
         inst.g_st_dict = stDict = Namespace.new_n(512)
         stDict._klass = inst.k_sys_dictionary
         stDict.name = inst.symbol_add("Smalltalk")
-        inst.name_add_sym(stDict, "Smalltalk", stDict)
+        inst.name_add_sym(stDict, stDict.name.to_str(), stDict)
+        
+        # add global objects
         inst.name_add_sym(stDict, "SymbolTable", inst.g_sym_table)
         inst.name_add_sym(stDict, "KernelInitialized", inst.o_false)
         inst.name_add_sym(stDict, "Version", String.from_str("1.0"))
         inst.name_add_sym(stDict, "Features", Array(1))
-        inst.name_add_sym(stDict, "Undeclared", inst.o_nil)
+        inst.name_add_sym(stDict, "Undeclared", Namespace.new_n(32))
         inst.name_add_sym(stDict, "SytemExceptions", stDict)
         
         # finalize class build
@@ -160,8 +164,8 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        #print("ST Dictionary:")
-        #inst.dict_print(inst.g_st_dict, True)
+        print("ST Dictionary:")
+        inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
         #    cacheName = klassInfo[2]
@@ -173,7 +177,9 @@ class Smalltalk(object):
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
         
-        x = inst.g_interp.send_message_extern(inst.o_true, "halt", ())
+        x = inst.g_interp.send_message_extern(inst.o_true, 
+                                              "halt", 
+                                              ())
         print(x)
         
     def build_classes_1(self):
