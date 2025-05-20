@@ -29,6 +29,7 @@ class Interp(object):
         self.b_table = bTbl = [None] * 256
         bTbl[B_PUSH_SELF] = self.b_push_self
         bTbl[B_PUSH_LIT_CONSTANT] = self.b_push_lit_const
+        bTbl[B_PUSH_TEMPORARY_VARIABLE] = self.b_push_temp_var
         bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
         bTbl[B_SEND] = self.b_send
         
@@ -175,6 +176,13 @@ class Interp(object):
         Execute push literal constant bytecode
         """
         ctx.push(ctx.method.literals[arg])
+        return 2
+        
+    def b_push_temp_var(self, ctx, arg):
+        """
+        Execute the push temp variable bytecode
+        """
+        ctx.push(ctx[7 + arg])
         return 2
         
     def b_send(self, ctx, arg):
