@@ -1058,13 +1058,14 @@ class CompiledMethod(_Code):
         """
         super().__init__(3)
         
-    def set_hdr(self, numArg, numTemp, depth):
+    def set_hdr(self, numArg, numTemp, depth, primId):
         """
         Set the method header info
         """
         self.header = (numArg & 0x1f) | \
                       ((depth & 0x3f) << 5) | \
-                      ((numTemp & 0x3f) << 11)
+                      ((numTemp & 0x3f) << 11) | \
+                      ((primId & 0x1ff) << 17)
         
     def get_num_arg(self):
         """
@@ -1083,6 +1084,12 @@ class CompiledMethod(_Code):
         Get stack depth required for method
         """
         return (self.header >> 5) & 0x3f
+        
+    def get_prim_id(self):
+        """
+        Get method primitive ID, 0 if none.
+        """
+        return (self.header >> 17) & 0x1ff
         
     @property
     def literals(self):
