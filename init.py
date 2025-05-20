@@ -58,8 +58,9 @@ Init_Class = (
     ("MethodDictionary", True, "meth_dictionary", "ident_dictionary", False, ("mutex",), (), ()),
 )
 
-# the instance vaariable names for Metaclass
-# these end up as the instance variables for Class instances
+# the instance variable names for Metaclass
+# these end up as the instance variables for Class 
+# and Metaclass instances
 Init_Meta_Vars = ("superClass", "methodDictionary", "instanceSpec", "subClasses", "instanceVariables", 
                   "name", "comment", "category", "environment", "classVariables", "sharedPools", "pragmaHandlers")
                   
@@ -69,4 +70,11 @@ Init_Kernel_Mod = (
     #"Builtins.st",
     #"SysDict.st",
     "Object-test.st",
+)
+
+# the list of primitive ops handled by the interpreter
+# the primitive ID is the index of the name in the list
+# plus 1 (0 is reserved)
+Init_Primitive = (
+    "Object_basicSize",
 )

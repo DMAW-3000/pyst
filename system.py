@@ -159,6 +159,9 @@ class Smalltalk(object):
         if debug:
             inst.g_interp.set_debug(inst.debug_hook_pre, inst.debug_hook_post)
         
+        # initialize primitive ops
+        inst.build_primitives()
+        
         # compile the Kernel modules
         inst.g_compile = Compile(inst)
         for mod in init.Init_Kernel_Mod:
@@ -195,7 +198,7 @@ class Smalltalk(object):
             if superName is not None:
                 superName = "k_" + superName
                 if not hasattr(self, superName):
-                    self.fatal_err("missing class cache " + superName)
+                    self.fatal_err("missing class cache", superName)
                 superObj = getattr(self, superName)
                 superVars = superObj.get_num_inst()
             else:
@@ -207,7 +210,7 @@ class Smalltalk(object):
                 superObj.subClasses += 1
             cacheName = "k_" + cacheName
             if not hasattr(self, cacheName):
-                self.fatal_err("missing class cache " + cacheName)
+                self.fatal_err("missing class cache", cacheName)
             setattr(self, cacheName, klassObj)
             
     def build_classes_2(self):
@@ -276,6 +279,23 @@ class Smalltalk(object):
             klassObj.category = self.o_nil
             klassObj.pragmaHandlers = self.o_nil
             klassObj.name = self.name_add_sym(self.g_st_dict, klassName, klassObj)
+    
+    def build_primitives(self):
+        """
+        Create the primitives dictionary and register ops with
+        interpreter.
+        """
+        primDict = BindingDictionary.new_n(512)
+        self.name_add_sym(self.g_st_dict, "VMPrimititves", primDict)
+        for primId,primName in enumerate(init.Init_Primitive):
+            primId += 1     # 0 is reserved
+            if not self.g_interp.add_primitive(primName):
+                self.fatal_err("cannot find primitive handler", primName)
+            symObj = self.symbol_add("VMpr_" + primName)
+            self.dict_add(primDict, symObj, primId)
+        print("VM Primitives:")
+        self.dict_print(primDict)
+        print()
     
     def symbol_add(self, symName):
         """
@@ -674,12 +694,12 @@ class Smalltalk(object):
             print("[%d]" % n, r)
         print()
         
-    def fatal_err(self, s):
+    def fatal_err(self, *s):
         """
         Print a message and exit.  None of the
         system state will be saved.
         """
-        print(s)
+        print(*s)
         sys.exit(-1)
             
         

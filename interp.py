@@ -21,6 +21,10 @@ class Interp(object):
         # the interpreter global state
         self.i_context = self._nil
         
+        # the primitive handler table
+        # index 0 is reserved
+        self.i_primitive = [None]
+        
         # debugging support
         self.i_debug_pre = None
         self.i_debug_post = None
@@ -140,6 +144,18 @@ class Interp(object):
         self.i_debug_pre = preHook
         self.i_debug_post = postHook
         
+    def add_primitive(self, name):
+        """
+        Add a primitive handler at a given index.
+        Return True if successful, False otherwise.
+        """
+        name = "p_" + name
+        if not hasattr(self, name):
+            return False
+        handler = getattr(self, name)
+        self.i_primitive.append(handler)
+        return True
+        
     def exec(self):
         """
         Start executing bytecodes from current location
@@ -227,6 +243,12 @@ class Interp(object):
         # return control to sender
         self.i_context = newCtx
         return 0
+        
+    def p_Object_basicSize(self, ctx):
+        """
+        Primitive hander for Object basicSize
+        """
+        pass
         
         
 
