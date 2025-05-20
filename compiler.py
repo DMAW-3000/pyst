@@ -50,6 +50,10 @@ class Compile(object):
         self._nil = system.o_nil
         self._true = system.o_true
         self._false = system.o_false
+        bind = system.find_global("VMPrimitives")
+        if bind.is_nil():
+            raise NameError("missing global VMPrimitives")
+        self._prim_dict = bind.value
         
         # the lexer and parser
         self._lex = Lexer
@@ -245,9 +249,13 @@ class Compile(object):
             tok = self._lex.token()
             
         # parse method attributes
+        primId = 0
         while (tok.type == "OPERATOR") and (tok.value == '<'):
-            self.parse_method_attr()
+            value = self.parse_method_attr()
+            if value is not None:
+                primId = value
             tok = self._lex.token()
+        print("Primitive:", primId)
             
         # skip more comment
         while tok.type == "DSTRING":
@@ -305,7 +313,10 @@ class Compile(object):
             
         # set method header values
         # TODO: set depth
-        methObj.set_hdr(len(argNames), len(tempNames), 0)
+        methObj.set_hdr(len(argNames), 
+                        len(tempNames), 
+                        0,
+                        primId)
         
         # create literals Array for method
         if len(self._cur_literal) > 0:
@@ -314,8 +325,6 @@ class Compile(object):
             self._sys.arr_print(methObj.literals)
             
         # add method to class dictionary
-        # TODO: gst uses initial method dict size of 32 items
-        # for now just make the dict big until I can add grow methods
         methDict = self._cur_klass.methodDictionary
         if methDict.is_nil():
             self._cur_klass.methodDictionary = methDict = MethodDictionary.new_n(32)
@@ -331,8 +340,10 @@ class Compile(object):
           
     def parse_method_attr(self):
         """
-        Parse a method attribute definition
+        Parse a method attribute definition.  Return int ID
+        of primitive if present, None otherwise.
         """
+        primId = None
         attrName = self._lex.token()    # name
         attrValue = self._lex.token()   # value
         tok = self._lex.token()         # >
@@ -341,7 +352,12 @@ class Compile(object):
         if attrName.value == "category":
             self._cur_meth.descriptor.category = String.from_str(attrValue.value)
         elif attrName.value == "primitive":
-            print("Primitive:", attrValue.value)
+            sym = self._sys.symbol_find(attrValue.value)
+            if not sym.is_nil():
+                assoc = self._sys.dict_find(self._prim_dict, sym)
+                if not assoc.is_nil():
+                    primId = assoc.value
+        return primId
             
     def parse_method_temps(self):
         """
