@@ -29,6 +29,7 @@ class Interp(object):
         self.b_table = bTbl = [None] * 256
         bTbl[B_PUSH_SELF] = self.b_push_self
         bTbl[B_PUSH_LIT_CONSTANT] = self.b_push_lit_const
+        bTbl[B_PUSH_LIT_VARIABLE] = self.b_push_lit_var
         bTbl[B_PUSH_TEMPORARY_VARIABLE] = self.b_push_temp_var
         bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
         bTbl[B_SEND] = self.b_send
@@ -177,6 +178,26 @@ class Interp(object):
         """
         ctx.push(ctx.method.literals[arg])
         return 2
+        
+    def b_push_lit_var(self, ctx, arg):
+        """
+        Execute the push literal var bytecode
+        """
+        # get symbol
+        sym = ctx.method.literals[arg]
+        
+        # TODO - do full namespace resolution
+        # look in all places for variable
+        
+        # look in globals
+        var = self._sys.dict_find(self._sys.g_st_dict, sym)
+        if var.is_nil():
+            raise NameError("variable %s not found" % sym)
+        
+        # push variable to stack
+        ctx.push(var.value.value)
+        return 2
+        
         
     def b_push_temp_var(self, ctx, arg):
         """
