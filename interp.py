@@ -128,12 +128,26 @@ class Interp(object):
         for a in argList:
             newCtx.push(a)
             
+        # check for primitive operation
+        # return control immediately to sender if
+        # the primitive op is successful
+        primId = methObj.get_prim_id()
+        if primId > 0:
+            primFunc = self.i_primitive[primId]
+            if primFunc is None:
+                raise RuntimeError("primitive id %d not handled" % primId)
+            if primFunc(newCtx, numArgs):
+                oldCtx.push(newCtx.pop())
+                self.i_context = oldCtx
+                return
+            
         # make room for temp variables
         numTemp = methObj.get_num_temp()
         if numTemp > 0:
             newCtx.expand(numTemp)
         
-        # transfer control to new context
+        # transfer control to new context if no
+        # primitive or primitive failed
         self.i_context = newCtx
         
     def set_debug(self, preHook, postHook):
@@ -244,11 +258,13 @@ class Interp(object):
         self.i_context = newCtx
         return 0
         
-    def p_Object_basicSize(self, ctx):
+    def p_Object_basicSize(self, ctx, numArg):
         """
         Primitive hander for Object basicSize
         """
-        pass
+        print("Object.basicSize", numArg)
+        ctx.push(ctx.receiver.size)
+        return True
         
         
 
