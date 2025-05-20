@@ -638,7 +638,10 @@ class Smalltalk(object):
         ip = ctx.ip
         code = ctx.method.get_code()
         selName = ctx.method.descriptor.selector
-        print("%s[%d]:" % (selName, ip), self.dis_byte(code[ip]), code[ip + 1])
+        klassName = ctx.method.descriptor.klass
+        print("<%s> %s[%d]:" % (klassName, selName, ip), 
+              self.dis_byte(code[ip]), 
+              code[ip + 1])
     
     @staticmethod
     def context_print_state(ctx):
