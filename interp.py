@@ -112,7 +112,7 @@ class Interp(object):
         
         # check number of arguments
         if numArgs != methObj.get_num_arg():
-            raise RuntimeError("wrong number of arguments")
+            raise RuntimeError("wrong number of args %d for %s" % (numArgs, selObj))
         
         # allocate a new context and link to old
         newCtx = MethodContext()
