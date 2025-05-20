@@ -286,6 +286,7 @@ class Smalltalk(object):
         interpreter.
         """
         primDict = BindingDictionary.new_n(512)
+        primDict.environment = self.g_st_dict
         self.name_add_sym(self.g_st_dict, "VMPrimitives", primDict)
         for primId,primName in enumerate(init.Init_Primitive):
             primId += 1     # 0 is reserved
