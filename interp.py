@@ -133,10 +133,11 @@ class Interp(object):
         # the primitive op is successful
         primId = methObj.get_prim_id()
         if primId > 0:
-            primFunc = self.i_primitive[primId]
-            if primFunc is None:
-                raise RuntimeError("primitive id %d not handled" % primId)
-            if primFunc(newCtx, numArgs):
+            try:
+                primFunc = self.i_primitive[primId]
+            except IndexError:
+                primFunc = None
+            if (primFunc is not None) and primFunc(newCtx, numArgs):
                 oldCtx.push(newCtx.pop())
                 return
             
