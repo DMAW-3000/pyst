@@ -138,7 +138,6 @@ class Interp(object):
                 raise RuntimeError("primitive id %d not handled" % primId)
             if primFunc(newCtx, numArgs):
                 oldCtx.push(newCtx.pop())
-                self.i_context = oldCtx
                 return
             
         # make room for temp variables
@@ -146,8 +145,7 @@ class Interp(object):
         if numTemp > 0:
             newCtx.expand(numTemp)
         
-        # transfer control to new context if no
-        # primitive or primitive failed
+        # transfer control to new context
         self.i_context = newCtx
         
     def set_debug(self, preHook, postHook):
