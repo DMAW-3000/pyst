@@ -17,6 +17,8 @@ class Interp(object):
         # cache values from system
         self._sys = system
         self._nil = system.o_nil
+        self._false = system.o_false
+        self._true = system.o_true
         
         # the interpreter global state
         self.i_context = self._nil
@@ -265,6 +267,26 @@ class Interp(object):
         print("Object.basicSize", numArg)
         ctx.push(ctx.receiver.size)
         return True
+        
+    def p_Object_identity(self, ctx, numArg):
+        """
+        Primitive handler for Object identity (==)
+        """
+        print("Object identity", numArg)
+        if ctx.receiver.is_same(ctx[7]):
+            ctx.push(self._true)
+        else:
+            ctx.push(self._false)
+        return True
+        
+    def p_Object_class(self, ctx, numArg):
+        """
+        Primitive handler for Object class
+        """
+        print("Object class", numArg)
+        ctx.push(ctx.receiver.get_class())
+        return True
+        
         
         
 

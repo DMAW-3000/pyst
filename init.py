@@ -77,4 +77,6 @@ Init_Kernel_Mod = (
 # plus 1 (0 is reserved)
 Init_Primitive = (
     "Object_basicSize",
+    "Object_identity",
+    "Object_class",
 )
