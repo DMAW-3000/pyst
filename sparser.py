@@ -13,7 +13,7 @@ class ParseStatementList(object):
     Represent a list of statements.
     """
     def __init__(self, x):
-        self.data = x
+        self.data = [x]
 
 class ParseStatement(object):
     """
@@ -91,8 +91,13 @@ class ParseLiteral(object):
         self.value = x
         
 def p_statement_list(p):
-    r'''statement_list : statement'''
-    p[0] = ParseStatementList(p[1:])
+    r'''statement_list : statement_list PERIOD statement
+                       | statement'''
+    if len(p) == 2:
+        p[0] = ParseStatementList(p[1])
+    else:
+        p[1].data.append(p[3])
+        p[0] = p[1]
 
 def p_statement(p):
     r'''statement : exec_statement
@@ -145,6 +150,7 @@ def p_message_arg_list(p):
     
 def p_message_arg(p):
     r'''message_arg : MESSAGEARG sub_statement
+                    | MESSAGEARG unary_message
                     | MESSAGEARG literal'''
     p[0] = ParseMessageArg(p[1], p[2])
     
@@ -172,6 +178,8 @@ precedence = (
     ('left', 'MESSAGEARG'),
     ('left', 'LPARENS', 'RPARENS'),
     ('left', 'SSTRING'),
+    ('left', 'PERIOD'),
+    ('left', 'LBRACK', 'RBRACK'),
 )
 
 # globals

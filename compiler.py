@@ -153,9 +153,9 @@ class Compile(object):
             else:
                 raise CompileError("bad method syntax")
         
-        #print("Meth Dict:")
-        #self._sys.identdict_print(self._cur_klass.methodDictionary)
-        #print()
+        print("Meth Dict:")
+        self._sys.identdict_print(self._cur_klass.methodDictionary)
+        print()
                 
     def parse_class_attr(self):
         """
@@ -361,6 +361,7 @@ class Compile(object):
         """
         # setup parser
         self._lex.input(text)
+        print(text)
         
         # get list of statements
         result = self._parse(text, lexer = self._lex, debug = False)
@@ -496,6 +497,8 @@ class Compile(object):
         for a in argValues:
             if isinstance(a, ParseLiteral):
                 self.compile_load_literal(a.value)
+            elif isinstance(a, ParseUnaryMessage):
+                self.compile_unary_message(a.recv, a.name)
             elif isinstance(a, ParseExecStatement):
                 self.compile_exec_statement(a.data)
             else:

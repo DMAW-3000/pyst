@@ -58,6 +58,32 @@ All classes in the system are subclasses of me.'>
         "Subclasses should redefine this method to perform initializations on
         instance creation"
     ]
+	
+	storeString [
+	"Answer a String of Smalltalk code compiling to the receiver"
+
+	<category: 'storing'>
+	| stream |
+	stream := WriteStream on: String new.
+	self storeOn: stream.
+	^stream contents
+    ]
+	
+	store [
+	"Put a String of Smalltalk code compiling to the receiver on
+	 the Transcript (stdout the GUI is not active)"
+
+	<category: 'storing'>
+	Transcript show: self storeString
+    ]
+
+    storeNl [
+	"Put a String of Smalltalk code compiling to the receiver, followed by
+	 a new line, on the Transcript (stdout the GUI is not active)"
+
+	<category: 'storing'>
+	Transcript showCr: self storeString
+    ]
 
     ~= anObject [
 	"Answer whether the receiver and anObject are not equal"
@@ -107,6 +133,37 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'testing functionality'>
 	^true
+    ]
+	
+	ifNil: nilBlock [
+	"Evaluate nilBlock if the receiver is nil, else answer self"
+
+	<category: 'testing functionality'>
+	^self
+    ]
+
+    ifNil: nilBlock ifNotNil: notNilBlock [
+	"Evaluate nilBlock if the receiver is nil, else evaluate
+	 notNilBlock, passing the receiver."
+
+	<category: 'testing functionality'>
+	^notNilBlock cull: self
+    ]
+
+    ifNotNil: notNilBlock [
+	"Evaluate notNilBlock if the receiver is not nil, passing the receiver.
+	 Else answer nil."
+
+	<category: 'testing functionality'>
+	^notNilBlock cull: self
+    ]
+
+    ifNotNil: notNilBlock ifNil: nilBlock [
+	"Evaluate nilBlock if the receiver is nil, else evaluate
+	 notNilBlock, passing the receiver."
+
+	<category: 'testing functionality'>
+	^notNilBlock cull: self
     ]
 
     isCObject [
@@ -192,6 +249,15 @@ All classes in the system are subclasses of me.'>
 	<category: 'testing functionality'>
 	^false
     ]
+	
+	copy [
+	"Returns a shallow copy of the receiver (the instance variables are
+	 not copied). The shallow copy receives the message postCopy and the
+	 result of postCopy is passed back."
+
+	<category: 'copying'>
+	^self shallowCopy postCopy
+    ]
 
     postCopy [
 	"Performs any changes required to do on a copied object. This is the
@@ -207,6 +273,20 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'class type methods'>
 	^self
+    ]
+	
+	species [
+	"This method has no unique definition. Generally speaking, methods which
+	 always return the same type usually don't use #class, but #species.
+	 For example, a PositionableStream's species is the class of the collection
+	 on which it is streaming (used by upTo:, upToAll:, upToEnd). Stream uses
+	 species for obtaining the class of next:'s return value, Collection uses
+	 it in its #copyEmpty: message, which in turn is used by all collection-returning
+	 methods. An Interval's species is Array (used by collect:, select:,
+	 reject:, etc.)."
+
+	<category: 'class type methods'>
+	^self class
     ]
 
     mourn [
@@ -235,6 +315,19 @@ All classes in the system are subclasses of me.'>
 	<category: 'change and update'>
 	self changed: self
     ]
+	
+	displayString [
+	"Answer a String representing the receiver. For most objects
+	 this is simply its #printString, but for strings and characters,
+	 superfluous dollars or extra pair of quotes are stripped."
+
+	<category: 'printing'>
+	| stream |
+	stream := WriteStream on: String new.
+	self displayOn: stream.
+	^stream contents
+    ]
+	
     displayOn: aStream [
 	"Print a represention of the receiver on aStream. For most objects
 	 this is simply its #printOn: representation, but for strings and
@@ -243,6 +336,52 @@ All classes in the system are subclasses of me.'>
 	<category: 'printing'>
 	self printOn: aStream
     ]
+	
+	display [
+	"Print a represention of the receiver on the Transcript (stdout the GUI
+	 is not active). For most objects this is simply its #print
+	 representation, but for strings and characters, superfluous dollars
+	 or extra pair of quotes are stripped."
+
+	<category: 'printing'>
+	Transcript show: self displayString
+    ]
+
+    displayNl [
+	"Print a represention of the receiver, then put a new line on
+	 the Transcript (stdout the GUI is not active). For most objects this
+	 is simply its #printNl representation, but for strings and
+	 characters, superfluous dollars or extra pair of quotes are stripped."
+
+	<category: 'printing'>
+	Transcript showCr: self displayString
+    ]
+
+    printString [
+	"Answer a String representing the receiver"
+
+	<category: 'printing'>
+	| stream |
+	stream := WriteStream on: String new.
+	self printOn: stream.
+	^stream contents
+    ]
+	
+	print [
+	"Print a represention of the receiver on the Transcript (stdout the GUI
+	 is not active)"
+
+	<category: 'printing'>
+	Transcript show: self printString
+    ]
+
+    printNl [
+	"Print a represention of the receiver on stdout, put a new line
+	 the Transcript (stdout the GUI is not active)"
+
+	<category: 'printing'>
+	Transcript showCr: self printString
+    ]
 
     postLoad [
 	"Called after loading an object; must restore it to the state before
@@ -250,6 +389,14 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'saving and loading'>
 	
+    ]
+	
+	-> anObject [
+	"Creates a new instance of Association with the receiver being the key
+	 and the argument becoming the value"
+
+	<category: 'syntax shortcuts'>
+	^Association key: self value: anObject
     ]
 
     postStore [
