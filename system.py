@@ -88,25 +88,14 @@ class Smalltalk(object):
         
         # bytecode disassembly table
         # each entry is (name, num_arg)
-        self.g_dis = disTbl = [None] * 256
-        disTbl[B_PUSH_SELF] = ("PUSH_SELF", 0)
-        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD", 0)
-        disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 1)
-        disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 1)
-        disTbl[B_SEND] = ("SEND", 1)
-        disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 0)
-        disTbl[B_PUSH_TEMPORARY_VARIABLE] = ("PUSH_TEMP_VARIABLE", 1)
-        disTbl[B_STORE_LIT_VARIABLE] = ("STORE_LIT_VARIABLE", 1)
-        disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 1)
+        self.g_dis = [None] * 256
     
     @classmethod
     def rebuild(klass, debug):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
-        
-        # create empty system
-        klass._SmalltalkInstance = inst = klass()
+        inst = klass._SmalltalkInstance
             
         # Class initialization pass 1
         # this establishes the Class tree.
@@ -149,6 +138,9 @@ class Smalltalk(object):
         
         # finalize class build
         inst.build_classes_3()
+        
+        # generate disassembly info
+        inst.build_disassembly()
             
         # initialize runtime objects
         inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
@@ -180,8 +172,8 @@ class Smalltalk(object):
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
         
-        x = inst.g_interp.send_message_extern(inst.o_true, 
-                                              "halt", 
+        x = inst.g_interp.send_message_extern(inst.g_sym_table, 
+                                              "size", 
                                               ())
         print(x)
         
@@ -279,6 +271,21 @@ class Smalltalk(object):
             klassObj.category = self.o_nil
             klassObj.pragmaHandlers = self.o_nil
             klassObj.name = self.name_add_sym(self.g_st_dict, klassName, klassObj)
+    
+    def build_disassembly(self):
+        """
+        Create info needed for disassembly
+        """
+        disTbl = self.g_dis
+        disTbl[B_PUSH_SELF] = ("PUSH_SELF", 0)
+        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD", 0)
+        disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 1)
+        disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 1)
+        disTbl[B_SEND] = ("SEND", 1)
+        disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 0)
+        disTbl[B_PUSH_TEMPORARY_VARIABLE] = ("PUSH_TEMP_VARIABLE", 1)
+        disTbl[B_STORE_LIT_VARIABLE] = ("STORE_LIT_VARIABLE", 1)
+        disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 1)
     
     def build_primitives(self):
         """
@@ -704,8 +711,6 @@ class Smalltalk(object):
         sys.exit(-1)
             
         
-        
-        
-        
+Smalltalk._SmalltalkInstance = Smalltalk()
 
             
