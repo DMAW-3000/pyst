@@ -90,11 +90,12 @@ class Interp(object):
         
         # pop the message arguments
         argList = []
-        n = numArgs
-        while n > 0:
-            argList.append(pop())
-            n -= 1
-        argList.reverse()
+        if numArgs > 0:
+            n = numArgs
+            while n > 0:
+                argList.append(pop())
+                n -= 1
+            argList.reverse()
         
         # pop the message selector and receiver
         selObj = pop()
@@ -193,9 +194,8 @@ class Interp(object):
         code = ctx.method.get_code()
         op = self.b_table[code[ip]]
         if op is None:
-            raise RuntimeError("unknown bytecode %d" % code[ip])
-        inc = op(ctx, code[ip + 1])
-        ctx.ip = ip + inc
+            raise RuntimeError("unknown bytecode %d" % code[ip]) 
+        ctx.ip = ip + op(ctx, code[ip + 1])
     
     def b_push_self(self, ctx, arg):
         """
@@ -264,7 +264,6 @@ class Interp(object):
         """
         Primitive hander for Object basicSize
         """
-        print("Object.basicSize", numArg)
         ctx.push(ctx.receiver.size)
         return True
         
@@ -272,7 +271,6 @@ class Interp(object):
         """
         Primitive handler for Object identity (==)
         """
-        print("Object identity", numArg)
         if ctx.receiver.is_same(ctx[7]):
             ctx.push(self._true)
         else:
@@ -283,7 +281,6 @@ class Interp(object):
         """
         Primitive handler for Object class
         """
-        print("Object class", numArg)
         ctx.push(ctx.receiver.get_class())
         return True
         
