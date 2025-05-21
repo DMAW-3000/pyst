@@ -131,12 +131,11 @@ def p_unary_message(p):
     p[0] = ParseUnaryMessage(p[1], p[2])
     
 def p_expr_message(p):
-    r'''expr_message : exec_statement OPERATOR exec_statement'''
+    r'''expr_message : exec_statement OPERATOR exec_statement %prec IDENT'''
     p[0] = ParseExprMessage(p[1], p[2], p[3])
     
 def p_argument_message(p):
-    r'''argument_message : unary_message message_arg_list
-                         | literal message_arg_list'''
+    r'''argument_message : exec_statement message_arg_list'''
     p[0] = ParseArgumentMessage(p[1], p[2])
     
 def p_message_arg_list(p):
@@ -171,15 +170,11 @@ def p_error(t):
 # token precedence rules for the parser
 # tokens are listed from lowest to highest precedence   
 precedence = (
-    ('left', 'DECNUMBER'),
-    ('left', 'OPERATOR'),
-    ('left', 'ASSIGN'),
-    ('left', 'IDENT'),
     ('left', 'MESSAGEARG'),
-    ('left', 'LPARENS', 'RPARENS'),
-    ('left', 'SSTRING'),
-    ('left', 'PERIOD'),
+    ('left', 'OPERATOR'),
+    ('left', 'IDENT'),
     ('left', 'LBRACK', 'RBRACK'),
+    ('left', 'LPARENS', 'RPARENS'),
 )
 
 # globals

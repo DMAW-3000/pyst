@@ -474,10 +474,7 @@ class Compile(object):
         Comple sending a message with named arguments
         """
         # get receiver
-        if isinstance(recv, ParseUnaryMessage):
-            self.compile_unary_message(recv.recv, recv.name)
-        else:
-            self.compile_load_literal(recv.value)
+        self.compile_exec_statement(recv.data)
 
         # build up argument names and value
         argNames = []

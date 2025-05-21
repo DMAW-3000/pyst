@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'leftDECNUMBERleftOPERATORleftASSIGNleftIDENTleftMESSAGEARGleftLPARENSRPARENSleftSSTRINGleftPERIODleftLBRACKRBRACKASSIGN BASENUMBER CARET DECNUMBER DSTRING FLTNUMBER IDENT LBRACK LPARENS MESSAGEARG OPERATOR PERIOD PIPE RBRACK RPARENS SSTRINGstatement_list : statement_list PERIOD statement\n                       | statementstatement : exec_statement\n                  | assign_statement\n                  | return_statementreturn_statement : CARET exec_statementassign_statement : IDENT ASSIGN exec_statementexec_statement : sub_statement\n                       | argument_message\n                       | expr_message\n                       | unary_message\n                       | literalsub_statement : LPARENS exec_statement RPARENSunary_message : unary_message IDENT\n                      | literal IDENTexpr_message : exec_statement OPERATOR exec_statementargument_message : unary_message message_arg_list\n                         | literal message_arg_listmessage_arg_list : message_arg_list message_arg\n                         | message_argmessage_arg : MESSAGEARG sub_statement\n                    | MESSAGEARG unary_message\n                    | MESSAGEARG literalliteral : string_literal\n                | IDENT\n                | DECNUMBERstring_literal : SSTRING'
+_lr_signature = 'leftMESSAGEARGleftOPERATORleftIDENTleftLBRACKRBRACKleftLPARENSRPARENSASSIGN BASENUMBER CARET DECNUMBER DSTRING FLTNUMBER IDENT LBRACK LPARENS MESSAGEARG OPERATOR PERIOD PIPE RBRACK RPARENS SSTRINGstatement_list : statement_list PERIOD statement\n                       | statementstatement : exec_statement\n                  | assign_statement\n                  | return_statementreturn_statement : CARET exec_statementassign_statement : IDENT ASSIGN exec_statementexec_statement : sub_statement\n                       | argument_message\n                       | expr_message\n                       | unary_message\n                       | literalsub_statement : LPARENS exec_statement RPARENSunary_message : unary_message IDENT\n                      | literal IDENTexpr_message : exec_statement OPERATOR exec_statement %prec IDENTargument_message : exec_statement message_arg_listmessage_arg_list : message_arg_list message_arg\n                         | message_argmessage_arg : MESSAGEARG sub_statement\n                    | MESSAGEARG unary_message\n                    | MESSAGEARG literalliteral : string_literal\n                | IDENT\n                | DECNUMBERstring_literal : SSTRING'
     
-_lr_action_items = {'IDENT':([0,9,10,11,12,13,14,15,16,17,18,20,22,24,25,27,33,34,],[11,20,24,-25,27,27,-24,-26,-27,11,27,-14,27,-15,27,-25,20,24,]),'CARET':([0,17,],[12,12,]),'LPARENS':([0,12,13,17,18,22,25,],[13,13,13,13,13,13,13,]),'DECNUMBER':([0,12,13,17,18,22,25,],[15,15,15,15,15,15,15,]),'SSTRING':([0,12,13,17,18,22,25,],[16,16,16,16,16,16,16,]),'$end':([1,2,3,4,5,6,7,8,9,10,11,14,15,16,19,20,21,23,24,26,27,29,30,31,32,33,34,35,36,],[0,-2,-3,-4,-5,-8,-9,-10,-11,-12,-25,-24,-26,-27,-17,-14,-20,-18,-15,-6,-25,-1,-16,-19,-21,-22,-23,-7,-13,]),'PERIOD':([1,2,3,4,5,6,7,8,9,10,11,14,15,16,19,20,21,23,24,26,27,29,30,31,32,33,34,35,36,],[17,-2,-3,-4,-5,-8,-9,-10,-11,-12,-25,-24,-26,-27,-17,-14,-20,-18,-15,-6,-25,-1,-16,-19,-21,-22,-23,-7,-13,]),'OPERATOR':([3,6,7,8,9,10,11,14,15,16,19,20,21,23,24,26,27,28,30,31,32,33,34,35,36,],[18,-8,-9,-10,-11,-12,-25,-24,-26,-27,-17,-14,-20,-18,-15,18,-25,18,-16,-19,-21,-22,-23,18,-13,]),'RPARENS':([6,7,8,9,10,14,15,16,19,20,21,23,24,27,28,30,31,32,33,34,36,],[-8,-9,-10,-11,-12,-24,-26,-27,-17,-14,-20,-18,-15,-25,36,-16,-19,-21,-22,-23,-13,]),'MESSAGEARG':([9,10,11,14,15,16,19,20,21,23,24,27,31,32,33,34,36,],[22,22,-25,-24,-26,-27,22,-14,-20,22,-15,-25,-19,-21,-22,-23,-13,]),'ASSIGN':([11,],[25,]),}
+_lr_action_items = {'IDENT':([0,9,10,11,12,13,14,15,16,17,19,21,22,23,24,26,32,33,],[11,22,23,-24,26,26,-23,-25,-26,11,26,26,-14,-15,26,-24,22,23,]),'CARET':([0,17,],[12,12,]),'LPARENS':([0,12,13,17,19,21,24,],[13,13,13,13,13,13,13,]),'DECNUMBER':([0,12,13,17,19,21,24,],[15,15,15,15,15,15,15,]),'SSTRING':([0,12,13,17,19,21,24,],[16,16,16,16,16,16,16,]),'$end':([1,2,3,4,5,6,7,8,9,10,11,14,15,16,18,20,22,23,25,26,28,29,30,31,32,33,34,35,],[0,-2,-3,-4,-5,-8,-9,-10,-11,-12,-24,-23,-25,-26,-17,-19,-14,-15,-6,-24,-1,-18,-16,-20,-21,-22,-7,-13,]),'PERIOD':([1,2,3,4,5,6,7,8,9,10,11,14,15,16,18,20,22,23,25,26,28,29,30,31,32,33,34,35,],[17,-2,-3,-4,-5,-8,-9,-10,-11,-12,-24,-23,-25,-26,-17,-19,-14,-15,-6,-24,-1,-18,-16,-20,-21,-22,-7,-13,]),'OPERATOR':([3,6,7,8,9,10,11,14,15,16,18,20,22,23,25,26,27,29,30,31,32,33,34,35,],[19,-8,-9,-10,-11,-12,-24,-23,-25,-26,-17,-19,-14,-15,19,-24,19,-18,-16,-20,-21,-22,19,-13,]),'MESSAGEARG':([3,6,7,8,9,10,11,14,15,16,18,20,22,23,25,26,27,29,30,31,32,33,34,35,],[21,-8,-9,-10,-11,-12,-24,-23,-25,-26,21,-19,-14,-15,21,-24,21,-18,-16,-20,-21,-22,21,-13,]),'RPARENS':([6,7,8,9,10,14,15,16,18,20,22,23,26,27,29,30,31,32,33,35,],[-8,-9,-10,-11,-12,-23,-25,-26,-17,-19,-14,-15,-24,35,-18,-16,-20,-21,-22,-13,]),'ASSIGN':([11,],[24,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement_list':([0,],[1,]),'statement':([0,17,],[2,29,]),'exec_statement':([0,12,13,17,18,25,],[3,26,28,3,30,35,]),'assign_statement':([0,17,],[4,4,]),'return_statement':([0,17,],[5,5,]),'sub_statement':([0,12,13,17,18,22,25,],[6,6,6,6,6,32,6,]),'argument_message':([0,12,13,17,18,25,],[7,7,7,7,7,7,]),'expr_message':([0,12,13,17,18,25,],[8,8,8,8,8,8,]),'unary_message':([0,12,13,17,18,22,25,],[9,9,9,9,9,33,9,]),'literal':([0,12,13,17,18,22,25,],[10,10,10,10,10,34,10,]),'string_literal':([0,12,13,17,18,22,25,],[14,14,14,14,14,14,14,]),'message_arg_list':([9,10,],[19,23,]),'message_arg':([9,10,19,23,],[21,21,31,31,]),}
+_lr_goto_items = {'statement_list':([0,],[1,]),'statement':([0,17,],[2,28,]),'exec_statement':([0,12,13,17,19,24,],[3,25,27,3,30,34,]),'assign_statement':([0,17,],[4,4,]),'return_statement':([0,17,],[5,5,]),'sub_statement':([0,12,13,17,19,21,24,],[6,6,6,6,6,31,6,]),'argument_message':([0,12,13,17,19,24,],[7,7,7,7,7,7,]),'expr_message':([0,12,13,17,19,24,],[8,8,8,8,8,8,]),'unary_message':([0,12,13,17,19,21,24,],[9,9,9,9,9,32,9,]),'literal':([0,12,13,17,19,21,24,],[10,10,10,10,10,33,10,]),'string_literal':([0,12,13,17,19,21,24,],[14,14,14,14,14,14,14,]),'message_arg_list':([3,25,27,30,34,],[18,18,18,18,18,]),'message_arg':([3,18,25,27,30,34,],[20,29,20,20,20,20,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -43,15 +43,14 @@ _lr_productions = [
   ('unary_message -> unary_message IDENT','unary_message',2,'p_unary_message','sparser.py',129),
   ('unary_message -> literal IDENT','unary_message',2,'p_unary_message','sparser.py',130),
   ('expr_message -> exec_statement OPERATOR exec_statement','expr_message',3,'p_expr_message','sparser.py',134),
-  ('argument_message -> unary_message message_arg_list','argument_message',2,'p_argument_message','sparser.py',138),
-  ('argument_message -> literal message_arg_list','argument_message',2,'p_argument_message','sparser.py',139),
-  ('message_arg_list -> message_arg_list message_arg','message_arg_list',2,'p_message_arg_list','sparser.py',143),
-  ('message_arg_list -> message_arg','message_arg_list',1,'p_message_arg_list','sparser.py',144),
-  ('message_arg -> MESSAGEARG sub_statement','message_arg',2,'p_message_arg','sparser.py',152),
-  ('message_arg -> MESSAGEARG unary_message','message_arg',2,'p_message_arg','sparser.py',153),
-  ('message_arg -> MESSAGEARG literal','message_arg',2,'p_message_arg','sparser.py',154),
-  ('literal -> string_literal','literal',1,'p_literal','sparser.py',158),
-  ('literal -> IDENT','literal',1,'p_literal','sparser.py',159),
-  ('literal -> DECNUMBER','literal',1,'p_literal','sparser.py',160),
-  ('string_literal -> SSTRING','string_literal',1,'p_string_literal','sparser.py',164),
+  ('argument_message -> exec_statement message_arg_list','argument_message',2,'p_argument_message','sparser.py',138),
+  ('message_arg_list -> message_arg_list message_arg','message_arg_list',2,'p_message_arg_list','sparser.py',142),
+  ('message_arg_list -> message_arg','message_arg_list',1,'p_message_arg_list','sparser.py',143),
+  ('message_arg -> MESSAGEARG sub_statement','message_arg',2,'p_message_arg','sparser.py',151),
+  ('message_arg -> MESSAGEARG unary_message','message_arg',2,'p_message_arg','sparser.py',152),
+  ('message_arg -> MESSAGEARG literal','message_arg',2,'p_message_arg','sparser.py',153),
+  ('literal -> string_literal','literal',1,'p_literal','sparser.py',157),
+  ('literal -> IDENT','literal',1,'p_literal','sparser.py',158),
+  ('literal -> DECNUMBER','literal',1,'p_literal','sparser.py',159),
+  ('string_literal -> SSTRING','string_literal',1,'p_string_literal','sparser.py',163),
 ]
