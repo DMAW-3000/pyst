@@ -6,20 +6,6 @@ from st import *
 from lexer import Lexer
 from sparser import *
 
-METH_NAMES = set(("isMetaclass", "postCopy", "isString", "isCharacterArray",
-              "isSymbol", "isString", "isCharacter", "isNumber", "isFloat",
-              "isInteger", "isSmallInteger", "isNamespace", "isClass", "dependencies",
-              "isArray", "isBehavior", "yourself", "identityHash", "hash",
-              "nextInstance", "isNil", "notNil", "ifNil:", "isCObject", "~=", "~~",
-              "class", "primitiveFailed", "shouldNotImplement", "isMemberOf:",
-              "subclassResponsibility", "notYetImplemented", "badReturnError",
-              "noRunnableProcess", "userInterrupt", "isMetaClass", "validSize",
-              "isMeta", "halt:", "inspect", "examine", "changed", "displayOn:",
-              "respondsTo:", "become:", "becomeForward:", "postStore", "at:", "basicAt:",
-              "reconstructOriginalObject", "dependencies:", "halt", "asOop",
-              "makeEphemeron", "makeReadOnly:", "makeFixed", "instVarNamed:",
-              "instVarNamed:put:", "initialize", "mourn"))
-
 
 class CompileError(Exception): 
     """
@@ -301,12 +287,9 @@ class Compile(object):
                 pos += 1
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)
-            if methName in METH_NAMES:
-                result = self.compile_str(stmtText)
-                methObj.set_code(result)
-                print(stmtText)
-            else:
-                print(">> Defer")
+            result = self.compile_str(stmtText)
+            methObj.set_code(result)
+            
         else:
             # empty method definition
             methObj.set_code(self._Ret_Self_Bytes)

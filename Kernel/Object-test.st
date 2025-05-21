@@ -78,7 +78,7 @@ All classes in the system are subclasses of me.'>
 	 a subclass of aClass"
 
 	<category: 'testing functionality'>
-	^self class == aClass or: [self class inheritsFrom: aClass]
+	"^self class == aClass or: [self class inheritsFrom: aClass]"
     ]
 
     isMemberOf: aClass [
