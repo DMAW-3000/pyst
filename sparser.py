@@ -6,6 +6,7 @@ from ply import yacc
 
 from lexer import tokens
 
+class ParseError(Exception): pass
 
 class ParseStatementList(object):
     """
@@ -156,6 +157,9 @@ def p_literal(p):
 def p_string_literal(p):
     r'''string_literal : SSTRING'''
     p[0] = tuple(p[1])
+    
+def p_error(t):
+    raise ParseError("syntax error at %s(%s)" % (t.value, t.type))
     
     
 # token precedence rules for the parser
