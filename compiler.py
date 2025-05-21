@@ -543,9 +543,8 @@ class Compile(object):
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
         # string constant
-        elif isinstance(x, tuple):
-            chars = tuple(map(ord, x))
-            idx = self.add_literal(String.from_seq(chars))
+        elif isinstance(x, ParseLiteralString):
+            idx = self.add_literal(String.from_str(x.value))
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
         # unknown type

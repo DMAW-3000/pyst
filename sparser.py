@@ -90,6 +90,13 @@ class ParseLiteral(object):
     def __init__(self, x):
         self.value = x
         
+class ParseLiteralString(ParseLiteral):
+    """
+    Represent a 'string literal' value
+    """
+    def __init__(self, x):
+        self.value = x
+        
 def p_statement_list(p):
     r'''statement_list : statement_list PERIOD statement
                        | statement'''
@@ -161,7 +168,7 @@ def p_literal(p):
     
 def p_string_literal(p):
     r'''string_literal : SSTRING'''
-    p[0] = tuple(p[1])
+    p[0] = ParseLiteralString(p[1])
     
 def p_error(t):
     raise ParseError("syntax error at %s(%s)" % (t.value, t.type))
