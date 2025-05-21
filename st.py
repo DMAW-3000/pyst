@@ -108,6 +108,12 @@ class Object(object):
         """
         return self._klass
         
+    def get_id(self):
+        """
+        Return the Object's unique id (integer)
+        """
+        return self._obj_id
+        
     def hsh(self):
         """
         Return a hash key for the object.
