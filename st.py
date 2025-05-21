@@ -1066,6 +1066,17 @@ class CompiledMethod(_Code):
                       ((depth & 0x3f) << 5) | \
                       ((numTemp & 0x3f) << 11) | \
                       ((primId & 0x1ff) << 17)
+                      
+    def get_hdr(self):
+        """
+        Return the method header info as a tuple:
+        (num_arg, num_temp, depth, prim_id)
+        """
+        hdr = self.header
+        return (hdr & 0x1f, 
+               (hdr >> 11) & 0x3f, 
+               (hdr >> 5) & 0x3f, 
+               (hdr >> 17) & 0x1ff)
         
     def get_num_arg(self):
         """

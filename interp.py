@@ -112,10 +112,13 @@ class Interp(object):
             superObj = klassObj.superClass
             if superObj.is_nil():
                 raise NameError("unknown method %s" % selObj)
-            klassObj = superObj        
+            klassObj = superObj 
+
+        # get method info
+        numHdrArgs, numTemp, depth, primId = methObj.get_hdr()
         
         # check number of arguments
-        if numArgs != methObj.get_num_arg():
+        if numArgs != numHdrArgs:
             raise RuntimeError("wrong number of args %d for %s" % (numArgs, selObj))
         
         # allocate a new context and link to old
@@ -131,7 +134,6 @@ class Interp(object):
         # check for primitive operation
         # return control immediately to sender if
         # the primitive op is successful
-        primId = methObj.get_prim_id()
         if primId > 0:
             try:
                 primFunc = self.i_primitive[primId]
@@ -141,8 +143,7 @@ class Interp(object):
                 oldCtx.push(newCtx.pop())
                 return
             
-        # make room for temp variables
-        numTemp = methObj.get_num_temp()
+        # make room for temp variables on new stack
         if numTemp > 0:
             newCtx.expand(numTemp)
         
