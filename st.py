@@ -1000,13 +1000,13 @@ class _Code(Object):
     objects.
     """
     
-    def __init__(self, sz):
+    def __init__(self):
         """
         Create a new code object.  Extend the usual
-        reference list by an array to hold the objects
+        reference list by an bytearray to hold the objects
         bytecodes.
         """
-        super().__init__(sz)
+        super().__init__(3)
         self._bc_arr = bytearray(1)
         
     def get_code(self):
@@ -1051,12 +1051,6 @@ class CompiledMethod(_Code):
     """
     
     _Cover = None
-    
-    def __init__(self):
-        """
-        Create a new Compiled Method
-        """
-        super().__init__(3)
         
     def set_hdr(self, numArg, numTemp, depth, primId):
         """
@@ -1134,6 +1128,43 @@ class CompiledMethod(_Code):
             s = '????'
         return "METHOD(" + s + ")"
         
+
+class CompiledBlock(_Code):
+    """
+    Internal representation of Smalltalk CompiledBlock
+    """
+    
+    _Cover = None
+    
+    @property
+    def literals(self):
+        return self[0]
+        
+    @property
+    def literals(self):
+        return self[0]
+        
+    @literals.setter
+    def literals(self, x):
+        self[0] = x
+    
+    @property
+    def header(self):
+        return self[1]
+        
+    @header.setter
+    def header(self, x):
+        self[1] = x
+        
+    @property
+    def method(self):
+        return self[2]
+        
+    @method.setter
+    def method(self, x):
+        self[2] = x
+        
+        
         
 class MethodInfo(Object):
     """
@@ -1185,6 +1216,44 @@ class MethodInfo(Object):
     @debugInfo.setter
     def debugInfo(self, x):
         self[4] = x
+        
+        
+class BlockClosure(Object):
+    """
+    Internal representation of Smalltalk BlockClosure
+    """
+    
+    _Cover = None
+    
+    def __init__(self):
+        """
+        Create a new BlockClosure
+        """
+        super().__init__(3)
+        
+    @property
+    def outerContext(self):
+        return self[0]
+        
+    @outerContext.setter
+    def outerContext(self, x):
+        self[0] = x
+        
+    @property
+    def block(self):
+        return self[1]
+        
+    @block.setter
+    def block(self, x):
+        self[1] = x
+        
+    @property
+    def receiver(self):
+        return self[2]
+        
+    @receiver.setter
+    def receiver(self, x):
+        self[2] = x
 
 
 # the global bytecode values
