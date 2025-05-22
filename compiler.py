@@ -434,7 +434,7 @@ class Compile(object):
         self.compile_exec_statement(s.data)
         
         # assign value
-        idx = self.find_local(var)
+        idx, scope = self.find_local(var)
         if idx is not None:
             self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
         else:
@@ -538,9 +538,12 @@ class Compile(object):
                 self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             # variable name
             else:
-                idx = self.find_local(x)
+                idx, scope = self.find_local(x)
                 if idx is not None:
-                    self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
+                    if scope == 0:
+                        self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
+                    elif scope > 0:
+                        self.emit_bytes(B_PUSH_OUTER_TEMP, idx, scope - 1, 0)
                 else:
                     sym = self._sys.symbol_find_or_add(x)
                     idx = self.add_literal(sym)
@@ -571,11 +574,7 @@ class Compile(object):
         Compile a block closure expresion
         """
         # save current context state and prepare new
-        self._ctx_stack.append((self._cur_bytes, self._cur_literal))
-        self._cur_bytes = bytearray()
-        self._cur_literal = []
-        self._cur_depth += 1
-        self._max_depth = max(self._max_depth, self._cur_depth)
+        self.context_push()
         
         # compile the block statements
         self.compile_statement_list(s.data, True)
@@ -592,12 +591,33 @@ class Compile(object):
         self._sys.dis_bytecode(blkObj.get_code())
         
         # restore context state
-        self._cur_bytes, self._cur_literal = self._ctx_stack.pop()
-        self._cur_depth -= 1
+        self.context_pop()
         
         # add new block to context literals
         idx = self.add_literal(BlockClosure(blkObj))
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        
+    def context_push(self):
+        """
+        Enter a new context
+        """
+        self._ctx_stack.append((self._cur_bytes, 
+                                self._cur_literal, 
+                                self._cur_local))
+        self._cur_bytes = bytearray()
+        self._cur_literal = []
+        self._cur_local = []
+        self._cur_depth += 1
+        self._max_depth = max(self._max_depth, self._cur_depth)
+        
+    def context_pop(self):
+        """
+        Leave a context
+        """
+        self._cur_bytes, \
+        self._cur_literal, \
+        self._cur_local = self._ctx_stack.pop()
+        self._cur_depth -= 1
         
     def add_literal(self, x):
         """
@@ -620,13 +640,35 @@ class Compile(object):
     def find_local(self, name):
         """
         Find the index of a argument or temporary
-        variable name, or None if not local.
-        """
+        variable name, or None if not local.  Returns a 
+        tuple (idx, scope), where scope indicates:
+        0  = current context
+        >0 = parent context
+        <0 = instance var index
+        """   
+        scope = 0
+        
+        # look in this context
         try:
-            idx = self._cur_local.index(name)
+            return (self._cur_local.index(name), scope)
         except ValueError:
-            idx = None
-        return idx
+            pass
+            
+        # look in parent contexts
+        varStack = []
+        for f in self._ctx_stack:
+            varStack.append(f[-1])
+        for varList in reversed(varStack):
+            scope += 1
+            try:
+                return (varList.index(name), scope)
+            except ValueError:
+                pass
+                
+        # TODO - look in receiver instance vars
+            
+        # name is not local
+        return (None, scope)
 
             
 
