@@ -396,8 +396,15 @@ class Compile(object):
             
         # add ^self if no explicit return provided
         # and this is not a block context
-        if (not isBlk) and (not isinstance(slist[-1], ParseReturnStatement)):
-            self.emit_bytes(*self._Ret_Self_Bytes)
+        if not isBlk:
+            if not isinstance(slist[-1], ParseReturnStatement):
+                self.emit_bytes(*self._Ret_Self_Bytes)
+                
+        # if it is a block context, add return if lasst
+        # statement is not a method return
+        else:
+            if not isinstance(slist[-1], ParseReturnStatement):
+                self.emit_bytes(B_RETURN_CONTEXT_STACK_TOP, 0)
         
     def compile_statement(self, s):
         """
