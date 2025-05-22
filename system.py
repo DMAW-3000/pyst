@@ -175,7 +175,7 @@ class Smalltalk(object):
         
         x = inst.g_interp.send_message_extern(inst.o_true, 
                                               "~~", 
-                                              (inst.k_false,))
+                                              (inst.o_true,))
         print()
         print(x)
         
@@ -284,6 +284,7 @@ class Smalltalk(object):
         disTbl = self.g_dis
         disTbl[B_PUSH_SELF] = ("PUSH_SELF", 2, 0)
         disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD", 2, 0)
+        disTbl[B_RETURN_CONTEXT_STACK_TOP] = ("RETURN_CONTEXT", 2, 0)
         disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 2, 1)
         disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 2, 1)
         disTbl[B_SEND] = ("SEND", 2, 1)
