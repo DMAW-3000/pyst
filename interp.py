@@ -104,7 +104,10 @@ class Interp(object):
         # lookup method object from selector symbol
         # search from receiver's class through its
         # superclasses until Object's nil superclass
-        klassObj = recvObj.get_class()
+        if is_int(recvObj):
+            klassObj = self._sys.k_small_int
+        else:
+            klassObj = recvObj.get_class()
         while True:
             #print("meth lookup", klassObj)
             methDict = klassObj.methodDictionary
@@ -271,17 +274,35 @@ class Interp(object):
         """
         Primitive handler for Object identity (==)
         """
-        if recv.is_same(ctx[7]):
-            ctx.push(self._true)
+        send = ctx[7]
+        if is_int(recv):
+            if is_int(send):
+                if recv == send:
+                    ret = self._true
+                else:
+                    ret = self._false
+            else:
+                ret = self._false
         else:
-            ctx.push(self._false)
+            if is_int(send):
+                ret = self._false
+            else:
+                if recv.is_same(send):
+                    ret = self._true
+                else:
+                    ret = self._false
+        ctx.push(ret)
         return True
         
     def p_Object_class(self, ctx, recv, numArg):
         """
         Primitive handler for Object class
         """
-        ctx.push(recv.get_class())
+        if is_int(recv):
+            klass = self._sys.k_small_int
+        else:
+            klass = recv.get_class()
+        ctx.push(klass)
         return True
         
         
