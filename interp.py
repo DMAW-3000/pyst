@@ -142,7 +142,7 @@ class Interp(object):
                 primFunc = self.i_primitive[primId]
             except IndexError:
                 primFunc = None
-            if (primFunc is not None) and primFunc(newCtx, numArgs):
+            if (primFunc is not None) and primFunc(newCtx, recvObj, numArgs):
                 oldCtx.push(newCtx.pop())
                 return
             
@@ -260,28 +260,28 @@ class Interp(object):
         self.i_context = newCtx
         return 0
         
-    def p_Object_basicSize(self, ctx, numArg):
+    def p_Object_basicSize(self, ctx, recv, numArg):
         """
         Primitive hander for Object basicSize
         """
-        ctx.push(ctx.receiver.size)
+        ctx.push(recv.size)
         return True
         
-    def p_Object_identity(self, ctx, numArg):
+    def p_Object_identity(self, ctx, recv, numArg):
         """
         Primitive handler for Object identity (==)
         """
-        if ctx.receiver.is_same(ctx[7]):
+        if recv.is_same(ctx[7]):
             ctx.push(self._true)
         else:
             ctx.push(self._false)
         return True
         
-    def p_Object_class(self, ctx, numArg):
+    def p_Object_class(self, ctx, recv, numArg):
         """
         Primitive handler for Object class
         """
-        ctx.push(ctx.receiver.get_class())
+        ctx.push(recv.get_class())
         return True
         
         
