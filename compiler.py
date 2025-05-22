@@ -51,6 +51,8 @@ class Compile(object):
         self._cur_local = None
         self._cur_literal = None
         self._cur_bytes = None
+        self._cur_depth = None
+        self._max_depth = None
         self._ctx_stack = []
         
     def parse_file(self, fileName):
@@ -260,6 +262,7 @@ class Compile(object):
         self._cur_local = argNames + tempNames
         self._cur_literal = []
         self._cur_bytes = bytearray()
+        self._cur_depth = self._max_depth = 0
             
         # scan method statements
         # look for trailing ']'
@@ -296,11 +299,11 @@ class Compile(object):
             methObj.set_code(self._Ret_Self_Bytes)
             
         # set method header values
-        # TODO: set depth
         methObj.set_hdr(len(argNames), 
                         len(tempNames), 
-                        0,
+                        self._max_depth,
                         primId)
+        print("Depth:", self._max_depth)
         
         # create literals Array for method
         if len(self._cur_literal) > 0:
@@ -569,8 +572,10 @@ class Compile(object):
         """
         # save current context state and prepare new
         self._ctx_stack.append((self._cur_bytes, self._cur_literal))
-        self._cur_bytes = bytearray(0)
+        self._cur_bytes = bytearray()
         self._cur_literal = []
+        self._cur_depth += 1
+        self._max_depth = max(self._max_depth, self._cur_depth)
         
         # compile the block statements
         self.compile_statement_list(s.data, True)
@@ -588,6 +593,7 @@ class Compile(object):
         
         # restore context state
         self._cur_bytes, self._cur_literal = self._ctx_stack.pop()
+        self._cur_depth -= 1
         
         # add new block to context literals
         idx = self.add_literal(BlockClosure(blkObj))
