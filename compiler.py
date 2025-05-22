@@ -51,6 +51,7 @@ class Compile(object):
         self._cur_local = None
         self._cur_literal = None
         self._cur_bytes = None
+        self._ctx_stack = []
         
     def parse_file(self, fileName):
         """
@@ -369,10 +370,10 @@ class Compile(object):
             raise CompileError("bad statements")
             
         # compile
-        self.compile_statement_list(result.data)
+        self.compile_statement_list(result.data, False)
         return self._cur_bytes
         
-    def compile_statement_list(self, slist):
+    def compile_statement_list(self, slist, isBlk):
         """
         Compile a list of statments
         """
@@ -385,7 +386,8 @@ class Compile(object):
                 self.emit_bytes(B_POP_STACK_TOP, 0)
             
         # add ^self if no explicit return provided
-        if not isinstance(slist[-1], ParseReturnStatement):
+        # and this is not a block context
+        if (not isBlk) and (not isinstance(slist[-1], ParseReturnStatement)):
             self.emit_bytes(*self._Ret_Self_Bytes)
         
     def compile_statement(self, s):
@@ -547,10 +549,44 @@ class Compile(object):
             idx = self.add_literal(String.from_str(x.value))
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
+        # block closure
+        elif isinstance(x, ParseLiteralBlock):
+            self.compile_blk_closure(x.value)
+            
         # unknown type
         else:
             raise CompileError("unknown literal type %s" % x)
-                
+            
+    def compile_blk_closure(self, s):
+        """
+        Compile a block closure expresion
+        """
+        # save current context state and prepare new
+        self._ctx_stack.append((self._cur_bytes, self._cur_literal))
+        self._cur_bytes = bytearray(0)
+        self._cur_literal = []
+        
+        # compile the block statements
+        self.compile_statement_list(s.data, True)
+        
+        # create new block object and its literals array
+        blkObj = CompiledBlock()
+        blkObj.set_code(self._cur_bytes)
+        blkObj.literals = Array.from_seq(self._cur_literal)
+        blkObj.method = self._cur_meth
+        
+        print("Literals", blkObj.literals.size)
+        self._sys.arr_print(blkObj.literals)
+        print("Bytecodes:", len(blkObj.get_code()))
+        self._sys.dis_bytecode(blkObj.get_code())
+        
+        # restore context state
+        self._cur_bytes, self._cur_literal = self._ctx_stack.pop()
+        
+        # add new block to context literals
+        idx = self.add_literal(BlockClosure(blkObj))
+        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        
     def add_literal(self, x):
         """
         Add a new literal reference to the current context

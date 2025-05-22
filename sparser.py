@@ -94,8 +94,14 @@ class ParseLiteralString(ParseLiteral):
     """
     Represent a 'string literal' value
     """
-    def __init__(self, x):
-        self.value = x
+    pass
+        
+class ParseLiteralBlock(ParseLiteral):
+    """
+    Represent a [block] value
+    """
+    pass
+    
         
 def p_statement_list(p):
     r'''statement_list : statement_list PERIOD statement
@@ -161,10 +167,15 @@ def p_message_arg(p):
     p[0] = ParseMessageArg(p[1], p[2])
     
 def p_literal(p):
-    r'''literal : string_literal
+    r'''literal : block_literal
+                | string_literal
                 | IDENT
                 | DECNUMBER'''
     p[0] = ParseLiteral(p[1])
+    
+def p_block_literal(p):
+    r'''block_literal : LBRACK statement_list RBRACK'''
+    p[0] = ParseLiteralBlock(p[2])
     
 def p_string_literal(p):
     r'''string_literal : SSTRING'''
