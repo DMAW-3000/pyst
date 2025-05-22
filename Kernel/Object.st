@@ -53,36 +53,19 @@ All classes in the system are subclasses of me.'>
 	<category: 'initialization'>
 	Dependencies := anObject
     ]
+	
+	Object class >> initialize [
+	"Initialize the Dependencies dictionary to be a WeakKeyIdentityDictionary."
+
+	<category: 'initialization'>
+	self == Object ifFalse: [^self].
+	self dependencies: WeakKeyIdentityDictionary new.
+	ObjectMemory addDependent: self
+    ]
 
 	initialize [
         "Subclasses should redefine this method to perform initializations on
         instance creation"
-    ]
-	
-	storeString [
-	"Answer a String of Smalltalk code compiling to the receiver"
-
-	<category: 'storing'>
-	| stream |
-	stream := WriteStream on: String new.
-	self storeOn: stream.
-	^stream contents
-    ]
-	
-	store [
-	"Put a String of Smalltalk code compiling to the receiver on
-	 the Transcript (stdout the GUI is not active)"
-
-	<category: 'storing'>
-	Transcript show: self storeString
-    ]
-
-    storeNl [
-	"Put a String of Smalltalk code compiling to the receiver, followed by
-	 a new line, on the Transcript (stdout the GUI is not active)"
-
-	<category: 'storing'>
-	Transcript showCr: self storeString
     ]
 
     ~= anObject [
@@ -399,6 +382,42 @@ All classes in the system are subclasses of me.'>
 	<category: 'printing'>
 	Transcript showCr: self printString
     ]
+	
+	storeString [
+	"Answer a String of Smalltalk code compiling to the receiver"
+
+	<category: 'storing'>
+	| stream |
+	stream := WriteStream on: String new.
+	self storeOn: stream.
+	^stream contents
+    ]
+	
+	store [
+	"Put a String of Smalltalk code compiling to the receiver on
+	 the Transcript (stdout the GUI is not active)"
+
+	<category: 'storing'>
+	Transcript show: self storeString
+    ]
+
+    storeNl [
+	"Put a String of Smalltalk code compiling to the receiver, followed by
+	 a new line, on the Transcript (stdout the GUI is not active)"
+
+	<category: 'storing'>
+	Transcript showCr: self storeString
+    ]
+	
+	binaryRepresentationObject [
+	"This method must be implemented if PluggableProxies are used with
+	 the receiver's class.  The default implementation raises an exception."
+
+	<category: 'saving and loading'>
+	(ObjectDumper proxyClassFor: self) == PluggableProxy 
+	    ifTrue: [self subclassResponsibility]
+	    ifFalse: [self shouldNotImplement]
+    ]
 
     postLoad [
 	"Called after loading an object; must restore it to the state before
@@ -479,6 +498,31 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_changeClassTo>
 	
+    ]
+	
+	checkIndexableBounds: index ifAbsent: aBlock [
+	"Private - Check the reason why an access to the given indexed
+	 instance variable failed.  Evaluate aBlock for an invalid index."
+
+	<category: 'built ins'>
+	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
+	index isInteger 
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
+	^aBlock value
+    ]
+	
+	checkIndexableBounds: index [
+	"Private - Check the reason why an access to the given indexed
+	 instance variable failed"
+
+	<category: 'built ins'>
+	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
+	index isInteger 
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
+	index < 1 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
+	index > self basicSize 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index]
     ]
 
     at: anIndex [
@@ -577,6 +621,37 @@ All classes in the system are subclasses of me.'>
 	^self instVarAt: (self class indexOfInstVar: aString) put: anObject
     ]
 	
+	instVarAt: index [
+	"Answer the index-th instance variable of the receiver.
+	 This method must not be overridden."
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_instVarAt>
+	index < 1 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
+	index isInteger 
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
+	index > (self basicSize + self class instSize) 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
+	^self basicAt: index - self class instSize
+    ]
+	
+	instVarAt: index put: value [
+	"Store value in the index-th instance variable of the receiver.
+	 This method must not be overridden."
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_instVarAtPut>
+	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signal].
+	index < 1 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
+	index isInteger 
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
+	index > (self basicSize + self class instSize) 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
+	^self basicAt: index - self class instSize put: value
+    ]
+	
     isReadOnly [
 	"Answer whether the object's indexed instance variables can be
 	 written"
@@ -656,6 +731,33 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_nextInstance>
 	^nil
+    ]
+	
+	perform: selectorOrMethod withArguments: argumentsArray [
+	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
+	 passing the elements of argumentsArray as parameters, or execute the
+	 method within the receiver (if a CompiledMethod).  In the latter case,
+	 the method need not reside on the hierarchy from the receiver's class
+	 to Object -- it need not reside at all in a MethodDictionary, in
+	 fact -- but doing bad things will compromise stability of the Smalltalk
+	 virtual machine (and don't blame anybody but yourself).
+	 
+	 This method should not be overridden"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_performWithArguments>
+	argumentsArray isArray 
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: argumentsArray mustBe: Array].
+	(selectorOrMethod isKindOf: CompiledMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
+	selectorOrMethod isSymbol 
+	    ifFalse: 
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+	(self respondsTo: selectorOrMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
+	    ifFalse: 
+		[self doesNotUnderstand: (Message selector: selectorOrMethod
+			    arguments: argumentsArray)]
     ]
 	
     == arg [

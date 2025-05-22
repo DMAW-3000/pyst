@@ -461,6 +461,8 @@ class Compile(object):
             self.compile_arg_message(s.recv, s.args)
         elif isinstance(s, ParseLiteral):
             self.compile_load_literal(s.value)
+        elif isinstance(s, ParseExecStatement):
+            self.compile_exec_statement(s.data)
         else:
             raise CompileError("bad statement syntax %s" % s)
             
