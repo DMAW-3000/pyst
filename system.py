@@ -174,8 +174,8 @@ class Smalltalk(object):
         #                         klassObj.classVariables))
         
         x = inst.g_interp.send_message_extern(inst.o_true, 
-                                              "isMemberOf:", 
-                                              (inst.k_true,))
+                                              "~~", 
+                                              (inst.k_false,))
         print(x)
         
     def build_classes_1(self):
@@ -275,18 +275,21 @@ class Smalltalk(object):
     
     def build_disassembly(self):
         """
-        Create info needed for disassembly
+        Create info needed for disassembly.  Each entry is a tuple:
+        0 = bytecode name
+        1 = number bytes
+        2 = number of parameters
         """
         disTbl = self.g_dis
-        disTbl[B_PUSH_SELF] = ("PUSH_SELF", 0)
-        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD", 0)
-        disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 1)
-        disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 1)
-        disTbl[B_SEND] = ("SEND", 1)
-        disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 0)
-        disTbl[B_PUSH_TEMPORARY_VARIABLE] = ("PUSH_TEMP_VARIABLE", 1)
-        disTbl[B_STORE_LIT_VARIABLE] = ("STORE_LIT_VARIABLE", 1)
-        disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 1)
+        disTbl[B_PUSH_SELF] = ("PUSH_SELF", 2, 0)
+        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD", 2, 0)
+        disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 2, 1)
+        disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 2, 1)
+        disTbl[B_SEND] = ("SEND", 2, 1)
+        disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 2, 0)
+        disTbl[B_PUSH_TEMPORARY_VARIABLE] = ("PUSH_TEMP_VARIABLE", 2, 1)
+        disTbl[B_STORE_LIT_VARIABLE] = ("STORE_LIT_VARIABLE", 2, 1)
+        disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 2, 1)
     
     def build_primitives(self):
         """
@@ -586,15 +589,17 @@ class Smalltalk(object):
         Disassemble an array of bytecode values and
         display the results.
         """
-        for n,b in enumerate(byteCode[::2]):
-            info = self.g_dis[b]
+        n = 0
+        while n < len(byteCode):
+            info = self.g_dis[byteCode[n]]
             if info is None:
                 prList = ["????"]
             else:
-                prList = ["[%d]" % (n * 2), info[0]]
-                if info[1] == 1:
-                    prList.append(byteCode[(n * 2) + 1])
+                prList = ["[%d]" % n, info[0]]
+                if info[2] == 1:
+                    prList.append(byteCode[n + 1])
             print(*prList)
+            n += info[1]
             
     def dis_byte(self, b):
         """
