@@ -382,8 +382,14 @@ class Compile(object):
             self.compile_statement(s)
             
             # discard stack top if result not used
-            if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
-                self.emit_bytes(B_POP_STACK_TOP, 0)
+            # unless it is not the last statement of a block
+            if not isBlk:
+                if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
+                    self.emit_bytes(B_POP_STACK_TOP, 0)
+            else:
+                if slist.index(s) != (len(slist) - 1):
+                    if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
+                        self.emit_bytes(B_POP_STACK_TOP, 0)
             
         # add ^self if no explicit return provided
         # and this is not a block context
