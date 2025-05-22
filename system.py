@@ -288,6 +288,7 @@ class Smalltalk(object):
         disTbl[B_SEND] = ("SEND", 2, 1)
         disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 2, 0)
         disTbl[B_PUSH_TEMPORARY_VARIABLE] = ("PUSH_TEMP_VARIABLE", 2, 1)
+        disTbl[B_PUSH_OUTER_TEMP] = ("PUSH_OUTER_VARIABLE", 4, 2)
         disTbl[B_STORE_LIT_VARIABLE] = ("STORE_LIT_VARIABLE", 2, 1)
         disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 2, 1)
     
@@ -596,8 +597,8 @@ class Smalltalk(object):
                 prList = ["????"]
             else:
                 prList = ["[%d]" % n, info[0]]
-                if info[2] == 1:
-                    prList.append(byteCode[n + 1])
+                for k in range(info[2]):
+                    prList.append(byteCode[n + k + 1])
             print(*prList)
             n += info[1]
             
@@ -679,9 +680,7 @@ class Smalltalk(object):
         code = ctx.method.get_code()
         selName = ctx.method.descriptor.selector
         klassName = ctx.method.descriptor.klass
-        print("<%s> %s[%d]:" % (klassName, selName, ip), 
-              self.dis_byte(code[ip]), 
-              code[ip + 1])
+        print("<%s> %s[%d]:" % (klassName, selName, ip), self.dis_byte(code[ip]))
     
     @staticmethod
     def context_print_state(ctx):
