@@ -1231,11 +1231,12 @@ class BlockClosure(Object):
     
     _Cover = None
     
-    def __init__(self):
+    def __init__(self, blk):
         """
         Create a new BlockClosure
         """
         super().__init__(3)
+        self.block = blk
         
     @property
     def outerContext(self):
