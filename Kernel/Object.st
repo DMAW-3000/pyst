@@ -40,14 +40,6 @@ All classes in the system are subclasses of me.'>
     FinalizableObjects := nil.
     FinalSemaphore := nil.
 
-    Object class >> update: aspect [
-	"Do any global tasks for the ObjectMemory events."
-
-	<category: 'initialization'>
-	aspect == #returnFromSnapshot ifFalse: [^self].
-	FinalizableObjects := nil
-    ]
-
     Object class >> dependencies [
 	"Answer a dictionary that associates an object with its dependents."
 
@@ -62,43 +54,35 @@ All classes in the system are subclasses of me.'>
 	Dependencies := anObject
     ]
 
-    Object class >> finalSemaphore [
-	<category: 'initialization'>
-
-	FinalSemaphore isNil ifFalse: [ ^FinalSemaphore ].
-	^ [
-            FinalSemaphore isNil ifTrue: [ FinalSemaphore := Semaphore forMutualExclusion ].
-            FinalSemaphore
-          ] valueWithoutPreemption
-    ]
-
-    Object class >> finalizableObjects [
-	"Answer a set of finalizable objects."
-
-	<category: 'initialization'>
-	FinalizableObjects isNil ifTrue: [FinalizableObjects := Set new].
-	^FinalizableObjects
-    ]
-
-    Object class >> initialize [
-	"Initialize the Dependencies dictionary to be a WeakKeyIdentityDictionary."
-
-	<category: 'initialization'>
-	self == Object ifFalse: [^self].
-	self dependencies: WeakKeyIdentityDictionary new.
-	ObjectMemory addDependent: self
-    ]
-
 	initialize [
         "Subclasses should redefine this method to perform initializations on
         instance creation"
     ]
+	
+	storeString [
+	"Answer a String of Smalltalk code compiling to the receiver"
 
-    class [
-        "Answer the class to which the receiver belongs"
-        <primitive: VMpr_Object_class>
-        <category: 'builtin'>
-        self primitiveFailed
+	<category: 'storing'>
+	| stream |
+	stream := WriteStream on: String new.
+	self storeOn: stream.
+	^stream contents
+    ]
+	
+	store [
+	"Put a String of Smalltalk code compiling to the receiver on
+	 the Transcript (stdout the GUI is not active)"
+
+	<category: 'storing'>
+	Transcript show: self storeString
+    ]
+
+    storeNl [
+	"Put a String of Smalltalk code compiling to the receiver, followed by
+	 a new line, on the Transcript (stdout the GUI is not active)"
+
+	<category: 'storing'>
+	Transcript showCr: self storeString
     ]
 
     ~= anObject [
@@ -150,8 +134,8 @@ All classes in the system are subclasses of me.'>
 	<category: 'testing functionality'>
 	^true
     ]
-
-    ifNil: nilBlock [
+	
+	ifNil: nilBlock [
 	"Evaluate nilBlock if the receiver is nil, else answer self"
 
 	<category: 'testing functionality'>
@@ -265,8 +249,8 @@ All classes in the system are subclasses of me.'>
 	<category: 'testing functionality'>
 	^false
     ]
-
-    copy [
+	
+	copy [
 	"Returns a shallow copy of the receiver (the instance variables are
 	 not copied). The shallow copy receives the message postCopy and the
 	 result of postCopy is passed back."
@@ -284,24 +268,23 @@ All classes in the system are subclasses of me.'>
 	^self
     ]
 
-    deepCopy [
-	"Returns a deep copy of the receiver (the instance variables are
-	 copies of the receiver's instance variables)"
+    yourself [
+	"Answer the receiver"
 
-	<category: 'copying'>
-	| class aCopy num |
-	class := self class.
-	aCopy := self shallowCopy.
-	class isPointers 
-	    ifTrue: [num := class instSize + self basicSize]
-	    ifFalse: [num := class instSize].
-
-	"copy the instance variables (if any)"
-	1 to: num do: [:i | aCopy instVarAt: i put: (self instVarAt: i) copy].
-	^aCopy
+	<category: 'class type methods'>
+	^self
     ]
+	
+	dependents [
+	"Answer a collection of the receiver's dependents."
 
-    species [
+	<category: 'dependents access'>
+	| dependencies |
+	dependencies := Dependencies at: self ifAbsent: [^OrderedCollection new].
+	^dependencies asOrderedCollection
+    ]
+	
+	species [
 	"This method has no unique definition. Generally speaking, methods which
 	 always return the same type usually don't use #class, but #species.
 	 For example, a PositionableStream's species is the class of the collection
@@ -313,77 +296,6 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'class type methods'>
 	^self class
-    ]
-
-    yourself [
-	"Answer the receiver"
-
-	<category: 'class type methods'>
-	^self
-    ]
-
-    addDependent: anObject [
-	"Add anObject to the set of the receiver's dependents. Important:
-	 if an object has dependents, it won't be garbage collected."
-
-	<category: 'dependents access'>
-	^(Dependencies at: self ifAbsentPut: [OrderedCollection new]) 
-	    add: anObject
-    ]
-
-    removeDependent: anObject [
-	"Remove anObject to the set of the receiver's dependents. No problem
-	 if anObject is not in the set of the receiver's dependents."
-
-	<category: 'dependents access'>
-	| dependencies |
-	dependencies := Dependencies at: self ifAbsent: [^anObject].
-	dependencies remove: anObject ifAbsent: [].
-	dependencies size < 1 ifTrue: [
-	    Dependencies removeKey: self ifAbsent: []].
-	^anObject
-    ]
-
-    dependents [
-	"Answer a collection of the receiver's dependents."
-
-	<category: 'dependents access'>
-	| dependencies |
-	dependencies := Dependencies at: self ifAbsent: [^OrderedCollection new].
-	^dependencies asOrderedCollection
-    ]
-
-    release [
-	"Remove all of the receiver's dependents from the set and allow the
-	 receiver to be garbage collected."
-
-	<category: 'dependents access'>
-	Dependencies removeKey: self ifAbsent: []
-    ]
-
-    addToBeFinalized [
-	"Arrange things so that #finalize is sent to the object when the garbage
-	 collector finds out there are only weak references to it."
-
-	<category: 'finalization'>
-	self class finalSemaphore critical: [ self class finalizableObjects add: ((HomedAssociation 
-		    key: self
-		    value: nil
-		    environment: FinalizableObjects)
-		    makeEphemeron;
-		    yourself) ]
-    ]
-
-    removeToBeFinalized [
-	"Unregister the object, so that #finalize is no longer sent to the object
-	 when the garbage collector finds out there are only weak references to it."
-
-	<category: 'finalization'>
-	self class finalSemaphore critical: [ self class finalizableObjects remove: (HomedAssociation 
-		    key: self
-		    value: nil
-		    environment: self class finalizableObjects)
-	    ifAbsent: [] ]
     ]
 
     mourn [
@@ -412,99 +324,8 @@ All classes in the system are subclasses of me.'>
 	<category: 'change and update'>
 	self changed: self
     ]
-
-    changed: aParameter [
-	"Send update: for each of the receiver's dependents, passing them
-	 aParameter"
-
-	<category: 'change and update'>
-	| dependencies |
-	dependencies := Object dependencies at: self ifAbsent: [nil].
-	dependencies notNil 
-	    ifTrue: [dependencies do: [:dependent | dependent update: aParameter]]
-    ]
-
-    update: aParameter [
-	"Default behavior is to do nothing. Called by #changed and #changed:"
-
-	<category: 'change and update'>
 	
-    ]
-
-    broadcast: aSymbol [
-	"Send the unary message aSymbol to each of the receiver's dependents"
-
-	<category: 'change and update'>
-	| dependencies |
-	dependencies := Object dependencies at: self ifAbsent: [nil].
-	dependencies notNil 
-	    ifTrue: [dependencies do: [:dependent | dependent perform: aSymbol]]
-    ]
-
-    broadcast: aSymbol with: anObject [
-	"Send the message aSymbol to each of the receiver's dependents, passing
-	 anObject"
-
-	<category: 'change and update'>
-	| dependencies |
-	dependencies := Object dependencies at: self ifAbsent: [nil].
-	dependencies notNil 
-	    ifTrue: 
-		[dependencies do: [:dependent | dependent perform: aSymbol with: anObject]]
-    ]
-
-    broadcast: aSymbol with: arg1 with: arg2 [
-	"Send the message aSymbol to each of the receiver's dependents, passing
-	 arg1 and arg2 as parameters"
-
-	<category: 'change and update'>
-	| dependencies |
-	dependencies := Object dependencies at: self ifAbsent: [nil].
-	dependencies notNil 
-	    ifTrue: 
-		[dependencies do: 
-			[:dependent | 
-			dependent 
-			    perform: aSymbol
-			    with: arg1
-			    with: arg2]]
-    ]
-
-    broadcast: aSymbol withBlock: aBlock [
-	"Send the message aSymbol to each of the receiver's dependents, passing
-	 the result of evaluating aBlock with each dependent as the parameter"
-
-	<category: 'change and update'>
-	| dependencies |
-	dependencies := Object dependencies at: self ifAbsent: [nil].
-	dependencies notNil 
-	    ifTrue: 
-		[dependencies 
-		    do: [:dependent | dependent perform: aSymbol with: (aBlock value: dependent)]]
-    ]
-
-    broadcast: aSymbol withArguments: anArray [
-	"Send the message aSymbol to each of the receiver's dependents, passing
-	 the parameters in anArray"
-
-	<category: 'change and update'>
-	| dependencies |
-	dependencies := Object dependencies at: self ifAbsent: [nil].
-	dependencies notNil 
-	    ifTrue: 
-		[dependencies 
-		    do: [:dependent | dependent perform: aSymbol withArguments: anArray]]
-    ]
-
-    -> anObject [
-	"Creates a new instance of Association with the receiver being the key
-	 and the argument becoming the value"
-
-	<category: 'syntax shortcuts'>
-	^Association key: self value: anObject
-    ]
-
-    displayString [
+	displayString [
 	"Answer a String representing the receiver. For most objects
 	 this is simply its #printString, but for strings and characters,
 	 superfluous dollars or extra pair of quotes are stripped."
@@ -515,7 +336,7 @@ All classes in the system are subclasses of me.'>
 	self displayOn: stream.
 	^stream contents
     ]
-
+	
     displayOn: aStream [
 	"Print a represention of the receiver on aStream. For most objects
 	 this is simply its #printOn: representation, but for strings and
@@ -524,8 +345,8 @@ All classes in the system are subclasses of me.'>
 	<category: 'printing'>
 	self printOn: aStream
     ]
-
-    display [
+	
+	display [
 	"Print a represention of the receiver on the Transcript (stdout the GUI
 	 is not active). For most objects this is simply its #print
 	 representation, but for strings and characters, superfluous dollars
@@ -554,28 +375,8 @@ All classes in the system are subclasses of me.'>
 	self printOn: stream.
 	^stream contents
     ]
-
-    printOn: aStream [
-	"Print a represention of the receiver on aStream"
-
-	<category: 'printing'>
-	aStream
-	    nextPutAll: self class article;
-	    space;
-	    nextPutAll: self class name
-    ]
-
-    basicPrintOn: aStream [
-	"Print a represention of the receiver on aStream"
-
-	<category: 'printing'>
-	aStream
-	    nextPutAll: self class article;
-	    space;
-	    nextPutAll: self class name
-    ]
-
-    print [
+	
+	print [
 	"Print a represention of the receiver on the Transcript (stdout the GUI
 	 is not active)"
 
@@ -591,104 +392,20 @@ All classes in the system are subclasses of me.'>
 	Transcript showCr: self printString
     ]
 
-    basicPrintNl [
-	"Print a basic representation of the receiver, followed by a new line."
-
-	<category: 'printing'>
-	stdout flush.
-	self basicPrint.
-	stdout nextPut: Character nl; flush
-    ]
-
-    storeString [
-	"Answer a String of Smalltalk code compiling to the receiver"
-
-	<category: 'storing'>
-	| stream |
-	stream := WriteStream on: String new.
-	self storeOn: stream.
-	^stream contents
-    ]
-
-    storeLiteralOn: aStream [
-	"Put a Smalltalk literal compiling to the receiver on aStream"
-
-	<category: 'storing'>
-	aStream nextPutAll: '##('.
-	self storeOn: aStream.
-	aStream nextPut: $)
-    ]
-
-    storeOn: aStream [
-	"Put Smalltalk code compiling to the receiver on aStream"
-
-	<category: 'storing'>
-	| class hasSemi |
-	class := self class.
-	aStream nextPut: $(.
-	aStream nextPutAll: self class storeString.
-	hasSemi := false.
-	class isVariable 
-	    ifTrue: 
-		[aStream nextPutAll: ' basicNew: '.
-		self basicSize printOn: aStream]
-	    ifFalse: [aStream nextPutAll: ' basicNew'].
-	1 to: class instSize
-	    do: 
-		[:i | 
-		aStream nextPutAll: ' instVarAt: '.
-		i printOn: aStream.
-		aStream nextPutAll: ' put: '.
-		(self instVarAt: i) storeOn: aStream.
-		aStream nextPut: $;.
-		hasSemi := true].
-	class isVariable 
-	    ifTrue: 
-		[1 to: self validSize
-		    do: 
-			[:i | 
-			aStream nextPutAll: ' basicAt: '.
-			i printOn: aStream.
-			aStream nextPutAll: ' put: '.
-			(self basicAt: i) storeOn: aStream.
-			aStream nextPut: $;.
-			hasSemi := true]].
-	hasSemi ifTrue: [aStream nextPutAll: ' yourself'].
-	aStream nextPut: $)
-    ]
-
-    store [
-	"Put a String of Smalltalk code compiling to the receiver on
-	 the Transcript (stdout the GUI is not active)"
-
-	<category: 'storing'>
-	Transcript show: self storeString
-    ]
-
-    storeNl [
-	"Put a String of Smalltalk code compiling to the receiver, followed by
-	 a new line, on the Transcript (stdout the GUI is not active)"
-
-	<category: 'storing'>
-	Transcript showCr: self storeString
-    ]
-
-    binaryRepresentationObject [
-	"This method must be implemented if PluggableProxies are used with
-	 the receiver's class.  The default implementation raises an exception."
-
-	<category: 'saving and loading'>
-	(ObjectDumper proxyClassFor: self) == PluggableProxy 
-	    ifTrue: [self subclassResponsibility]
-	    ifFalse: [self shouldNotImplement]
-    ]
-
     postLoad [
 	"Called after loading an object; must restore it to the state before
 	 `preStore' was called.  Do nothing by default"
 
 	<category: 'saving and loading'>
 	
+    ]
+	
+	-> anObject [
+	"Creates a new instance of Association with the receiver being the key
+	 and the argument becoming the value"
+
+	<category: 'syntax shortcuts'>
+	^Association key: self value: anObject
     ]
 
     postStore [
@@ -731,43 +448,6 @@ All classes in the system are subclasses of me.'>
         self examineOn: Transcript
     ]
 
-    examineOn: aStream [
-	"Print all the instance variables of the receiver on aStream"
-
-	<category: 'debugging'>
-	| instVars output object |
-	aStream
-	    nextPutAll: 'An instance of ';
-	    print: self class;
-	    nl.
-	instVars := self class allInstVarNames.
-	1 to: instVars size + self validSize
-	    do: 
-		[:i | 
-		object := self instVarAt: i.
-		output := [object printString] on: Error
-			    do: 
-				[:ex | 
-				ex 
-				    return: '%1 %2' % 
-						{object class article.
-						object class name asString}].
-		i <= instVars size 
-		    ifTrue: 
-			[aStream
-			    nextPutAll: '  ';
-			    nextPutAll: (instVars at: i);
-			    nextPutAll: ': ']
-		    ifFalse: 
-			[aStream
-			    nextPutAll: '  [';
-			    print: i - instVars size;
-			    nextPutAll: ']: '].
-		aStream
-		    nextPutAll: output;
-		    nl]
-    ]
-
     validSize [
 	"Answer how many elements in the receiver should be inspected"
 
@@ -793,83 +473,6 @@ All classes in the system are subclasses of me.'>
 	
     ]
 
-    checkIndexableBounds: index ifAbsent: aBlock [
-	"Private - Check the reason why an access to the given indexed
-	 instance variable failed.  Evaluate aBlock for an invalid index."
-
-	<category: 'built ins'>
-	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
-	index isInteger 
-	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
-	^aBlock value
-    ]
-
-    checkIndexableBounds: index [
-	"Private - Check the reason why an access to the given indexed
-	 instance variable failed"
-
-	<category: 'built ins'>
-	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
-	index isInteger 
-	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
-	index < 1 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
-	index > self basicSize 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index]
-    ]
-
-    checkIndexableBounds: index put: object [
-	"Private - Check the reason why a store to the given indexed
-	 instance variable failed"
-
-	<category: 'built ins'>
-	| shape size |
-	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
-	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signal].
-	index isInteger 
-	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
-	index < 1 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
-	index > self basicSize 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
-	shape := self class shape.
-	(shape == #float or: [shape == #double]) 
-	    ifTrue: 
-		["SystemExceptions." WrongClass signalOn: object
-		    mustBe: 
-			{Float.
-			SmallInteger}].
-	(object isKindOf: Character) 
-	    ifFalse: 
-		[(shape == #character or: [shape == #utf32]) 
-		    ifTrue: ["SystemExceptions." WrongClass signalOn: object mustBe: Character]].
-	shape == #character 
-	    ifTrue: 
-		[^"SystemExceptions." ArgumentOutOfRange 
-		    signalOn: object
-		    mustBeBetween: (Character value: 0)
-		    and: (Character value: 255)].
-	shape == #utf32 
-	    ifTrue: 
-		[^"SystemExceptions." ArgumentOutOfRange 
-		    signalOn: object
-		    mustBeBetween: 0 asCharacter
-		    and: 1114111 asCharacter].
-	shape == #byte ifTrue: [size := 8].
-	shape == #int8 ifTrue: [size := 7].
-	shape == #ushort ifTrue: [size := 16].
-	shape == #short ifTrue: [size := 15].
-	shape == #uint ifTrue: [size := 32].
-	shape == #int ifTrue: [size := 31].
-	shape == #uint64 ifTrue: [size := 64].
-	shape == #int64 ifTrue: [size := 63].
-	size isNil ifTrue: [^self primtiveFailed].
-	^"SystemExceptions." ArgumentOutOfRange 
-	    signalOn: object
-	    mustBeBetween: (size odd ifTrue: [-1 bitShift: size] ifFalse: [0])
-	    and: (1 bitShift: size) - 1
-    ]
-
     at: anIndex [
 	"Answer the index-th indexed instance variable of the receiver"
 
@@ -886,24 +489,7 @@ All classes in the system are subclasses of me.'>
 	<primitive: VMpr_Object_basicAt>
 	self checkIndexableBounds: anIndex
     ]
-
-    at: anIndex put: value [
-	"Store value in the index-th indexed instance variable of the receiver"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_basicAtPut>
-	self checkIndexableBounds: anIndex put: value
-    ]
-
-    basicAt: anIndex put: value [
-	"Store value in the index-th indexed instance variable of the receiver
-	 This method must not be overridden, override at:put: instead"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_basicAtPut>
-	self checkIndexableBounds: anIndex put: value
-    ]
-
+	
     size [
 	"Answer the number of indexed instance variable in the receiver"
 
@@ -947,27 +533,6 @@ All classes in the system are subclasses of me.'>
 	^"SystemExceptions." ReadOnlyObject signal
     ]
 
-    shallowCopy [
-	"Returns a shallow copy of the receiver (the instance variables are
-	 not copied)"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_shallowCopy>
-	"This is a primitive for speed.  An alternative implementation is
-	 found below."
-
-	| class aCopy |
-	class := self class.
-	class isVariable 
-	    ifTrue: [aCopy := class basicNew: self basicSize]
-	    ifFalse: [aCopy := class basicNew].
-
-	"copy the instance variables (if any)"
-	1 to: class instSize + self basicSize
-	    do: [:i | aCopy instVarAt: i put: (self instVarAt: i)].
-	^aCopy
-    ]
-
     makeFixed [
 	"Avoid that the receiver moves in memory across garbage collections."
 
@@ -1003,38 +568,7 @@ All classes in the system are subclasses of me.'>
 	<category: 'introspection'>
 	^self instVarAt: (self class indexOfInstVar: aString) put: anObject
     ]
-
-    instVarAt: index [
-	"Answer the index-th instance variable of the receiver.
-	 This method must not be overridden."
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_instVarAt>
-	index < 1 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
-	index isInteger 
-	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
-	index > (self basicSize + self class instSize) 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
-	^self basicAt: index - self class instSize
-    ]
-
-    instVarAt: index put: value [
-	"Store value in the index-th instance variable of the receiver.
-	 This method must not be overridden."
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_instVarAtPut>
-	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signal].
-	index < 1 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
-	index isInteger 
-	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
-	index > (self basicSize + self class instSize) 
-	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
-	^self basicAt: index - self class instSize put: value
-    ]
-
+	
     isReadOnly [
 	"Answer whether the object's indexed instance variables can be
 	 written"
@@ -1115,169 +649,7 @@ All classes in the system are subclasses of me.'>
 	<primitive: VMpr_Object_nextInstance>
 	^nil
     ]
-
-    perform: selectorOrMessageOrMethod [
-	"Send the unary message named selectorOrMessageOrMethod (if a Symbol)
-	 to the receiver, or the message and arguments it identifies (if a Message
-	 or DirectedMessage), or finally execute the method within the receiver
-	 (if a CompiledMethod).  In the last case, the method need not reside on
-	 the hierarchy from the receiver's class to Object -- it need not reside
-	 at all in a MethodDictionary, in fact -- but doing bad things will
-	 compromise stability of the Smalltalk virtual machine (and don't blame
-	 anybody but yourself).
-	 
-	 This method should not be overridden"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_perform>
-	selectorOrMessageOrMethod isSymbol 
-	    ifTrue: 
-		[(self respondsTo: selectorOrMessageOrMethod) 
-		    ifTrue: [^"SystemExceptions." WrongArgumentCount signal]
-		    ifFalse: 
-			[self doesNotUnderstand: (Message selector: selectorOrMessageOrMethod
-				    arguments: #())]].
-	(selectorOrMessageOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
-	^selectorOrMessageOrMethod sendTo: self
-    ]
-
-    perform: selectorOrMethod with: arg1 [
-	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
-	 passing arg1 to it, or execute the method within the receiver
-	 (if a CompiledMethod).  In the latter case, the method need not reside on
-	 the hierarchy from the receiver's class to Object -- it need not reside
-	 at all in a MethodDictionary, in fact -- but doing bad things will
-	 compromise stability of the Smalltalk virtual machine (and don't blame
-	 anybody but yourself).
-	 
-	 This method should not be overridden"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_perform>
-	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
-	selectorOrMethod isSymbol 
-	    ifFalse: 
-		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
-	(self respondsTo: selectorOrMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
-	    ifFalse: 
-		[self 
-		    doesNotUnderstand: (Message selector: selectorOrMethod arguments: {arg1})]
-    ]
-
-    perform: selectorOrMethod with: arg1 with: arg2 [
-	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
-	 passing arg1 and arg2 to it, or execute the method within the receiver
-	 (if a CompiledMethod).  In the latter case, the method need not reside on
-	 the hierarchy from the receiver's class to Object -- it need not reside
-	 at all in a MethodDictionary, in fact -- but doing bad things will
-	 compromise stability of the Smalltalk virtual machine (and don't blame
-	 anybody but yourself).
-	 
-	 This method should not be overridden"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_perform>
-	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
-	selectorOrMethod isSymbol 
-	    ifFalse: 
-		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
-	(self respondsTo: selectorOrMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
-	    ifFalse: 
-		[self doesNotUnderstand: (Message selector: selectorOrMethod
-			    arguments: 
-				{arg1.
-				arg2})]
-    ]
-
-    perform: selectorOrMethod with: arg1 with: arg2 with: arg3 [
-	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
-	 passing the other arguments to it, or execute the method within the
-	 receiver (if a CompiledMethod).  In the latter case, the method need not
-	 reside on the hierarchy from the receiver's class to Object -- it need
-	 not reside at all in a MethodDictionary, in fact -- but doing bad things
-	 will compromise stability of the Smalltalk virtual machine (and don't
-	 blame anybody but yourself).
-	 
-	 This method should not be overridden"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_perform>
-	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
-	selectorOrMethod isSymbol 
-	    ifFalse: 
-		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
-	(self respondsTo: selectorOrMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
-	    ifFalse: 
-		[self doesNotUnderstand: (Message selector: selectorOrMethod
-			    arguments: 
-				{arg1.
-				arg2.
-				arg3})]
-    ]
-
-    perform: selectorOrMethod with: arg1 with: arg2 with: arg3 with: arg4 [
-	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
-	 passing the other arguments to it, or execute the method within the
-	 receiver (if a CompiledMethod).  In the latter case, the method need not
-	 reside on the hierarchy from the receiver's class to Object -- it need
-	 not reside at all in a MethodDictionary, in fact -- but doing bad things
-	 will compromise stability of the Smalltalk virtual machine (and don't
-	 blame anybody but yourself).
-	 
-	 This method should not be overridden"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_perform>
-	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
-	selectorOrMethod isSymbol 
-	    ifFalse: 
-		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
-	(self respondsTo: selectorOrMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
-	    ifFalse: 
-		[self doesNotUnderstand: (Message selector: selectorOrMethod
-			    arguments: 
-				{arg1.
-				arg2.
-				arg3.
-				arg4})]
-    ]
-
-    perform: selectorOrMethod withArguments: argumentsArray [
-	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
-	 passing the elements of argumentsArray as parameters, or execute the
-	 method within the receiver (if a CompiledMethod).  In the latter case,
-	 the method need not reside on the hierarchy from the receiver's class
-	 to Object -- it need not reside at all in a MethodDictionary, in
-	 fact -- but doing bad things will compromise stability of the Smalltalk
-	 virtual machine (and don't blame anybody but yourself).
-	 
-	 This method should not be overridden"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_performWithArguments>
-	argumentsArray isArray 
-	    ifFalse: ["SystemExceptions." WrongClass signalOn: argumentsArray mustBe: Array].
-	(selectorOrMethod isKindOf: CompiledMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
-	selectorOrMethod isSymbol 
-	    ifFalse: 
-		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
-	(self respondsTo: selectorOrMethod) 
-	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
-	    ifFalse: 
-		[self doesNotUnderstand: (Message selector: selectorOrMethod
-			    arguments: argumentsArray)]
-    ]
-
+	
     == arg [
 	"Answer whether the receiver is the same object as arg. This is a
 	 very fast test and is called 'object identity'."
@@ -1391,17 +763,6 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'VM callbacks'>
 	"SystemExceptions." BadReturn signal
-    ]
-
-    mustBeBoolean [
-	"Called by the system when ifTrue:*, ifFalse:*, and: or or: are sent to
-	 anything but a boolean"
-
-	<category: 'VM callbacks'>
-	| result |
-	result := "SystemExceptions." MustBeBoolean signalOn: self.
-	result == false ifFalse: [result := true].
-	^result
     ]
 
     noRunnableProcess [

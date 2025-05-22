@@ -71,7 +71,7 @@ Init_Meta_Vars = ("superClass", "methodDictionary", "instanceSpec", "subClasses"
 Init_Kernel_Mod = (
     #"Builtins.st",
     #"SysDict.st",
-    "Object-test.st",
+    "Object.st",
 )
 
 # the list of primitive ops handled by the interpreter
