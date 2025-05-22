@@ -126,13 +126,13 @@ class Smalltalk(object):
         # create the global namespace dictionary ("Smalltalk")
         inst.g_st_dict = stDict = Namespace.new_n(512)
         stDict._klass = inst.k_sys_dictionary
-        stDict.name = inst.symbol_add("Smalltalk")
-        inst.name_add_sym(stDict, stDict.name.to_str(), stDict)
+        sym = inst.name_add_sym(stDict, "Smalltalk", stDict)
+        stDict.name = sym
         
         # add global objects
         inst.name_add_sym(stDict, "SymbolTable", inst.g_sym_table)
         inst.name_add_sym(stDict, "KernelInitialized", inst.o_false)
-        inst.name_add_sym(stDict, "Version", String.from_str("1.0"))
+        inst.name_add_sym(stDict, "Version", String.from_str("0.1"))
         inst.name_add_sym(stDict, "Features", Array(1))
         inst.name_add_sym(stDict, "Undeclared", Namespace.new_n(32))
         inst.name_add_sym(stDict, "SytemExceptions", stDict)
@@ -176,6 +176,7 @@ class Smalltalk(object):
         x = inst.g_interp.send_message_extern(inst.o_true, 
                                               "~~", 
                                               (inst.k_false,))
+        print()
         print(x)
         
     def build_classes_1(self):
