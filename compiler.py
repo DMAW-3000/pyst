@@ -577,7 +577,12 @@ class Compile(object):
         self.context_push()
         
         # compile the block statements
-        self.compile_statement_list(s.data, True)
+        # check for empty closure
+        if s is None:
+            idx = self.add_literal(self._nil)
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_RETURN_CONTEXT_STACK_TOP, 0)
+        else:
+            self.compile_statement_list(s.data, True)
         
         # create new block object and its literals array
         blkObj = CompiledBlock()

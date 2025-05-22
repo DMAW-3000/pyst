@@ -284,6 +284,14 @@ All classes in the system are subclasses of me.'>
 	^dependencies asOrderedCollection
     ]
 	
+	release [
+	"Remove all of the receiver's dependents from the set and allow the
+	 receiver to be garbage collected."
+
+	<category: 'dependents access'>
+	Dependencies removeKey: self ifAbsent: []
+    ]
+	
 	species [
 	"This method has no unique definition. Generally speaking, methods which
 	 always return the same type usually don't use #class, but #species.

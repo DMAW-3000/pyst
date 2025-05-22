@@ -174,8 +174,12 @@ def p_literal(p):
     p[0] = ParseLiteral(p[1])
     
 def p_block_literal(p):
-    r'''block_literal : LBRACK statement_list RBRACK'''
-    p[0] = ParseLiteralBlock(p[2])
+    r'''block_literal : LBRACK statement_list RBRACK
+                      | LBRACK RBRACK'''
+    if len(p) == 3:
+        p[0] = ParseLiteralBlock(None)
+    else:
+        p[0] = ParseLiteralBlock(p[2])
     
 def p_string_literal(p):
     r'''string_literal : SSTRING'''
