@@ -251,7 +251,7 @@ class Compile(object):
             tok = self._lex.token()
             
         # parse method temporary variables
-        if tok.type == "PIPE":
+        if (tok.type == "OPERATOR") and (tok.value == '|'):
             tempNames = self.parse_method_temps()
             tok = self._lex.token()
         else:
@@ -352,7 +352,7 @@ class Compile(object):
         """
         tempNames = []
         tok = self._lex.token()
-        while tok.type != "PIPE":
+        while (tok.type != "OPERATOR") and (tok.value != '|'):
             if tok.type != "IDENT":
                 raise CompileError("expected ident")
             tempNames.append(tok.value)

@@ -17,7 +17,6 @@ tokens = [
     'RPARENS',
     'LBRACK',
     'RBRACK',
-    'PIPE',
     'CARET',
     'PERIOD',
     'ASSIGN',
@@ -109,10 +108,6 @@ def t_ASSIGN(t):
     r':='
     return t
     
-def t_PIPE(t):
-    r'\|'
-    return t
-    
 def t_CARET(t):
     r'\^'
     return t
@@ -123,7 +118,7 @@ def t_MESSAGEARG(t):
     return t
     
 def t_OPERATOR(t):
-    r'[\+\-\*\/\,<>=%~&\\][\+\-\*\/\,<>=%~&\\]?'
+    r'[\+\-\*\/\,<>=%~&\\\|][\+\-\*\/\,<>=%~&\\]?'
     return t
     
 def t_IDENT(t):
