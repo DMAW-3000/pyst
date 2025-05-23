@@ -111,7 +111,8 @@ class Compile(object):
         parse3 = None
             
         # check for class variables
-        if (tok.type != "IDENT") and (tok.type != "OPERATOR"):
+        if (tok.type != "IDENT") and (tok.type != "OPERATOR") and (tok.type != "MESSAGEARG"):
+            print(tok)
             raise CompileError("expected ident or operator")
         while True:
             parse1 = tok         # name
