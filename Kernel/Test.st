@@ -10,5 +10,9 @@ Object subclass: Boolean [
 		| x |
 		x := 'hello'
 	]
+	
+	test3 [
+		 ^self size
+	]
 ]
 

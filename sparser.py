@@ -108,9 +108,9 @@ class Parser(object):
     def token(self):
         if self._lkahd is not None:
             t = self._lkahd
-            self._lkahd = None
         else:
             t = self._lex.token()
+        self._lkahd = None
         return t
         
     def lookahead(self):
@@ -131,6 +131,10 @@ class Parser(object):
         return slist
         
     def parse_statement(self):
+        """
+        Parse a generic statement.  Splits ^ return
+        statements.
+        """
         if self.lookahead() == "CARET":
             self.drop()
             s = ParseReturnStatement(self.parse_exec_statement())
@@ -140,16 +144,41 @@ class Parser(object):
         return s
             
     def parse_exec_statement(self):
+        """
+        Parse a non-return statement.  Splits :=
+        assign statements.
+        """
         tok = self.token()
         if self.lookahead() == "ASSIGN":
             self.drop()
+            if tok.type != "IDENT":
+                raise ParseError("expected ident before :=")
             return ParseAssignStatement(tok.value, self.parse_exec_statement())
+        if tok.type == "IDENT":
+            s = ParseExecStatement(self.parse_message(tok))
         else:
-            print(tok.type)
             s = ParseExecStatement(self.parse_literal(tok))
+        print(s)
+        return s
+        
+    def parse_message(self, recv):
+        """
+        Parse a generic message starting with token recv
+        """
+        tok = self.token()
+        print("parse msg", recv, tok)
+        if tok is None:
+            s = self.parse_literal(recv)
+        elif tok.type == "IDENT":
+            s = ParseUnaryMessage(recv, tok.value)
+        else:
+            raise ParseError("expected ident")
         return s
         
     def parse_literal(self, t):
+        """
+        Parse a literal value from the given token
+        """
         if t.type == "SSTRING":
             val = ParseLiteralString(t.value)
         else:
