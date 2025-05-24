@@ -161,6 +161,8 @@ class Parser(object):
                 s = self.parse_message(tok)
             else:
                 s = self.parse_literal(tok)
+                if self._recv is None:
+                    self._recv = s
             tok = self.token()
         return ParseExecStatement(s)
         
