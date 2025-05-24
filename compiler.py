@@ -41,8 +41,9 @@ class Compile(object):
             raise NameError("missing global VMPrimitives")
         self._prim_dict = bind.value
         
-        # the lexer and parser
+        # the lexer and statement parser
         self._lex = Lexer
+        self._parse = Parser(self._lex)
         
         # helpers
         self._cur_klass = None
@@ -372,8 +373,7 @@ class Compile(object):
         #if not isinstance(result, ParseStatementList):
         #    raise CompileError("bad statements")
          
-        p = Parser(self._lex)
-        result = p.parse()
+        result = self._parse.parse()
          
         # compile
         self.compile_statement_list(result.data, False)

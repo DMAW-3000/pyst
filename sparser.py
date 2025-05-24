@@ -2,10 +2,6 @@
 Smalltalk statement parser
 """
 
-from ply import yacc
-
-from lexer import tokens
-
 class ParseError(Exception): pass
 
 class ParseStatementList(object):
@@ -102,110 +98,6 @@ class ParseLiteralBlock(ParseLiteral):
     """
     pass
     
-        
-def p_statement_list(p):
-    r'''statement_list : statement_list PERIOD statement
-                       | statement'''
-    if len(p) == 2:
-        p[0] = ParseStatementList(p[1])
-    else:
-        p[1].data.append(p[3])
-        p[0] = p[1]
-
-def p_statement(p):
-    r'''statement : exec_statement
-                  | assign_statement
-                  | return_statement'''
-    p[0] = p[1] 
-    
-def p_return_statement(p):
-    r'''return_statement : CARET exec_statement'''
-    p[0] = ParseReturnStatement(p[2])
-    
-def p_assign_statement(p):
-    r'''assign_statement : IDENT ASSIGN exec_statement'''
-    p[0] = ParseAssignStatement(p[1], p[3])
-    
-def p_exec_statement(p):
-    r'''exec_statement : sub_statement
-                       | argument_message
-                       | expr_message
-                       | unary_message
-                       | literal'''
-    p[0] = ParseExecStatement(p[1])
-    
-def p_sub_statement(p):
-    r'''sub_statement : LPARENS exec_statement RPARENS'''
-    p[0] = p[2]
-    
-def p_unary_message(p):
-    r'''unary_message : unary_message IDENT
-                      | literal IDENT'''
-    p[0] = ParseUnaryMessage(p[1], p[2])
-    
-def p_expr_message(p):
-    r'''expr_message : exec_statement OPERATOR literal
-                     | exec_statement OPERATOR unary_message'''
-    p[0] = ParseExprMessage(p[1], p[2], p[3])
-    
-def p_argument_message(p):
-    r'''argument_message : exec_statement message_arg_list'''
-    print("parse arg msg", p[1].data.value, p[2])
-    p[0] = ParseArgumentMessage(p[1], p[2])
-    
-def p_message_arg_list(p):
-    r'''message_arg_list : message_arg_list message_arg
-                         | message_arg'''
-    print("parse arg list", len(p), p[1])
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[1].append(p[2])
-        p[0] = p[1]
-    
-def p_message_arg(p):
-    r'''message_arg : MESSAGEARG sub_statement
-                    | MESSAGEARG unary_message
-                    | MESSAGEARG expr_message
-                    | MESSAGEARG literal'''
-    print("parse msg arg", p[1], p[2])
-    p[0] = ParseMessageArg(p[1], p[2])
-    
-def p_literal(p):
-    r'''literal : block_literal
-                | string_literal
-                | IDENT
-                | DECNUMBER'''
-    print("parse lit", p[1])
-    p[0] = ParseLiteral(p[1])
-    
-def p_block_literal(p):
-    r'''block_literal : LBRACK statement_list RBRACK
-                      | LBRACK RBRACK'''
-    if len(p) == 3:
-        p[0] = ParseLiteralBlock(None)
-    else:
-        p[0] = ParseLiteralBlock(p[2])
-    
-def p_string_literal(p):
-    r'''string_literal : SSTRING'''
-    p[0] = ParseLiteralString(p[1])
-    
-def p_error(t):
-    raise ParseError("syntax error at %s(%s)" % (t.value, t.type))
-    
-    
-# token precedence rules for the parser
-# tokens are listed from lowest to highest precedence   
-precedence = (
-    ('left', 'OPERATOR'),
-    ('left', 'IDENT'),
-    ('left', 'MESSAGEARG'),
-    ('left', 'LBRACK', 'RBRACK'),
-    ('left', 'LPARENS', 'RPARENS'),
-)
-
-# globals
 
 class Parser(object):
     
