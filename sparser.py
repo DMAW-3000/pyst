@@ -104,6 +104,7 @@ class Parser(object):
     def __init__(self, lex):
         self._lex = lex
         self._lkahd = None
+        self._recv = None
         
     def token(self):
         if self._lkahd is not None:
@@ -148,41 +149,44 @@ class Parser(object):
         Parse a non-return statement.  Splits :=
         assign statements.
         """
+        self._recv = None
         tok = self.token()
-        if self.lookahead() == "ASSIGN":
-            self.drop()
-            if tok.type != "IDENT":
-                raise ParseError("expected ident before :=")
-            return ParseAssignStatement(tok.value, self.parse_exec_statement())
-        if tok.type == "IDENT":
-            s = ParseExecStatement(self.parse_message(tok))
+        while tok is not None:
+            if self.lookahead() == "ASSIGN":
+                self.drop()
+                if tok.type != "IDENT":
+                    raise ParseError("expected ident before :=")
+                return ParseAssignStatement(tok.value, self.parse_exec_statement())
+            if tok.type == "IDENT":
+                s = self.parse_message(tok)
+            else:
+                s = self.parse_literal(tok)
+            tok = self.token()
+        return ParseExecStatement(s)
+        
+    def parse_message(self, tok):
+        """
+        Parse a generic message starting with token
+        """
+        if self._recv is not None:
+            s = ParseUnaryMessage(self._recv, tok.value)
         else:
-            s = ParseExecStatement(self.parse_literal(tok))
-        print(s)
+            nTok = self.token()
+            if nTok is None:
+                s = self.parse_literal(tok)
+            else:
+                s = ParseUnaryMessage(self.parse_literal(tok), nTok.value)
+        self._recv = s
         return s
         
-    def parse_message(self, recv):
-        """
-        Parse a generic message starting with token recv
-        """
-        tok = self.token()
-        print("parse msg", recv, tok)
-        if tok is None:
-            s = self.parse_literal(recv)
-        elif tok.type == "IDENT":
-            s = ParseUnaryMessage(recv, tok.value)
-        else:
-            raise ParseError("expected ident")
-        return s
-        
-    def parse_literal(self, t):
+    def parse_literal(self, tok):
         """
         Parse a literal value from the given token
         """
-        if t.type == "SSTRING":
-            val = ParseLiteralString(t.value)
+        if tok.type == "SSTRING":
+            val = ParseLiteralString(tok.value)
         else:
-            val = t.value
+            val = tok.value
         return ParseLiteral(val)
         
         

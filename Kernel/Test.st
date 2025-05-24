@@ -12,7 +12,7 @@ Object subclass: Boolean [
 	]
 	
 	test3 [
-		 ^self size
+		 ^self size double isBig
 	]
 ]
 
