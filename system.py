@@ -160,8 +160,8 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        print("ST Dictionary:")
-        inst.dict_print(inst.g_st_dict, True)
+        #print("ST Dictionary:")
+        #inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
         #    cacheName = klassInfo[2]
@@ -173,11 +173,11 @@ class Smalltalk(object):
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
         
-        x = inst.g_interp.send_message_extern(inst.o_true, 
-                                              "~~", 
-                                              (inst.o_true,))
-        print()
-        print(x)
+        #x = inst.g_interp.send_message_extern(inst.o_true, 
+        #                                      "~~", 
+        #                                      (inst.o_true,))
+        #print()
+        #print(x)
         
     def build_classes_1(self):
         """

@@ -43,7 +43,6 @@ class Compile(object):
         
         # the lexer and parser
         self._lex = Lexer
-        self._parse = Parser.parse
         
         # helpers
         self._cur_klass = None
@@ -157,9 +156,9 @@ class Compile(object):
             else:
                 raise CompileError("bad method syntax")
         
-        print("Meth Dict:")
-        self._sys.identdict_print(self._cur_klass.methodDictionary)
-        print()
+        #print("Meth Dict:")
+        #self._sys.identdict_print(self._cur_klass.methodDictionary)
+        #print()
                 
     def parse_class_attr(self):
         """
@@ -369,10 +368,13 @@ class Compile(object):
         print(text)
         
         # get list of statements
-        result = self._parse(text, lexer = self._lex, debug = False)
-        if not isinstance(result, ParseStatementList):
-            raise CompileError("bad statements")
-            
+        #result = self._parse(text, lexer = self._lex, debug = False)
+        #if not isinstance(result, ParseStatementList):
+        #    raise CompileError("bad statements")
+         
+        p = Parser(self._lex)
+        result = p.parse()
+         
         # compile
         self.compile_statement_list(result.data, False)
         return self._cur_bytes
@@ -487,7 +489,12 @@ class Compile(object):
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
-        self.compile_exec_statement(send.data)
+        if isinstance(send, ParseLiteral):
+            self.compile_load_literal(send.value)
+        elif isinstance(send, ParseUnaryMessage):
+            self.compile_unary_message(send.recv, send.name)
+        else:
+            raise CompileError("expr message syntax error")
         self.emit_bytes(B_SEND, 1)
         
     def compile_arg_message(self, recv, args):
@@ -517,6 +524,8 @@ class Compile(object):
                 self.compile_load_literal(a.value)
             elif isinstance(a, ParseUnaryMessage):
                 self.compile_unary_message(a.recv, a.name)
+            elif isinstance(a, ParseExprMessage):
+                self.compile_expr_message(a.recv, a.name, a.send)
             elif isinstance(a, ParseExecStatement):
                 self.compile_exec_statement(a.data)
             else:
