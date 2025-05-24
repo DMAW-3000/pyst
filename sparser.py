@@ -103,39 +103,62 @@ class Parser(object):
     
     def __init__(self, lex):
         self._lex = lex
+        self._lkahd = None
+        
+    def token(self):
+        if self._lkahd is not None:
+            t = self._lkahd
+            self._lkahd = None
+        else:
+            t = self._lex.token()
+        return t
+        
+    def lookahead(self):
+        t = self._lex.token()
+        if t is None:
+            return t
+        self._lkahd = t
+        return t.type
+            
+    def drop(self):
+        self._lkahd = None
         
     def parse(self):
         return ParseStatementList(self.parse_statement_list())
         
     def parse_statement_list(self):
-        slist = []
-        while True:
-            tlist = []
-            tok = self._lex.token()
-            while (tok is not None) and (tok.type != "PERIOD"):
-                tlist.append(tok)
-                tok = self._lex.token()
-            if len(tlist):
-                print(tlist)
-                slist.append(self.parse_statement(tlist))
-            else:
-                break
+        slist = [self.parse_statement()]
         return slist
         
-    def parse_statement(self, tlist):
-        if tlist[0].type == "CARET":
-            if len(tlist) > 1:
-                return ParseReturnStatement(self.parse_exec_statement(tlist[1:]))
-            else:
-                raise ParseError("empty return statement")
-        elif (tlist[0].type == "IDENT") and \
-             (len(tlist) > 1) and \
-             (tlist[1].type == "ASSIGN"):
-                return ParseAssignStatement(tlist[0].value, self.parse_exec_statement(tlist[2:]))
+    def parse_statement(self):
+        if self.lookahead() == "CARET":
+            self.drop()
+            s = ParseReturnStatement(self.parse_exec_statement())
         else:
-            return self.parse_exec_statement(tlist)
+            s = self.parse_exec_statement()
+        print(s)
+        return s
             
-    def parse_exec_statement(self, tlist):
-        return ParseExecStatement(ParseLiteral(tlist[0].value))
+    def parse_exec_statement(self):
+        tok = self.token()
+        if self.lookahead() == "ASSIGN":
+            self.drop()
+            return ParseAssignStatement(tok.value, self.parse_exec_statement())
+        else:
+            print(tok.type)
+            s = ParseExecStatement(self.parse_literal(tok))
+        return s
+        
+    def parse_literal(self, t):
+        if t.type == "SSTRING":
+            val = ParseLiteralString(t.value)
+        else:
+            val = t.value
+        return ParseLiteral(val)
+        
+        
+            
+            
+        
             
             

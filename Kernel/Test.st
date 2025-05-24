@@ -2,13 +2,13 @@
 
 Object subclass: Boolean [
 
-    test1 [
-		^self
+    test1: arg1 [
+		^arg1
 	]
 	
 	test2 [
-		f.
-		x := self
+		| x |
+		x := 'hello'
 	]
 ]
 
