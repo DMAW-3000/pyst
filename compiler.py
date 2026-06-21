@@ -43,7 +43,7 @@ class Compile(object):
         
         # the lexer and parser
         self._lex = Lexer
-        self._parse = Parser.parse
+        self._parse = Parser(self._lex)
         
         # helpers
         self._cur_klass = None
@@ -366,10 +366,11 @@ class Compile(object):
         """
         # setup parser
         self._lex.input(text)
+        self._parse.reset()
         print(text)
         
         # get list of statements
-        result = self._parse(text, lexer = self._lex, debug = False)
+        result = self._parse.parse_statements()
         if not isinstance(result, ParseStatementList):
             raise CompileError("bad statements")
             
