@@ -190,6 +190,15 @@ class Parser(object):
         else:
             self.lex()
             return True
+            
+    def lex_skip_manditory(self, tok):
+        """
+        Look for and eat token, otherwise exception
+        """
+        if self.token(0) != tok:
+            raise ParseError("expected token %s" % tok)
+        else:
+            self.lex()
         
     def parse_statements(self):
         sList = []
@@ -232,6 +241,10 @@ class Parser(object):
                 (tok == "DECNUMBER"):
             node = ParseLiteral(self.val(0))
             self.lex()
+        elif tok == "LPARENS":
+            self.lex()
+            node = self.parse_expr(self.EXPR_ANY)
+            self.lex_skip_manditory("RPARENS")
         return node
         
     def parse_message(self, recv, kind):
@@ -245,6 +258,10 @@ class Parser(object):
                 if not (kind & self.EXPR_BINOP):
                     return node
                 node = self.parse_message_binary(node, kind)
+            elif tok == "MESSAGEARG":
+                if not (kind & self.EXPR_KEYWORD):
+                    return node
+                node = self.parse_message_keyword(node, kind)
             else:
                 return node
             n += 1
@@ -261,5 +278,8 @@ class Parser(object):
         self.lex()
         node = self.parse_expr(kind & ~self.EXPR_BINOP)
         return ParseExprMessage(ParseExecStatement(recv), sel, node)
+        
+    def parse_message_keyword(self, recv, kind):
+        raise ParseError("keyword msg")
         
             
