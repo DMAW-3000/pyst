@@ -2,8 +2,6 @@
 Smalltalk statement parser
 """
 
-from lexer import tokens
-
 class ParseError(Exception): pass
 
 class ParseStatementList(object):
@@ -116,7 +114,7 @@ class Parser(object):
     EXPR_BINOP          = 4
     EXPR_KEYWORD        = 8
     EXPR_CASCADE        = 16
-    EXPR_CASCADED       = EXPR_BINOP | EXPR_KEYWORD,
+    EXPR_CASCADED       = EXPR_BINOP | EXPR_KEYWORD
     EXPR_ANY            = 31
     
     def __init__(self, lexer):
@@ -201,6 +199,9 @@ class Parser(object):
             self.lex()
         
     def parse_statements(self):
+        """
+        Parse a list of statements separated by '.'
+        """
         sList = []
         while True:
             carFlag = self.lex_skip_if("CARET")
@@ -214,6 +215,9 @@ class Parser(object):
         return ParseStatementList(sList)
         
     def parse_expr(self, kind):
+        """
+        Parse a general expression
+        """
         assign = None
         while True:
             if self.token(0) != "IDENT":
@@ -235,6 +239,9 @@ class Parser(object):
             return ParseExecStatement(node)
         
     def parse_primary(self):
+        """
+        Parse an isolated token
+        """
         node = None
         tok = self.token(0)
         if      (tok == "IDENT") or \
@@ -248,6 +255,9 @@ class Parser(object):
         return node
         
     def parse_message(self, recv, kind):
+        """
+        Parse a message send expression
+        """
         node = recv
         n = 0
         while True:
@@ -269,17 +279,26 @@ class Parser(object):
                 raise ParseError("parse msg overflow")
                 
     def parse_message_unary(self, recv, kind):
+        """
+        Parse a unary message
+        """
         sel = self.val(0)
         self.lex()
         return ParseUnaryMessage(recv, sel)
     
     def parse_message_binary(self, recv, kind):
+        """
+        Parse a binary expression message
+        """
         sel = self.val(0)
         self.lex()
         node = self.parse_expr(kind & ~self.EXPR_BINOP)
         return ParseExprMessage(ParseExecStatement(recv), sel, node)
         
     def parse_message_keyword(self, recv, kind):
+        """
+        Parse a keyword list message
+        """
         raise ParseError("keyword msg")
         
             
