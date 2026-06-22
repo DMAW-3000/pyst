@@ -248,6 +248,8 @@ class Parser(object):
                 (tok == "DECNUMBER"):
             node = ParseLiteral(self.val(0))
             self.lex()
+        elif tok == "LBRACK":
+            node = self.parse_block()
         elif tok == "LPARENS":
             self.lex()
             node = self.parse_expr(self.EXPR_ANY)
@@ -308,4 +310,13 @@ class Parser(object):
             if self.token(0) != "MESSAGEARG":
                 break
         return ParseArgumentMessage(ParseExecStatement(recv), aList)
+        
+    def parse_block(self):
+        """
+        Parse a block closure
+        """
+        self.lex()
+        slist = self.parse_statements()
+        self.lex_skip_manditory("RBRACK")
+        return ParseLiteralBlock(ParseLiteralBlock(slist))
             
