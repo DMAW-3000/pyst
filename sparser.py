@@ -143,7 +143,7 @@ class Parser(object):
             i = (self._la_first + self._la_size) % 4
             self._la[i] = self._lex.token()
             self._la_size += 1
-            print("<%d>: %s" % (i, self._la[i]))
+            #print("<%d>: %s" % (i, self._la[i]))
 
     def consume(self, n):
         """
@@ -226,8 +226,13 @@ class Parser(object):
             return ParseExecStatement(node)
         
     def parse_primary(self):
-        print("PARSE PRIMARY")
-        return None
+        node = None
+        tok = self.token(0)
+        if      (tok == "IDENT") or \
+                (tok == "DECNUMBER"):
+            node = ParseLiteral(self.val(0))
+            self.lex()
+        return node
         
     def parse_message(self, recv, kind):
         node = recv
@@ -235,7 +240,7 @@ class Parser(object):
         while True:
             tok = self.token(0)
             if tok == "IDENT":
-                node = None
+                node = self.parse_message_unary(node, kind)
             elif tok == "OPERATOR":
                 if not (kind & self.EXPR_BINOP):
                     return node
@@ -245,6 +250,11 @@ class Parser(object):
             n += 1
             if n > 1000:
                 raise ParseError("parse msg overflow")
+                
+    def parse_message_unary(self, recv, kind):
+        sel = self.val(0)
+        self.lex()
+        return ParseUnaryMessage(recv, sel)
     
     def parse_message_binary(self, recv, kind):
         sel = self.val(0)
