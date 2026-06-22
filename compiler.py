@@ -436,6 +436,7 @@ class Compile(object):
         Compile a := assignment statement
         """
         # check variable name
+        var = var.value
         if var in self._Keyword_Names:
             raise CompileError("assign to %s not allowed" % var)
         
@@ -487,6 +488,7 @@ class Compile(object):
         self.compile_exec_statement(recv.data)
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
+        print("compile msg: ", name)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         self.compile_exec_statement(send.data)
         self.emit_bytes(B_SEND, 1)
