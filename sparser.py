@@ -299,6 +299,13 @@ class Parser(object):
         """
         Parse a keyword list message
         """
-        raise ParseError("keyword msg")
-        
+        aList = []
+        while True:
+            name = self.val(0)
+            self.lex()
+            arg = self.parse_expr(kind & ~self.EXPR_KEYWORD)
+            aList.append(ParseMessageArg(name, arg))
+            if self.token(0) != "MESSAGEARG":
+                break
+        return ParseArgumentMessage(ParseExecStatement(recv), aList)
             
