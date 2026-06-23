@@ -294,7 +294,7 @@ class Parser(object):
         """
         sel = self.val(0)
         self.lex()
-        node = self.parse_expr(kind & ~self.EXPR_BINOP)
+        node = self.parse_expr(kind & ~self.EXPR_BINOP & ~self.EXPR_KEYWORD)
         return ParseExprMessage(ParseExecStatement(recv), sel, node)
         
     def parse_message_keyword(self, recv, kind):
