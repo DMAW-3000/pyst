@@ -475,6 +475,8 @@ class Compile(object):
         """
         if isinstance(recv, ParseUnaryMessage):
             self.compile_unary_message(recv.recv, recv.name)
+        elif isinstance(recv, ParseExecStatement):
+            self.compile_exec_statement(recv)
         else:
             self.compile_load_literal(recv.value)
         sym = self._sys.symbol_find_or_add(name)
