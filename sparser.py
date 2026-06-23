@@ -247,6 +247,9 @@ class Parser(object):
                 (tok == "DECNUMBER"):
             node = ParseLiteral(self.val(0))
             self.lex()
+        elif tok == "SSTRING":
+            node = ParseLiteral(ParseLiteralString(self.val(0)))
+            self.lex()
         elif tok == "LBRACK":
             node = self.parse_block()
         elif tok == "LPARENS":
