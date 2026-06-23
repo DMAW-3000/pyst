@@ -182,8 +182,7 @@ class Parser(object):
         Look for token and eat it if present.
         Returns True if token found, False otherwise.
         """
-        t0 = self.token(0)
-        if t0 != tok:
+        if self.token(0) != tok:
             return False
         else:
             self.lex()
