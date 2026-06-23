@@ -98,7 +98,7 @@ class Compile(object):
         # get definition body
         tok = self._lex.token()         # [
         if tok.type != "LBRACK":
-            raise CompileError("missing [")
+            raise CompileError("missing [ " + str(self._cur_meth))
             
         # check for attributes
         tok = self._lex.token()         # <
@@ -113,7 +113,7 @@ class Compile(object):
         # check for class variables
         if (tok.type != "IDENT") and (tok.type != "OPERATOR") and (tok.type != "MESSAGEARG"):
             print(tok)
-            raise CompileError("expected ident or operator")
+            raise CompileError("expected ident or operator " + str(self._cur_meth))
         while True:
             parse1 = tok         # name
             tok = self._lex.token()         # := or name
@@ -212,11 +212,11 @@ class Compile(object):
                     methName.append(tok.value)
                     tok = self._lex.token()     # ident
                     if tok.type != "IDENT":
-                        raise CompileError("expected ident")
+                        raise CompileError("expected ident " + str(self._cur_meth))
                     argNames.append(tok.value)
                     tok = self._lex.token()
                 else:
-                    raise CompileError("bad message syntax")
+                    raise CompileError("bad message syntax " + str(self._cur_meth))
                     
         # parse method name into a selector and argument names
         # create symbol for selector
@@ -336,7 +336,7 @@ class Compile(object):
         attrValue = self._lex.token()   # value
         tok = self._lex.token()         # >
         if (tok.type != "OPERATOR") or (tok.value != '>'):
-            raise CompileError("missing >")
+            raise CompileError("missing > " + str(self._cur_meth))
         if attrName.value == "category":
             self._cur_meth.descriptor.category = String.from_str(attrValue.value)
         elif attrName.value == "primitive":
@@ -355,7 +355,7 @@ class Compile(object):
         tok = self._lex.token()
         while (tok.type != "OPERATOR") and (tok.value != '|'):
             if tok.type != "IDENT":
-                raise CompileError("expected ident")
+                raise CompileError("expected ident "  + str(self._cur_meth))
             tempNames.append(tok.value)
             tok = self._lex.token()
         return tempNames
@@ -372,7 +372,7 @@ class Compile(object):
         # get list of statements
         result = self._parse.parse_statements()
         if not isinstance(result, ParseStatementList):
-            raise CompileError("bad statements")
+            raise CompileError("bad statements "  + str(self._cur_meth))
             
         # compile
         self.compile_statement_list(result.data, False)
@@ -522,7 +522,7 @@ class Compile(object):
             elif isinstance(a, ParseExecStatement):
                 self.compile_exec_statement(a.data)
             else:
-                raise CompileError("bad message argument syntax")
+                raise CompileError("bad message argument syntax "  + str(self._cur_meth))
             
         # send message
         self.emit_bytes(B_SEND, numArgs)
