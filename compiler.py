@@ -590,7 +590,7 @@ class Compile(object):
         
         # compile the block statements
         # check for empty closure
-        if s is None:
+        if s.data[0].data is None:
             idx = self.add_literal(self._nil)
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_RETURN_CONTEXT_STACK_TOP, 0)
         else:
