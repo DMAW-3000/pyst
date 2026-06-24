@@ -1170,6 +1170,9 @@ class CompiledBlock(_Code):
     def method(self, x):
         self[2] = x
         
+    def __str__(self):
+        return "BLOCKCODE(" + str(self.method) + ")"
+        
         
         
 class MethodInfo(Object):
