@@ -296,7 +296,10 @@ class Compile(object):
         remainder = self._lex.lexdata[self._lex.lexpos:]
         if tok.type != "RBRACK":
             stmtText = tok.value
-            brackCount = 1
+            if tok.type == "LBRACK":
+                brackCount = 2
+            else:
+                brackCount = 1
             comment = False
             c = remainder[pos]
             while brackCount > 0:
@@ -389,9 +392,9 @@ class Compile(object):
         Compile a python string of Smalltalk statements
         """
         # setup parser
+        print(text)
         self._lex.input(text)
         self._parse.reset()
-        print(text)
         
         # get list of statements
         result = self._parse.parse_statements()
