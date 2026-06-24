@@ -637,7 +637,7 @@ class Compile(object):
         self.context_pop()
         
         # add new block to context literals
-        idx = self.add_literal(BlockClosure(blkObj))
+        idx = self.add_literal(blkObj)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         
     def context_push(self):
