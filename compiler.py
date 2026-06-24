@@ -47,6 +47,7 @@ class Compile(object):
         
         # helpers
         self._cur_klass = None
+        self._cur_inst_var = []
         self._cur_meth = None
         self._cur_local = None
         self._cur_literal = None
@@ -93,15 +94,22 @@ class Compile(object):
         if binding.is_nil():
             raise CompileError("unknown class " + klassName)
         self._cur_klass = binding.value
+        self._cur_inst_var.clear()
         print("Compiling class", self._cur_klass.name)
         
         # get definition body
         tok = self._lex.token()         # [
         if tok.type != "LBRACK":
             raise CompileError("missing [ " + str(self._cur_meth))
+        tok = self._lex.token()
+            
+        # check for instance variables
+        if (tok.type == "OPERATOR") and (tok.value == '|'):
+            self.parse_inst_vars()
+            tok = self._lex.token()
+        print("Instance Variables: ", self._cur_inst_var)
             
         # check for attributes
-        tok = self._lex.token()         # <
         while (tok.type == "OPERATOR") and (tok.value == '<'):
             self.parse_class_attr()
             tok = self._lex.token()
@@ -112,7 +120,6 @@ class Compile(object):
             
         # check for class variables
         if (tok.type != "IDENT") and (tok.type != "OPERATOR") and (tok.type != "MESSAGEARG"):
-            print(tok)
             raise CompileError("expected ident or operator " + str(self._cur_meth))
         while True:
             parse1 = tok         # name
@@ -169,11 +176,23 @@ class Compile(object):
         attrValue = self._lex.token()   # value
         tok = self._lex.token()         # >
         if (tok.type != "OPERATOR") or (tok.value != '>'):
-            raise CompileError("missing >")
+            raise CompileError("attr missing >")
         if attrName.value == "comment":
             self._cur_klass.comment = String.from_str(attrValue.value)
         elif attrName.value == "category":
             self._cur_klass.category = String.from_str(attrValue.value)
+            
+    def parse_inst_vars(self):
+        """
+        Parse the class definition instance variables name list
+        """
+        tok = self._lex.token()
+        while tok.type == "IDENT":
+            self._cur_inst_var.append(tok.value)
+            tok = self._lex.token()
+        if (not tok.type == "OPERATOR") or (not tok.value == '|'):
+            raise CompileError("inst vars missing |")
+        
         
     def parse_class_var(self, varName):
         """
