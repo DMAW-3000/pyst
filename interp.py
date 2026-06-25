@@ -38,6 +38,7 @@ class Interp(object):
         bTbl[B_PUSH_LIT_VARIABLE] = self.b_push_lit_var
         bTbl[B_PUSH_TEMPORARY_VARIABLE] = self.b_push_temp_var
         bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
+        bTbl[B_RETURN_CONTEXT_STACK_TOP] = self.b_blk_ret
         bTbl[B_SEND] = self.b_send
         
     def reset(self):
@@ -273,6 +274,21 @@ class Interp(object):
         self.i_context = newCtx
         return 0
         
+    def b_blk_ret(self, ctx, arg):
+        """
+        Execute context return bytecode
+        """
+        # get sender parent context
+        newCtx = ctx.parent
+
+        # pop return value from current stack
+        # and push onto sender's stack
+        newCtx.push(ctx.pop())
+
+        # return control to sender
+        self.i_context = newCtx
+        return 0
+
     def p_Object_basicSize(self, ctx, recv, numArg):
         """
         Primitive hander for Object basicSize
