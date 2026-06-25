@@ -211,7 +211,14 @@ class Interp(object):
         """
         Execute push literal constant bytecode
         """
-        ctx.push(ctx.method.literals[arg])
+        # look for compiled blocks
+        # turn into BlockClosures
+        lit = ctx.method.literals[arg]
+        if is_obj(lit) and (lit.get_class() is self._sys.k_comp_block):
+            lit = BlockClosure(lit, self.i_context)
+            
+        # return on stack
+        ctx.push(lit)
         return 2
         
     def b_push_lit_var(self, ctx, arg):
