@@ -1155,7 +1155,7 @@ class CompiledBlock(_Code):
         (num_arg, depth)
         """
         hdr = self.header
-        return (hdr & 0x1f, 
+        return (hdr & 0x1f,
                (hdr >> 5) & 0x3f)
         
     def get_num_arg(self):
@@ -1164,9 +1164,15 @@ class CompiledBlock(_Code):
         """
         return self.header & 0x1f
         
+    def get_num_temp(self):
+        """
+        Get number of block temporary variables
+        """
+        return 0
+        
     def get_depth(self):
         """
-        Get stack depth required for method
+        Get depth of block
         """
         return (self.header >> 5) & 0x3f
     
