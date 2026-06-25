@@ -75,6 +75,7 @@ Init_Kernel_Mod = (
     "Boolean.st",
     "False.st",
     "True.st",
+    "BlkClosure.st",
 )
 
 # the list of primitive ops handled by the interpreter
@@ -84,4 +85,5 @@ Init_Primitive = (
     "Object_basicSize",
     "Object_identity",
     "Object_class",
+    "BlockClosure_value",
 )

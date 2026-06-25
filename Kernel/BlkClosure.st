@@ -44,55 +44,6 @@ execution context; this property can be used in the construction of
 control flow methods.  They also provide some methods that are used in the
 creation of Processes from blocks.'>
 
-    BlockClosure class >> exceptionHandlerResetBlock [
-	<category: 'private-instance creation'>
-	^[:context | context at: context numArgs + 1 put: 0]
-    ]
-
-    BlockClosure class >> exceptionHandlerSearchBlock [
-	<category: 'private-instance creation'>
-	^
-	[:context :signal | 
-	| best bestGoodness goodness activeHandlers nested |
-	bestGoodness := -1.
-	activeHandlers := context at: context numArgs + 1.
-	context at: context numArgs + 1 put: -1.
-	nested := activeHandlers = -1.
-	nested 
-	    ifFalse: 
-		[1 to: context numArgs - 1
-		    by: 2
-		    do: 
-			[:i | 
-			goodness := (context at: i) goodness: signal class.
-			goodness > -1 
-			    ifTrue: 
-				[(activeHandlers bitAt: i) = 1 
-				    ifTrue: 
-					["Sorry, this handler is already active..."
-
-					nested := true.
-					goodness := -1]].
-			goodness > bestGoodness 
-			    ifTrue: 
-				[best := i.
-				bestGoodness := goodness]]].
-
-	"Now instantiate the best handler we found"
-	best isNil 
-	    ifFalse: 
-		[context at: context numArgs + 1 put: (activeHandlers setBit: best).
-		signal 
-		    onDoBlock: context receiver
-		    handlerBlock: (context at: best + 1)
-		    onDoContext: context
-		    previousState: activeHandlers.
-		#found]
-	    ifTrue: 
-		[context at: context numArgs + 1 put: activeHandlers.
-		nested ifTrue: [#skip] ifFalse: [nil]]]
-    ]
-
     BlockClosure class >> numArgs: args numTemps: temps bytecodes: bytecodes depth: depth literals: literalArray [
 	"Answer a BlockClosure for a new CompiledBlock that is created using
 	 the passed parameters.  To make it work, you must put the BlockClosure
@@ -105,38 +56,6 @@ creation of Processes from blocks.'>
 		    bytecodes: bytecodes
 		    depth: depth
 		    literals: literalArray)
-    ]
-
-    BlockClosure class >> block: aCompiledBlock receiver: anObject outerContext: aContext [
-	"Answer a BlockClosure that activates the passed CompiledBlock
-	 with the given receiver."
-
-	<category: 'instance creation'>
-	^(self new)
-	    block: aCompiledBlock;
-	    receiver: anObject;
-	    outerContext: aContext;
-	    yourself
-    ]
-
-    BlockClosure class >> block: aCompiledBlock receiver: anObject [
-	"Answer a BlockClosure that activates the passed CompiledBlock
-	 with the given receiver."
-
-	<category: 'instance creation'>
-	^(self new)
-	    block: aCompiledBlock;
-	    receiver: anObject;
-	    yourself
-    ]
-
-    BlockClosure class >> block: aCompiledBlock [
-	"Answer a BlockClosure that activates the passed CompiledBlock."
-
-	<category: 'instance creation'>
-	^(self new)
-	    block: aCompiledBlock;
-	    yourself
     ]
 
     BlockClosure class >> isImmediate [
@@ -157,109 +76,6 @@ creation of Processes from blocks.'>
 	^self shallowCopy	"it's about as deep as we need to get"
     ]
 
-    asContext: parent [
-	"Answer a context which will evaluate the receiver without effects on
-	 the given context's stack (the return value won't be pushed), as
-	 soon as it becomes the VM's thisContext.
-	 parent can be nil - in which case reaching the end of the block will
-	 probably crash Smalltalk.
-	 Note that the block has no home, so it cannot contain returns."
-
-	<category: 'private'>
-	^BlockContext
-	    fromClosure: [
-	        | top |
-	        top := parent isNil
-		    ifTrue: [nil]
-		    ifFalse: [
-                        "This is really ugly.  The right solution would be
-                         to move the receiver into the first stack slot,
-                         so that sp is guaranteed to be non-negative."
-			parent sp == -1
-			    ifTrue: [parent instVarAt: parent class instSize]
-			    ifFalse: [parent at: parent sp + 1]].
-	        self value. top]
-	    parent: parent.
-    ]
-
-    on: anException do: aBlock [
-	"Evaluate the receiver; when anException is signaled, evaluate aBlock
-	 passing a Signal describing the exception. Answer either the result of
-	 evaluating the receiver or the parameter of a Signal>>#return:"
-
-	<category: 'exception handling'>
-	| active |
-	<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
-	reset: BlockClosure exceptionHandlerResetBlock>
-	active := 0.
-	^self valueAndResumeOnUnwind
-    ]
-
-    on: e1 do: b1 on: e2 do: b2 [
-	"Evaluate the receiver; when e1 or e2 are signaled, evaluate respectively
-	 b1 or b2, passing a Signal describing the exception. Answer either the
-	 result of evaluating the receiver or the argument of a Signal>>#return:"
-
-	<category: 'exception handling'>
-	| active |
-	<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
-	reset: BlockClosure exceptionHandlerResetBlock>
-	active := 0.
-	^self valueAndResumeOnUnwind
-    ]
-
-    on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 [
-	"Evaluate the receiver; when e1, e2 or e3 are signaled, evaluate
-	 respectively b1, b2 or b3, passing a Signal describing the exception.
-	 Answer either the result of evaluating the receiver or the parameter of a
-	 Signal>>#return:"
-
-	<category: 'exception handling'>
-	| active |
-	<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
-	reset: BlockClosure exceptionHandlerResetBlock>
-	active := 0.
-	^self valueAndResumeOnUnwind
-    ]
-
-    on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 on: e4 do: b4 [
-	"Evaluate the receiver; when e1, e2, e3 or e4 are signaled, evaluate
-	 respectively b1, b2, b3 or b4, passing a Signal describing the exception.
-	 Answer either the result of evaluating the receiver or the parameter of a
-	 Signal>>#return:"
-
-	<category: 'exception handling'>
-	| active |
-	<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
-	reset: BlockClosure exceptionHandlerResetBlock>
-	active := 0.
-	^self valueAndResumeOnUnwind
-    ]
-
-    on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 on: e4 do: b4 on: e5 do: b5 [
-	"Evaluate the receiver; when e1, e2, e3, e4 or e5 are signaled, evaluate
-	 respectively b1, b2, b3, b4 or b5, passing a Signal describing the exception.
-	 Answer either the result of evaluating the receiver or the parameter of a
-	 Signal>>#return:"
-
-	<category: 'exception handling'>
-	| active |
-	<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
-	reset: BlockClosure exceptionHandlerResetBlock>
-	active := 0.
-	^self valueAndResumeOnUnwind
-    ]
-
-    ifError: aBlock [
-	"Evaluate the receiver; when #error: is called, pass to aBlock the receiver
-	 and the parameter, and answer the result of evaluating aBlock.  If another
-	 exception is raised, it is passed to an outer handler; if no exception is
-	 raised, the result of evaluating the receiver is returned."
-
-	<category: 'exception handling'>
-	^self on: Error do: [:sig | sig return: (aBlock cull: sig messageText)]
-    ]
-
     ensure: aBlock [
 	"Evaluate the receiver; when any exception is signaled exit returning the
 	 result of evaluating aBlock; if no exception is raised, return the result
@@ -270,25 +86,6 @@ creation of Processes from blocks.'>
 	result := self valueAndResumeOnUnwind.
 	aBlock value.
 	^result
-    ]
-
-    ifCurtailed: aBlock [
-	"Evaluate the receiver; if its execution triggers an unwind which truncates
-	 the execution of the block (`curtails' the block), evaluate aBlock.  The
-	 three cases which can curtail the execution of the receiver are: a non-local
-	 return in the receiver, a non-local return in a block evaluated by the
-	 receiver which returns past the receiver itself, and an exception raised
-	 and not resumed during the execution of the receiver."
-
-	<category: 'unwind protection'>
-	| curtailed |
-	^
-	[| result |
-	curtailed := true.
-	result := self value.
-	curtailed := false.
-	result] 
-		ensure: [curtailed ifTrue: [aBlock value]]
     ]
 
     valueWithUnwind [
@@ -317,7 +114,7 @@ creation of Processes from blocks.'>
 	 by the compiler"
 
 	<category: 'control structures'>
-	[self value] repeat
+	self value repeat
     ]
 
     whileTrue: aBlock [
@@ -327,7 +124,8 @@ creation of Processes from blocks.'>
 	 by the compiler"
 
 	<category: 'control structures'>
-	[self value] whileTrue: [aBlock value].
+	self value ifTrue: [aBlock value.
+	                    self whileTrue: aBlock].
 	^nil
     ]
 
@@ -338,7 +136,8 @@ creation of Processes from blocks.'>
 	 by the compiler"
 
 	<category: 'control structures'>
-	[self value] whileFalse: [aBlock value].
+	self value ifFalse: [aBlock value.
+	                     self whileFalse: aBlock].
 	^nil
     ]
 
@@ -349,7 +148,7 @@ creation of Processes from blocks.'>
 	 by the compiler"
 
 	<category: 'control structures'>
-	^[self value] whileTrue
+	^self value ifTrue: [self whileTrue]
     ]
 
     whileFalse [
@@ -359,88 +158,9 @@ creation of Processes from blocks.'>
 	 by the compiler"
 
 	<category: 'control structures'>
-	^[self value] whileFalse
+	^self value ifFalse: [self whileFalse]
     ]
-
-    fork [
-	"Create a new process executing the receiver and start it"
-
-	<category: 'multiple process'>
-	^Process 
-	    on: self
-	    at: Processor activePriority
-	    suspend: false
-    ]
-
-    forkAt: priority [
-	"Create a new process executing the receiver with given priority
-	 and start it"
-
-	<category: 'multiple process'>
-	^Process 
-	    on: self
-	    at: priority
-	    suspend: false
-    ]
-
-    newProcess [
-	"Create a new process executing the receiver in suspended state.
-	 The priority is the same as for the calling process. The receiver
-	 must not contain returns"
-
-	<category: 'multiple process'>
-	^Process 
-	    on: self
-	    at: Processor activePriority
-	    suspend: true
-    ]
-
-    newProcessWith: anArray [
-	"Create a new process executing the receiver with the passed
-	 arguments, and leave it in suspended state. The priority is
-	 the same as for the calling process. The receiver must not
-	 contain returns"
-
-	<category: 'multiple process'>
-	^Process 
-	    on: [self valueWithArguments: anArray]
-	    at: Processor activePriority
-	    suspend: true
-    ]
-
-    forkWithoutPreemption [
-	"Evaluate the receiver in a process that cannot be preempted.
-	 If the receiver expect a parameter, pass the current process."
-
-	<category: 'multiple process'>
-	| creator |
-	creator := Processor activeProcess.
-	^Process 
-	    on: [self cull: creator]
-	    at: Processor unpreemptedPriority
-	    suspend: false
-    ]
-
-    valueWithoutInterrupts [
-	"Evaluate aBlock and delay all interrupts that are requested to the
-	 active process during its execution to after aBlock returns."
-
-	<category: 'multiple process'>
-	^Processor activeProcess valueWithoutInterrupts: self
-    ]
-
-    valueWithoutPreemption [
-	"Evaluate the receiver with external interrupts disabled.  This
-	 effectively disables preemption as long as the block does not
-	 explicitly yield control, wait on semaphores, and the like."
-
-	<category: 'multiple process'>
-	^
-	[Processor disableInterrupts.
-	self value] 
-		ensure: [Processor enableInterrupts]
-    ]
-
+	
     hasMethodReturn [
 	"Answer whether the block contains a method return"
 
@@ -560,7 +280,7 @@ creation of Processes from blocks.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_value>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     value: arg1 [
@@ -568,7 +288,7 @@ creation of Processes from blocks.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_value>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     value: arg1 value: arg2 [
@@ -576,7 +296,7 @@ creation of Processes from blocks.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_value>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     value: arg1 value: arg2 value: arg3 [
@@ -584,7 +304,7 @@ creation of Processes from blocks.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_value>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     cull: arg1 [
@@ -593,7 +313,7 @@ creation of Processes from blocks.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_cull>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     cull: arg1 cull: arg2 [
@@ -602,7 +322,7 @@ creation of Processes from blocks.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_cull>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     cull: arg1 cull: arg2 cull: arg3 [
@@ -611,7 +331,7 @@ creation of Processes from blocks.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_cull>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     valueWithArguments: argumentsArray [
@@ -620,8 +340,8 @@ creation of Processes from blocks.'>
 	<category: 'built ins'>
 	<primitive: VMpr_BlockClosure_valueWithArguments>
 	argumentsArray isArray 
-	    ifFalse: [SystemExceptions.WrongClass signalOn: argumentsArray mustBe: Array].
-	SystemExceptions.WrongArgumentCount signal
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: argumentsArray mustBe: Array].
+	"SystemExceptions." WrongArgumentCount signal
     ]
 
     method: aCompiledCode [
@@ -635,7 +355,7 @@ creation of Processes from blocks.'>
 
 	<category: 'private'>
 	<primitive: VMpr_BlockClosure_valueAndResumeOnUnwind>
-	SystemExceptions.WrongArgumentCount signal
+	"SystemExceptions."WrongArgumentCount signal
     ]
 ]
 
