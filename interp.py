@@ -312,6 +312,25 @@ class Interp(object):
         ctx.push(klass)
         return True
         
+    def p_BlockClosure_value(self, ctx, recv, numArg):
+        """
+        Primitive handler for BlockClosure value
+        """
+        # get block info znc verify number of args
+        blkObj = recv.block
+        numHdrArgs, depth, = blkObj.get_hdr()
+        if numHdrArgs != numArg:
+            return False
+
+        # allocate a new context and link to old
+        newCtx = BlockContext()
+        newCtx.parent = ctx
+        newCtx.method = blkObj
+        newCtx.outerContext = recv.outerContext
+        print(newCtx.outerContext.method)
+
+        raise RuntimeError("blk value")
+        return True
         
         
 
