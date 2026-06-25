@@ -146,7 +146,6 @@ class Interp(object):
             except IndexError:
                 primFunc = None
             if (primFunc is not None) and primFunc(newCtx, recvObj, numArgs):
-                oldCtx.push(newCtx.pop())
                 return
             
         # make room for temp variables on new stack
@@ -274,7 +273,7 @@ class Interp(object):
         """
         Primitive hander for Object basicSize
         """
-        ctx.push(recv.size)
+        ctx.parent.push(recv.size)
         return True
         
     def p_Object_identity(self, ctx, recv, numArg):
@@ -298,7 +297,7 @@ class Interp(object):
                     ret = self._true
                 else:
                     ret = self._false
-        ctx.push(ret)
+        ctx.parent.push(ret)
         return True
         
     def p_Object_class(self, ctx, recv, numArg):
@@ -309,7 +308,7 @@ class Interp(object):
             klass = self._sys.k_small_int
         else:
             klass = recv.get_class()
-        ctx.push(klass)
+        ctx.parent.push(klass)
         return True
         
     def p_BlockClosure_value(self, ctx, recv, numArg):
