@@ -1234,12 +1234,13 @@ class BlockClosure(Object):
     
     _Cover = None
     
-    def __init__(self, blk):
+    def __init__(self, blk, outer):
         """
         Create a new BlockClosure
         """
         super().__init__(3)
         self.block = blk
+        self.outerContext = outer
         
     @property
     def outerContext(self):
@@ -1264,6 +1265,9 @@ class BlockClosure(Object):
     @receiver.setter
     def receiver(self, x):
         self[2] = x
+        
+    def __str__(self):
+        return "BLOCK(" + str(self.block.method) + ")"
 
 
 # the global bytecode values
