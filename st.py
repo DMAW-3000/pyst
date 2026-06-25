@@ -1142,6 +1142,34 @@ class CompiledBlock(_Code):
     
     _Cover = None
     
+    def set_hdr(self, numArg, depth):
+        """
+        Set the method header info
+        """
+        self.header = (numArg & 0x1f) | \
+                      ((depth & 0x3f) << 5)
+                      
+    def get_hdr(self):
+        """
+        Return the method header info as a tuple:
+        (num_arg, depth)
+        """
+        hdr = self.header
+        return (hdr & 0x1f, 
+               (hdr >> 5) & 0x3f)
+        
+    def get_num_arg(self):
+        """
+        Get number of method arguments
+        """
+        return self.header & 0x1f
+        
+    def get_depth(self):
+        """
+        Get stack depth required for method
+        """
+        return (self.header >> 5) & 0x3f
+    
     @property
     def literals(self):
         return self[0]
