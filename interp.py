@@ -317,18 +317,18 @@ class Interp(object):
         """
         # get block info znc verify number of args
         blkObj = recv.block
-        numHdrArgs, depth, = blkObj.get_hdr()
+        numHdrArgs, depth = blkObj.get_hdr()
         if numHdrArgs != numArg:
             return False
 
         # allocate a new context and link to old
         newCtx = BlockContext()
-        newCtx.parent = ctx
+        newCtx.parent = ctx.parent
         newCtx.method = blkObj
         newCtx.outerContext = recv.outerContext
-        print(newCtx.outerContext.method)
 
-        raise RuntimeError("blk value")
+        # transfer control to new context
+        self.i_context = newCtx
         return True
         
         

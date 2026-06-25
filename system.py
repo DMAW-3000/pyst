@@ -174,8 +174,8 @@ class Smalltalk(object):
         #                         klassObj.classVariables))
         
         x = inst.g_interp.send_message_extern(inst.o_true, 
-                                              "~~", 
-                                              (inst.o_true,))
+                                              "isKindOf:", 
+                                              (inst.k_false,))
         print()
         print(x)
         
@@ -680,8 +680,13 @@ class Smalltalk(object):
         ctx = self.g_interp.i_context
         ip = ctx.ip
         code = ctx.method.get_code()
-        selName = ctx.method.descriptor.selector
-        klassName = ctx.method.descriptor.klass
+        if not is_int(ctx[6]):
+            desc =  ctx.method.method.descriptor
+            selName = "%s[Block]" % desc.selector
+        else:
+            desc = ctx.method.descriptor
+            selName = desc.selector
+        klassName = desc.klass
         print("<%s> %s[%d]:" % (klassName, selName, ip), self.dis_byte(code[ip]))
     
     @staticmethod
@@ -693,7 +698,10 @@ class Smalltalk(object):
         if meth.is_nil():
             methName = meth
         else:
-            methName = meth.descriptor.selector
+            if not is_int(ctx[6]):
+                methName = "Block<%s>" % meth.method.descriptor.selector
+            else:
+                methName = meth.descriptor.selector
         print("Method:", methName, "[%d]" % ctx.ip)
         print("Recv:", ctx.receiver)
         if not meth.is_nil():
