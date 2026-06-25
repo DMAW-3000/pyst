@@ -184,6 +184,8 @@ class UndefinedObject(Object):
 class CFalse(Object):
     """
     Internal representation of Smalltalk False
+    Instance variables:
+        truthValue
     """
     
     _Cover = None
@@ -213,6 +215,8 @@ class CFalse(Object):
 class CTrue(Object):
     """
     Internal representation of Smalltalk True
+    Instance variables:
+        truthValue
     """
     
     _Cover = None
@@ -329,6 +333,9 @@ class Symbol(String):
 class SymLink(Object):
     """
     Internal representation of SymLink object
+    Instance variables:
+        nextLink
+        symbol
     """
     
     _Cover = None
@@ -361,6 +368,9 @@ class SymLink(Object):
 class Association(Object):
     """
     Internal representation of a Smalltalk Association
+    Instance variables:
+        key
+        value
     """
     
     _Cover = None
@@ -393,6 +403,10 @@ class Association(Object):
 class VariableBinding(Object):
     """
     Internal representation of a Smalltalk VariableBinding
+    Instance variables:
+        key
+        value
+        environment
     """
     
     _Cover = None
@@ -453,6 +467,8 @@ class _Dict(Object):
 class Dictionary(_Dict):
     """
     Internal representation of a Smalltalk Dictionary
+    Instance variables:
+        tally
     """
     
     _Cover = None
@@ -487,6 +503,9 @@ class Dictionary(_Dict):
 class BindingDictionary(_Dict):
     """
     Internal representation of a Smalltalk BindingDictionary
+    Instance variables:
+        tally
+        environment
     """
     
     _Cover = None
@@ -529,6 +548,9 @@ class BindingDictionary(_Dict):
 class MethodDictionary(_Dict):
     """
     Internal representation of a Smalltalk IdentityDictionary
+    Instance variables:
+        tally
+        mutex
     """
     
     _Cover = None
@@ -571,6 +593,12 @@ class MethodDictionary(_Dict):
 class Namespace(_Dict):
     """
     Internal representation of a Smalltalk Namespace
+    Instance variables:
+        tally
+        name
+        environment
+        subspaces
+        sharedPools
     """
     
     _Cover = None
@@ -638,6 +666,19 @@ class Namespace(_Dict):
 class Class(Object):
     """
     Internal representation of a Smalltalk Class
+    Instance variables:
+        superClass
+        methodDictionary
+        instanceSpec
+        subClasses
+        instanceVariables
+        name
+        comment
+        category
+        environment
+        classVariables
+        sharedPools
+        pragmaHandlers
     """
     
     _Cover = None
@@ -765,6 +806,13 @@ class Class(Object):
 class Metaclass(Object):
     """
     The internal representation of Smalltalk Metaclass
+    Instance variables:
+        superClass
+        methodDictionary
+        instanceSpec
+        subClasses
+        instanceVariables
+        instanceClass
     """
     
     _Cover = None
@@ -867,6 +915,15 @@ class _Context(Object):
 class BlockContext(_Context):
     """
     Internal representation of Smalltalk BlockContext
+    Instance variables:
+        parent
+        native_ip
+        ip
+        sp
+        receiver
+        method
+        outerContext
+        <stack>
     """
     
     _Cover = None
@@ -931,6 +988,15 @@ class BlockContext(_Context):
 class MethodContext(_Context):
     """
     Internal representation of Smalltalk MethodContext
+    Instance variables:
+        parent
+        native_ip
+        ip
+        sp
+        receiver
+        method
+        flags
+        <stack>
     """
     
     _Cover = None
@@ -1054,6 +1120,11 @@ class _Code(Object):
 class CompiledMethod(_Code):
     """
     Internal representation of Smalltalk CompiledMethod
+    Instance variables:
+        literals
+        header
+        descriptor
+        <bytecode>
     """
     
     _Cover = None
@@ -1138,6 +1209,11 @@ class CompiledMethod(_Code):
 class CompiledBlock(_Code):
     """
     Internal representation of Smalltalk CompiledBlock
+    Instance variables:
+        literals
+        header
+        method
+        <bytecode>
     """
     
     _Cover = None
@@ -1212,6 +1288,12 @@ class CompiledBlock(_Code):
 class MethodInfo(Object):
     """
     Internal representation of Smalltalk MethodInfo
+    Instance variables:
+        sourceCode
+        category
+        klass
+        selector
+        debugInfo
     """
     
     _Cover = None
@@ -1264,6 +1346,10 @@ class MethodInfo(Object):
 class BlockClosure(Object):
     """
     Internal representation of Smalltalk BlockClosure
+    Instance variables:
+        outerContext
+        block
+        receiver
     """
     
     _Cover = None
