@@ -214,7 +214,11 @@ class Interp(object):
         # turn into BlockClosures
         lit = ctx.method.literals[arg]
         if is_obj(lit) and (lit.get_class() is self._sys.k_comp_block):
-            lit = BlockClosure(lit, self.i_context)
+            blk = BlockClosure()
+            blk.block = lit
+            blk.outerContext = ctx
+            blk.receiver = ctx.receiver
+            lit = blk
             
         # return on stack
         ctx.push(lit)
@@ -324,6 +328,7 @@ class Interp(object):
         # allocate a new context and link to old
         newCtx = BlockContext()
         newCtx.parent = ctx.parent
+        newCtx.receiver = recv.receiver
         newCtx.method = blkObj
         newCtx.outerContext = recv.outerContext
 
