@@ -30,4 +30,6 @@ if __name__ == '__main__':
 
     # run the system
     Smalltalk.rebuild(args.debug)
+    Smalltalk.run()
+    
     

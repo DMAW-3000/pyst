@@ -76,6 +76,7 @@ class Smalltalk(object):
         self.k_lookup_table = None
         self.k_ident_dictionary = None
         self.k_meth_dictionary = None
+        self.k_test = None
         
         # fundamental objects
         self.o_nil = None
@@ -173,6 +174,10 @@ class Smalltalk(object):
         #                         klassObj.superClass,
         #                         klassObj.classVariables))
         
+    
+    @classmethod
+    def run(klass):
+        inst = klass._SmalltalkInstance
         x = inst.g_interp.send_message_extern(inst.o_true, 
                                               "isKindOf:", 
                                               (inst.k_false,))
