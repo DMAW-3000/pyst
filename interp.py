@@ -43,21 +43,15 @@ class Interp(object):
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
         
-    def reset(self):
-        """
-        Prepare for execution
-        """
-        # create the root context
-        # leave the parent nil
-        self.i_context = MethodContext()
-        
     def send_message_extern(self, recvObj, selName, argValues):
         """
         Send a message from outside the interpreter.
         The selector name is a python str and the arg
         value sequence must match the selector arg order.
         """
-        self.reset()
+        # create the root context
+        # leave the parent nil
+        self.i_context = MethodContext()
         psh = self.i_context.push
         
         # find selector symbol
