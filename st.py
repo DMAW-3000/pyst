@@ -870,6 +870,9 @@ class Metaclass(Object):
     def instanceClass(self, x):
         self[5] = x
         
+    def __str__(self):
+        return "META(" + str(self.instanceClass) + ")"
+        
 
 class _Context(Object):
     """
