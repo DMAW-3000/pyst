@@ -296,6 +296,7 @@ class Smalltalk(object):
         disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 2, 0)
         disTbl[B_PUSH_TEMPORARY_VARIABLE] = ("PUSH_TEMP_VARIABLE", 2, 1)
         disTbl[B_PUSH_OUTER_TEMP] = ("PUSH_OUTER_VARIABLE", 4, 2)
+        disTbl[B_PUSH_RECEIVER_VARIABLE] = ("PUSH_RECV_VARIABLE", 2, 1)
         disTbl[B_STORE_LIT_VARIABLE] = ("STORE_LIT_VARIABLE", 2, 1)
         disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 2, 1)
     
