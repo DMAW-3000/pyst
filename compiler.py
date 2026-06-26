@@ -143,30 +143,36 @@ class Compile(object):
                 tok = self._lex.token()     # >>
                 if (tok.type != "OPERATOR") or (tok.value != ">>"):
                     CompileError("expected >>")
-                self.parse_method([], [], True, False)
+                self.parse_method([], [], True, False, True)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "OPERATOR") and (parse2.type == "IDENT"):
-                self.parse_method([parse1.value], [parse2.value], True, True)
+                self.parse_method([parse1.value], [parse2.value], True, True, False)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "MESSAGEARG") and (parse2.type == "IDENT"):
-                self.parse_method([parse1.value], [parse2.value], True, False)
+                self.parse_method([parse1.value], [parse2.value], True, False, False)
                 parse1 = None
                 parse2 = None
                 continue
             elif (parse1.type == "IDENT") and (parse2.type == "LBRACK"):
-                self.parse_method([parse1.value], [], False, False)
+                self.parse_method([parse1.value], [], False, False, False)
                 parse1 = None
                 parse2 = None
             else:
                 raise CompileError("bad method syntax")
         
-        print("Meth Dict:")
-        self._sys.identdict_print(self._cur_klass.methodDictionary)
-        print()
+        if (not self._cur_klass.get_class().is_nil()) and (not self._cur_klass.get_class().methodDictionary.is_nil()):
+            print("Class Meth Dict:")
+            self._sys.identdict_print(self._cur_klass.get_class().methodDictionary)
+            print()
+        
+        if not self._cur_klass.methodDictionary.is_nil():
+            print("Inst Meth Dict:")
+            self._sys.identdict_print(self._cur_klass.methodDictionary)
+            print()
                 
     def parse_class_attr(self):
         """
@@ -217,7 +223,7 @@ class Compile(object):
         self._sys.dict_add(varDict, symObj, varObj)
         print("Class Variable:", symObj, varObj)
         
-    def parse_method(self, methName, argNames, parseBrack, opName):
+    def parse_method(self, methName, argNames, parseBrack, opName, klassMeth):
         """
         Parse the definition of a method
         """
@@ -337,9 +343,15 @@ class Compile(object):
             self._sys.arr_print(methObj.literals)
             
         # add method to class dictionary
-        methDict = self._cur_klass.methodDictionary
-        if methDict.is_nil():
-            self._cur_klass.methodDictionary = methDict = MethodDictionary.new_n(32)
+        # or metaclass dictionary if class method
+        if klassMeth:
+            methDict = self._cur_klass.get_class().methodDictionary
+            if methDict.is_nil():
+                self._cur_klass.get_class().methodDictionary = methDict = MethodDictionary.new_n(32)
+        else:
+            methDict = self._cur_klass.methodDictionary
+            if methDict.is_nil():
+                self._cur_klass.methodDictionary = methDict = MethodDictionary.new_n(32)
         self._sys.identdict_add(methDict, methSym, methObj)
             
         byteCode = methObj.get_code()
