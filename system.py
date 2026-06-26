@@ -557,7 +557,10 @@ class Smalltalk(object):
         if superObj.is_nil():
             numSuper = 0
         else:
-            numSuper = superObj.instanceVariables.size
+            if superObj.instanceVariables.is_nil():
+                numSuper = 0
+            else:
+                numSuper = superObj.instanceVariables.size
         numInst = len(varNames)
         numVar = numSuper + numInst
         if numVar == 0:
