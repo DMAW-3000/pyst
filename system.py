@@ -149,7 +149,6 @@ class Smalltalk(object):
         
         # initialize interpreter
         inst.g_interp = Interp(inst)
-        inst.g_interp.reset()
         if debug:
             inst.g_interp.set_debug(inst.debug_hook_pre, inst.debug_hook_post)
         
@@ -178,9 +177,9 @@ class Smalltalk(object):
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        x = inst.g_interp.send_message_extern(inst.o_true, 
-                                              "isKindOf:", 
-                                              (inst.k_false,))
+        x = inst.g_interp.send_message_extern(inst.k_test, 
+                                              "new", 
+                                              ())
         print()
         print(x)
         

@@ -77,6 +77,7 @@ Init_Kernel_Mod = (
     "False.st",
     "True.st",
     "BlkClosure.st",
+    "Behavior.st",
     "Test.st",
 )
 
