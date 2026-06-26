@@ -287,18 +287,19 @@ class Smalltalk(object):
         2 = number of parameters
         """
         disTbl = self.g_dis
-        disTbl[B_PUSH_SELF] = ("PUSH_SELF", 2, 0)
-        disTbl[B_RETURN_METHOD_STACK_TOP] = ("RETURN_METHOD", 2, 0)
-        disTbl[B_RETURN_CONTEXT_STACK_TOP] = ("RETURN_CONTEXT", 2, 0)
-        disTbl[B_PUSH_LIT_VARIABLE] = ("PUSH_LIT_VARIABLE", 2, 1)
-        disTbl[B_PUSH_LIT_CONSTANT] = ("PUSH_LIT_CONSTANT", 2, 1)
-        disTbl[B_SEND] = ("SEND", 2, 1)
-        disTbl[B_POP_STACK_TOP] = ("POP_STACK_TOP", 2, 0)
-        disTbl[B_PUSH_TEMPORARY_VARIABLE] = ("PUSH_TEMP_VARIABLE", 2, 1)
-        disTbl[B_PUSH_OUTER_TEMP] = ("PUSH_OUTER_VARIABLE", 4, 2)
-        disTbl[B_PUSH_RECEIVER_VARIABLE] = ("PUSH_RECV_VARIABLE", 2, 1)
-        disTbl[B_STORE_LIT_VARIABLE] = ("STORE_LIT_VARIABLE", 2, 1)
-        disTbl[B_STORE_TEMPORARY_VARIABLE] = ("STORE_TEMP_VARIABLE", 2, 1)
+        disTbl[B_PUSH_SELF]                 = ("PUSH_SELF", 2, 0)
+        disTbl[B_RETURN_METHOD_STACK_TOP]   = ("RETURN_METHOD", 2, 0)
+        disTbl[B_RETURN_CONTEXT_STACK_TOP]  = ("RETURN_CONTEXT", 2, 0)
+        disTbl[B_PUSH_LIT_VARIABLE]         = ("PUSH_LIT_VARIABLE", 2, 1)
+        disTbl[B_PUSH_LIT_CONSTANT]         = ("PUSH_LIT_CONSTANT", 2, 1)
+        disTbl[B_SEND]                      = ("SEND", 2, 1)
+        disTbl[B_POP_STACK_TOP]             = ("POP_STACK_TOP", 2, 0)
+        disTbl[B_PUSH_TEMPORARY_VARIABLE]   = ("PUSH_TEMP_VARIABLE", 2, 1)
+        disTbl[B_PUSH_OUTER_TEMP]           = ("PUSH_OUTER_VARIABLE", 4, 2)
+        disTbl[B_PUSH_RECEIVER_VARIABLE]    = ("PUSH_RECV_VARIABLE", 2, 1)
+        disTbl[B_STORE_LIT_VARIABLE]        = ("STORE_LIT_VARIABLE", 2, 1)
+        disTbl[B_STORE_TEMPORARY_VARIABLE]  = ("STORE_TEMP_VARIABLE", 2, 1)
+        disTbl[B_STORE_RECEIVER_VARIABLE]   = ("STORE_RECV_VARIABLE", 2, 1)
     
     def build_primitives(self):
         """
