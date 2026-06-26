@@ -468,13 +468,20 @@ class Compile(object):
         self.compile_exec_statement(s.data)
         
         # assign value
+        # look in locals first
         idx, scope = self.find_local(var)
         if idx is not None:
             self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
         else:
-            sym = self._sys.symbol_find_or_add(var)
-            idx = self.add_literal(sym)
-            self.emit_bytes(B_STORE_LIT_VARIABLE, idx)
+            # look in instance variables
+            try:
+                idx = self._cur_inst_var.index(var)
+                self.emit_bytes(B_STORE_RECEIVER_VARIABLE, idx)
+            except ValueError:
+                # variable is global
+                sym = self._sys.symbol_find_or_add(var)
+                idx = self.add_literal(sym)
+                self.emit_bytes(B_STORE_LIT_VARIABLE, idx)
         
     def compile_exec_statement(self, s):
         """
@@ -576,16 +583,7 @@ class Compile(object):
                 self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             # variable name
             else:
-                idx, scope = self.find_local(x)
-                if idx is not None:
-                    if scope == 0:
-                        self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
-                    elif scope > 0:
-                        self.emit_bytes(B_PUSH_OUTER_TEMP, idx, scope - 1, 0)
-                else:
-                    sym = self._sys.symbol_find_or_add(x)
-                    idx = self.add_literal(sym)
-                    self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
+                self.compile_push_var(x)
                     
         # small integer
         elif isinstance(x, int):
@@ -606,6 +604,31 @@ class Compile(object):
         # unknown type
         else:
             raise CompileError("unknown literal type %s" % x)
+   
+    def compile_push_var(self, x):
+        """
+        Compile a variable push
+        """
+        # look in locals
+        idx, scope = self.find_local(x)
+        if idx is not None:
+            if scope == 0:
+                # this context
+                self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
+            elif scope > 0:
+                # parent context
+                self.emit_bytes(B_PUSH_OUTER_TEMP, idx, scope - 1, 0)
+       
+        # look in instance variables
+        else:
+            try:
+                idx = self._cur_inst_var.index(x)
+                self.emit_bytes(B_PUSH_RECEIVER_VARIABLE, idx)
+            except ValueError:
+                # variable is global
+                sym = self._sys.symbol_find_or_add(x)
+                idx = self.add_literal(sym)
+                self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
             
     def compile_blk_closure(self, s):
         """
