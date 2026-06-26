@@ -604,6 +604,12 @@ class Compile(object):
             idx = self.add_literal(x)
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
+        # symbol constant
+        elif isinstance(x, ParseLiteralSymbol):
+            sym = self._sys.symbol_find_or_add(x.value)
+            idx = self.add_literal(sym)
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            
         # string constant
         elif isinstance(x, ParseLiteralString):
             idx = self.add_literal(String.from_str(x.value))

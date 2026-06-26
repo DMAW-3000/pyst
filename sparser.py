@@ -91,6 +91,12 @@ class ParseLiteralString(ParseLiteral):
     Represent a 'string literal' value
     """
     pass
+    
+class ParseLiteralSymbol(ParseLiteral):
+    """
+    Represent a #symbol value
+    """
+    pass
         
 class ParseLiteralBlock(ParseLiteral):
     """
@@ -246,6 +252,10 @@ class Parser(object):
         if      (tok == "IDENT") or \
                 (tok == "DECNUMBER"):
             node = ParseLiteral(self.val(0))
+            self.lex()
+        elif tok == "SYMBOL":
+            print(self.token(0), self.val(0))
+            node = ParseLiteral(ParseLiteralSymbol(self.val(0)))
             self.lex()
         elif tok == "SSTRING":
             node = ParseLiteral(ParseLiteralString(self.val(0)))
