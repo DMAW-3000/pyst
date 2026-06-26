@@ -269,6 +269,7 @@ class Smalltalk(object):
             metaObj.instanceVariables = self.create_inst_vars(self.o_nil, init.Init_Meta_Vars)
             if not superObj.is_nil():
                 self.subclass_add(superObj, klassObj)
+            metaObj.methodDictioary = self.o_nil
             klassObj.environment = self.g_st_dict
             klassObj.instanceVariables = self.create_inst_vars(superObj, instVars)
             klassObj.classVariables = self.create_class_vars(klassObj, classVars)
