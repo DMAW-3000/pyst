@@ -37,6 +37,7 @@ class Interp(object):
         bTbl[B_PUSH_LIT_CONSTANT] = self.b_push_lit_const
         bTbl[B_PUSH_LIT_VARIABLE] = self.b_push_lit_var
         bTbl[B_PUSH_TEMPORARY_VARIABLE] = self.b_push_temp_var
+        bTbl[B_PUSH_OUTER_TEMP] = self.b_push_outer_var
         bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
         bTbl[B_RETURN_CONTEXT_STACK_TOP] = self.b_blk_ret
         bTbl[B_SEND] = self.b_send
@@ -244,7 +245,6 @@ class Interp(object):
         ctx.push(var.value.value)
         return 2
         
-        
     def b_push_temp_var(self, ctx, arg):
         """
         Execute the push temp variable bytecode
@@ -252,6 +252,23 @@ class Interp(object):
         ctx.push(ctx[7 + arg])
         return 2
         
+    def b_push_outer_var(self, ctx, arg):
+        """
+        Execute the push outer temp variable bytecde
+        """
+        # get extended bytecode data
+        level = ctx.method.get_code()[ctx.ip + 2]
+
+        # look through context frames
+        outer = ctx.outerContext
+        while level > 0:
+            outer = ctx.outerContext
+            level -= 1
+
+        # return temp variable
+        ctx.push(outer[7 + arg])
+        return 4
+
     def b_send(self, ctx, arg):
         """
         Execute the generic send message bytecode
