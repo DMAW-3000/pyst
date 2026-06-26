@@ -33,14 +33,15 @@ class Interp(object):
         
         # the bytecode handler table
         self.b_table = bTbl = [None] * 256
-        bTbl[B_PUSH_SELF] = self.b_push_self
-        bTbl[B_PUSH_LIT_CONSTANT] = self.b_push_lit_const
-        bTbl[B_PUSH_LIT_VARIABLE] = self.b_push_lit_var
-        bTbl[B_PUSH_TEMPORARY_VARIABLE] = self.b_push_temp_var
-        bTbl[B_PUSH_OUTER_TEMP] = self.b_push_outer_var
-        bTbl[B_RETURN_METHOD_STACK_TOP]= self.b_meth_ret
-        bTbl[B_RETURN_CONTEXT_STACK_TOP] = self.b_blk_ret
-        bTbl[B_SEND] = self.b_send
+        bTbl[B_PUSH_SELF]                   = self.b_push_self
+        bTbl[B_PUSH_LIT_CONSTANT]           = self.b_push_lit_const
+        bTbl[B_PUSH_LIT_VARIABLE]           = self.b_push_lit_var
+        bTbl[B_PUSH_TEMPORARY_VARIABLE]     = self.b_push_temp_var
+        bTbl[B_PUSH_OUTER_TEMP]             = self.b_push_outer_var
+        bTbl[B_POP_STACK_TOP]               = self.b_pop_top
+        bTbl[B_RETURN_METHOD_STACK_TOP]     = self.b_meth_ret
+        bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
+        bTbl[B_SEND]                        = self.b_send
         
     def reset(self):
         """
@@ -268,6 +269,13 @@ class Interp(object):
         # return temp variable
         ctx.push(outer[7 + arg])
         return 4
+        
+    def b_pop_top(self, ctx, arg):
+        """
+        Execute the pop stack top bytecode
+        """
+        ctx.pop()
+        return 2
 
     def b_send(self, ctx, arg):
         """
