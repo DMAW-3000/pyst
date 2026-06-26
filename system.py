@@ -567,8 +567,7 @@ class Smalltalk(object):
             return self.o_nil
         arrObj = Array(numSuper + numInst)
         for n,s in enumerate(varNames):
-            symObj = self.symbol_find_or_add(s)
-            arrObj[numSuper + n] = symObj
+            arrObj[numSuper + n] = String.from_str(s)
         return arrObj
         
     def create_class_vars(self, klassObj, varNames):
