@@ -188,16 +188,13 @@ class Compile(object):
         """
         tok = self._lex.token()
         while tok.type == "IDENT":
-            self._cur_inst_var.append(tok.value)
             tok = self._lex.token()
         if (not tok.type == "OPERATOR") or (not tok.value == '|'):
             raise CompileError("inst vars missing |")
-       
-        self._cur_klass.instanceVariables = Array(len(self._cur_inst_var))
-        for n,s in enumerate(self._cur_inst_var):
-            self._cur_klass.instanceVariables[n] = String.from_str(s)
-        #self._sys.arr_print(self._cur_klass.instanceVariables)
-        
+            
+        if not self._cur_klass.instanceVariables.is_nil():
+            for var in self._cur_klass.instanceVariables:
+                self._cur_inst_var.append(var.to_str())
         
     def parse_class_var(self, varName):
         """
