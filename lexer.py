@@ -114,7 +114,7 @@ def t_CARET(t):
     return t
     
 def t_SYMBOL(t):
-    r'\#[a-zA-Z_][a-zA-Z_\d]*:?'
+    r'\#([a-zA-Z_][a-zA-Z_\d]*:?)+'
     t.value = t.value.lstrip('#')
     return t
     
