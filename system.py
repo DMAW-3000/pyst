@@ -182,8 +182,8 @@ class Smalltalk(object):
     def run(klass):
         inst = klass._SmalltalkInstance
         x = inst.g_interp.send_message_extern(inst.k_dictionary, 
-                                              "basicNew:", 
-                                              (10,))
+                                              "new:", 
+                                              (20,))
         print()
         print(x)
         
@@ -304,6 +304,7 @@ class Smalltalk(object):
         disTbl[B_STORE_LIT_VARIABLE]        = ("STORE_LIT_VARIABLE", 2, 1)
         disTbl[B_STORE_TEMPORARY_VARIABLE]  = ("STORE_TEMP_VARIABLE", 2, 1)
         disTbl[B_STORE_RECEIVER_VARIABLE]   = ("STORE_RECV_VARIABLE", 2, 1)
+        disTbl[B_STORE_OUTER_TEMP]          = ("STORE_OUTER_VARIABLE", 4, 2)
     
     def build_primitives(self):
         """

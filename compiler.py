@@ -483,7 +483,12 @@ class Compile(object):
         # look in locals first
         idx, scope = self.find_local(var)
         if idx is not None:
-            self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
+            if scope == 0:
+                # current context
+                self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
+            else:
+                # parent context
+                self.emit_bytes(B_STORE_OUTER_TEMP, idx, scope - 1, 0)
         else:
             # look in instance variables
             try:
@@ -633,7 +638,7 @@ class Compile(object):
             if scope == 0:
                 # this context
                 self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
-            elif scope > 0:
+            else:
                 # parent context
                 self.emit_bytes(B_PUSH_OUTER_TEMP, idx, scope - 1, 0)
        
