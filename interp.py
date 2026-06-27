@@ -28,8 +28,8 @@ class Interp(object):
         self.i_primitive = [None]
         
         # debugging support
-        self.i_debug_pre = None
-        self.i_debug_post = None
+        self.i_debug_pre = self._debug_default
+        self.i_debug_post = self._debug_default
         
         # the bytecode handler table
         self.b_table = bTbl = [None] * 256
@@ -42,6 +42,12 @@ class Interp(object):
         bTbl[B_RETURN_METHOD_STACK_TOP]     = self.b_meth_ret
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
+        
+    def _debug_default(self):
+        """
+        Default debug handler - does nothing
+        """
+        return
         
     def send_message_extern(self, recvObj, selName, argValues):
         """
@@ -160,6 +166,12 @@ class Interp(object):
         self.i_debug_pre = preHook
         self.i_debug_post = postHook
         
+    def get_debug(self):
+        """
+        Get the curent debug callbacks (pre, post)
+        """
+        return (self.i_debug_pre, self.i_debug_post)
+        
     def add_primitive(self, name):
         """
         Add a primitive handler at a given index.
@@ -178,11 +190,9 @@ class Interp(object):
         until the control returns to the root context.
         """
         while not self.i_context.parent.is_nil():
-            if self.i_debug_pre is not None:
-                self.i_debug_pre()
+            self.i_debug_pre()
             self.step()
-            if self.i_debug_post is not None:
-                self.i_debug_post()
+            self.i_debug_post()
         
     def step(self):
         """

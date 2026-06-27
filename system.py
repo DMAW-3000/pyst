@@ -88,6 +88,9 @@ class Smalltalk(object):
         self.g_compile = None
         self.g_interp = None
         
+        # debug support
+        self.d_save = None
+        
         # bytecode disassembly table
         # each entry is (name, num_arg)
         self.g_dis = [None] * 256
@@ -150,6 +153,7 @@ class Smalltalk(object):
         # initialize interpreter
         inst.g_interp = Interp(inst)
         if debug:
+            inst.d_save = inst.g_interp.get_debug()
             inst.g_interp.set_debug(inst.debug_hook_pre, inst.debug_hook_post)
         
         # initialize primitive ops
@@ -177,9 +181,9 @@ class Smalltalk(object):
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        x = inst.g_interp.send_message_extern(inst.k_test, 
-                                              "new", 
-                                              ())
+        x = inst.g_interp.send_message_extern(inst.k_dictionary, 
+                                              "basicNew:", 
+                                              (10,))
         print()
         print(x)
         
@@ -651,7 +655,7 @@ class Smalltalk(object):
             if c == 's':
                 break
             elif c == 'c':
-                self.g_interp.set_debug(None, None)
+                self.g_interp.set_debug(*self.d_save)
                 break
             elif c == 'd':
                 self.context_print_byte()
