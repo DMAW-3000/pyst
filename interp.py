@@ -287,7 +287,7 @@ class Interp(object):
         # look through context frames
         outer = ctx.outerContext
         while level > 0:
-            outer = ctx.outerContext
+            outer = outer.outerContext
             level -= 1
 
         # return temp variable
@@ -325,7 +325,7 @@ class Interp(object):
         # look through context frames
         outer = ctx.outerContext
         while level > 0:
-            outer = ctx.outerContext
+            outer = outer.outerContext
             level -= 1
         # store temp variable
         outer[7 + arg] = ctx.pop()
