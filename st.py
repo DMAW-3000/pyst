@@ -163,7 +163,7 @@ class Object(object):
         """
         Convert to printable string
         """
-        return "OBJECT{" + str(self._klass) + "}"
+        return "OBJECT{" + str(self._klass) + "[" + str(self.size) + "]}"
         
 
 class UndefinedObject(Object):
