@@ -2,9 +2,6 @@
 Object ID manager
 """
 
-import sys
-
-
 import random
 random.seed()
 
@@ -15,7 +12,7 @@ class _ObjTableBase(object):
     """
     
     _Min_Id = 3
-    _Max_Id = sys.maxsize
+    _Max_Id = 0xffffffff
     
     def __init__(self):
         """
@@ -73,7 +70,7 @@ class _ObjTableLinear(_ObjTableBase):
         objMap.add(objId)
         self._cur_id = objId + 9
         if self._cur_id > self._Max_Id:
-            self._cur_id = self._Min_Id + (self._cur_id % 9)
+            self._cur_id = self._Min_Id
         return objId
 
 
