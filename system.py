@@ -4,7 +4,6 @@ The entire Smalltalk environment
 
 import os
 import pickle
-from copy import copy
 
 from st import *
 from compiler import Compile
@@ -181,9 +180,9 @@ class Smalltalk(object):
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        x = inst.g_interp.send_message_extern(inst.k_dictionary, 
-                                              "new:", 
-                                              (20,))
+        x = inst.g_interp.send_message_extern(inst.o_true, 
+                                              "isKindOf:", 
+                                              (inst.k_false,))
         print()
         print(x)
         
