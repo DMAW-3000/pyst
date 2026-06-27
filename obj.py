@@ -64,7 +64,7 @@ class _ObjTableLinear(_ObjTableBase):
         objMap = self._obj_map
         objId = self._cur_id
         while objId in objMap:
-            objId += 9
+            objId += 7
             if objId > self._Max_Id:
                 objId = self._Min_Id
         objMap.add(objId)
