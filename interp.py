@@ -371,6 +371,21 @@ class Interp(object):
         self.i_context = newCtx
         return True
         
+    def p_Behavior_basicNew(self, ctx, recv, numArg):
+        """
+        Primitiive handler for Behavior basicNew
+        """
+        status = False
+        if is_obj(recv) and (recv.get_class().get_class() is self._sys.k_metaclass):
+            spec = recv.instanceSpec
+            if spec & 0x10:
+                obj = Object(spec >> 12)
+                obj._klass = recv
+                ctx.parent.push(obj)
+                status = True
+        return status
+        
+        
         
 
 

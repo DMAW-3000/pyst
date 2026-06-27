@@ -89,4 +89,5 @@ Init_Primitive = (
     "Object_identity",
     "Object_class",
     "BlockClosure_value",
+    "Behavior_basicNew",
 )
