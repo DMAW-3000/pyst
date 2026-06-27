@@ -10,7 +10,10 @@
  
 	test1 [
         "test1"
-		true and: [false]
+		| b |
+		b := nil.
+		self ifNotNil: [b ifNil: [b := self]].
+		^b
     ]
 	
 ]

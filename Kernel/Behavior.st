@@ -172,9 +172,9 @@ method dictionary, and iterating over the class hierarchy.'>
 
 	<category: 'accessing the method dictionary'>
 	self methodDictionary isNil 
-	    ifTrue: [SystemExceptions.NotFound signalOn: selector what: 'key'].
+	    ifTrue: ["SystemExceptions." NotFound signalOn: selector what: 'key'].
 	^self methodDictionary at: selector
-	    ifAbsent: [SystemExceptions.NotFound signalOn: selector what: 'key']
+	    ifAbsent: ["SystemExceptions." NotFound signalOn: selector what: 'key']
     ]
 
     >> selector [
