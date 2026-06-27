@@ -114,10 +114,10 @@ class Interp(object):
         # pop the message arguments
         if numArgs > 0:
             argList = [None] * numArgs
-            n = 0
-            while n < numArgs:
-                argList[n] = pop()
-                n += 1
+            n = numArgs
+            while n > 0:
+                argList[n - 1] = pop()
+                n -= 1
         else:
             argList = ()
         
