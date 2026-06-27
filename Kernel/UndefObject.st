@@ -184,4 +184,9 @@ instance, which is the object "nil".'>
 	<category: 'storing'>
 	self printOn: aStream
     ]
+	
+	subclass: classNameString environment: aNamespace [
+	<category: 'class polymorphism'>
+        ^(aNamespace at: classNameString)
+    ]
 ]
