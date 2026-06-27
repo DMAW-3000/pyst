@@ -112,13 +112,14 @@ class Interp(object):
         pop = oldCtx.pop
         
         # pop the message arguments
-        argList = []
         if numArgs > 0:
-            n = numArgs
-            while n > 0:
-                argList.append(pop())
-                n -= 1
-            argList.reverse()
+            argList = [None] * numArgs
+            n = 0
+            while n < numArgs:
+                argList[n] = pop()
+                n += 1
+        else:
+            argList = ()
         
         # pop the message selector and receiver
         selObj = pop()
@@ -172,8 +173,7 @@ class Interp(object):
                 return
             
         # make room for temp variables on new stack
-        if numTemp > 0:
-            newCtx.expand(numTemp)
+        newCtx.expand(numTemp)
         
         # transfer control to new context
         self.i_context = newCtx
