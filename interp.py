@@ -38,7 +38,10 @@ class Interp(object):
         bTbl[B_PUSH_LIT_VARIABLE]           = self.b_push_lit_var
         bTbl[B_PUSH_TEMPORARY_VARIABLE]     = self.b_push_temp_var
         bTbl[B_PUSH_OUTER_TEMP]             = self.b_push_outer_var
+        bTbl[B_PUSH_RECEIVER_VARIABLE]      = self.b_push_recv_var
         bTbl[B_POP_STACK_TOP]               = self.b_pop_top
+        bTbl[B_STORE_TEMPORARY_VARIABLE]    = self.b_store_temp_var
+        bTbl[B_STORE_OUTER_TEMP]            = self.b_store_outer_var
         bTbl[B_RETURN_METHOD_STACK_TOP]     = self.b_meth_ret
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
@@ -291,12 +294,42 @@ class Interp(object):
         ctx.push(outer[7 + arg])
         return 4
         
+    def b_push_recv_var(self, ctx, arg):
+        """
+        Execute the push receiver variable bytecode
+        """
+        ctx.push(ctx.receiver[arg])
+        return 2
+        
     def b_pop_top(self, ctx, arg):
         """
         Execute the pop stack top bytecode
         """
         ctx.pop()
         return 2
+        
+    def b_store_temp_var(self, ctx, arg):
+        """
+        Execute the store temp variable bytecode
+        """
+        ctx[7 + arg] = ctx.pop()
+        return 2
+        
+    def b_store_outer_var(self, ctx, arg):
+        """
+        Execute the store outer temp variable bytecde
+        """
+        # get extended bytecode data
+        level = ctx.method.get_code()[ctx.ip + 2]
+
+        # look through context frames
+        outer = ctx.outerContext
+        while level > 0:
+            outer = ctx.outerContext
+            level -= 1
+        # store temp variable
+        outer[7 + arg] = ctx.pop()
+        return 4
 
     def b_send(self, ctx, arg):
         """
