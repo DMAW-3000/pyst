@@ -347,22 +347,9 @@ class Interp(object):
         Primitive handler for Object identity (==)
         """
         send = ctx[7]
-        if is_int(recv):
-            if is_int(send):
-                if recv == send:
-                    ret = self._true
-                else:
-                    ret = self._false
-            else:
-                ret = self._false
-        else:
-            if is_int(send):
-                ret = self._false
-            else:
-                if recv.is_same(send):
-                    ret = self._true
-                else:
-                    ret = self._false
+        ret = self._false
+        if is_obj(send) and recv.is_same(send):
+            ret = self._true
         ctx.parent.push(ret)
         return True
         
