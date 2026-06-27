@@ -159,6 +159,12 @@ class Object(object):
         #print("DEL", self._obj_id, self)
         Obj_Table.free_obj(self._obj_id)
         
+    def __str__(self):
+        """
+        Convert to printable string
+        """
+        return "OBJECT{" + str(self._klass) + "}"
+        
 
 class UndefinedObject(Object):
     """
