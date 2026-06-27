@@ -37,9 +37,8 @@ def hsh_seq(x):
     """
     Create a hash key from a sequence of values
     """
-    global Int_Max
     h = 1497032417
-    m = Int_Max
+    m = 0xffffffff
     for c in x:
         h = (h + c) & m
         h = (h + ((h << 10) & m)) & m
@@ -49,13 +48,14 @@ def hsh_seq(x):
 def hsh_scram(x):
     """
     Generate a hash key from a single value
+    MurmurHash3 32-bit algorithm
     """
-    global Int_Max
-    m = Int_Max
-    x ^= (((x << 33) & m) | (x >> 31))
-    x ^= (((x << 10) & m) | (x >> 22))
-    x ^= (((x <<  6) & m) | (x >> 26))
-    x ^= (((x << 16) & m) | (x >> 16))
+    m = 0xffffffff
+    x ^= (x >> 16)
+    x = (x * 0x85ebca6b) & m
+    x ^= (x >> 13)
+    x = (x * 0xc2b2ae35) & m
+    x ^= (x >> 16)
     return x
 
 
