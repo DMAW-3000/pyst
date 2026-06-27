@@ -180,9 +180,9 @@ class Smalltalk(object):
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        x = inst.g_interp.send_message_extern(inst.o_true, 
+        x = inst.g_interp.send_message_extern(inst.o_nil, 
                                               "isKindOf:", 
-                                              (inst.k_false,))
+                                              (inst.k_boolean,))
         print()
         print(x)
         

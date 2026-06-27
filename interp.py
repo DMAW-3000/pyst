@@ -342,8 +342,14 @@ class Interp(object):
         """
         Execute method return bytecode
         """
+        # we may be nested in blocks
+        # unwind until method context
+        outCtx = ctx
+        while not is_int(outCtx[6]):
+            outCtx = outCtx.outerContext
+        
         # get sender parent context
-        newCtx = ctx.parent
+        newCtx = outCtx.parent
         
         # pop return value from current stack
         # and push onto sender's stack
@@ -380,9 +386,10 @@ class Interp(object):
         Primitive handler for Object identity (==)
         """
         send = ctx[7]
-        ret = self._false
         if is_obj(send) and recv.is_same(send):
             ret = self._true
+        else:
+            ret = self._false
         ctx.parent.push(ret)
         return True
         
