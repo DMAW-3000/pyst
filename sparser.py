@@ -254,7 +254,6 @@ class Parser(object):
             node = ParseLiteral(self.val(0))
             self.lex()
         elif tok == "SYMBOL":
-            print(self.token(0), self.val(0))
             node = ParseLiteral(ParseLiteralSymbol(self.val(0)))
             self.lex()
         elif tok == "SSTRING":
