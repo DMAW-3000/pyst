@@ -42,7 +42,7 @@ class _ObjTableRandom(_ObjTableBase):
         objMap = self._obj_map
         objId = self._Get_Random(self._Min_Id, self._Max_Id)
         while objId in objMap:
-            objId = klass._Get_Random(self._Min_Id, self._Max_Id)
+            objId = self._Get_Random(self._Min_Id, self._Max_Id)
         objMap.add(objId)
         return objId
         
