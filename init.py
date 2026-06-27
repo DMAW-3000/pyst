@@ -90,4 +90,5 @@ Init_Primitive = (
     "Object_class",
     "BlockClosure_value",
     "Behavior_basicNew",
+    "Behavior_basicNewColon",
 )

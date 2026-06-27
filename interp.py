@@ -385,6 +385,21 @@ class Interp(object):
                 status = True
         return status
         
+    def p_Behavior_basicNewColon(self, ctx, recv, numArg):
+        """
+        Primitiive handler for Behavior basicNew
+        """
+        status = False
+        sz = ctx[7]
+        if is_obj(recv) and is_int(sz) and (recv.get_class().get_class() is self._sys.k_metaclass):
+            spec = recv.instanceSpec
+            if not (spec & 0x10):
+                obj = Object((spec >> 12) + sz)
+                obj._klass = recv
+                ctx.parent.push(obj)
+                status = True
+        return status
+        
         
         
 
