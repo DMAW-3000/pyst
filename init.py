@@ -73,6 +73,7 @@ Init_Kernel_Mod = (
     #"Builtins.st",
     #"SysDict.st",
     "Object.st",
+    "UndefObject.st",
     "Boolean.st",
     "False.st",
     "True.st",
