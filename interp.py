@@ -79,6 +79,23 @@ class Interp(object):
         # pop return value from stack
         return self.i_context.pop()
         
+    def send_message_intern(self, recvObj, selName, argValues):
+        """
+        Send a message from inside the interpreter.
+        The selector name is a python str and the arg
+        value sequence must match the selector arg order.
+        """
+        # save the root context
+        ctxSave = self.i_context
+        
+        # send the message smd get reply value
+        ret = self.send_message_extern(recvObj, selName, argValues)
+        
+        # restore context and return value
+        self.i_context = ctxSave
+        return ret
+        
+        
     def send_message(self, numArgs):
         """
         Send a message.  This assumes that the receiver,
@@ -397,7 +414,7 @@ class Interp(object):
         
     def p_Behavior_basicNewColon(self, ctx, recv, numArg):
         """
-        Primitiive handler for Behavior basicNew
+        Primitiive handler for Behavior basicNew:
         """
         status = False
         sz = ctx[7]
@@ -408,6 +425,32 @@ class Interp(object):
                 obj._klass = recv
                 ctx.parent.push(obj)
                 status = True
+        return status
+        
+    def p_Behavior_newInitialize(self, ctx, recv, numArg):
+        """
+        Primitive handler for Bahavior new.
+        Send initialize message to new object.
+        """
+        # create the object
+        status = self.p_Behavior_basicNew(ctx, recv, numArg)
+        
+        if status:
+            # send the new object initialize message
+            self.send_message_intern(ctx.parent[-1], "initialize", ())
+        return status
+        
+    def p_Behavior_newColonInitialize(self, ctx, recv, numArg):
+        """
+        Primitive handler for Bahavior mew:
+        Send initialize message to new object.
+        """
+        # create the object
+        status = self.p_Behavior_basicNewColon(ctx, recv, numArg)
+        
+        if status:
+            # send the new object initialize message
+            self.send_message_intern(ctx.parent[-1], "initialize", ())
         return status
         
         

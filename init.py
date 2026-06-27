@@ -91,4 +91,6 @@ Init_Primitive = (
     "BlockClosure_value",
     "Behavior_basicNew",
     "Behavior_basicNewColon",
+    "Behavior_newInitialize",
+    "Behavior_newColonInitialize",
 )
