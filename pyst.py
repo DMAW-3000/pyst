@@ -29,7 +29,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # run the system
-    Smalltalk.rebuild(args.debug)
+    Smalltalk.rebuild(args.debug, args.verbose)
     Smalltalk.run()
     
     

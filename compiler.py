@@ -25,7 +25,7 @@ class Compile(object):
     # reserved keywords
     _Keyword_Names = set(("self", "nil", "true", "false"))
     
-    def __init__(self, system):
+    def __init__(self, system, verbose):
         """
         Create a blank compiler instance
         """
@@ -33,6 +33,7 @@ class Compile(object):
         
         # cache system information
         self._sys = system
+        self._verbose = verbose
         self._nil = system.o_nil
         self._true = system.o_true
         self._false = system.o_false
@@ -95,7 +96,8 @@ class Compile(object):
             raise CompileError("unknown class " + klassName)
         self._cur_klass = binding.value
         self._cur_inst_var.clear()
-        print("Compiling class", self._cur_klass.name)
+        if self._verbose:
+            print("Compiling class", self._cur_klass.name)
         
         # get definition body
         tok = self._lex.token()         # [
@@ -107,7 +109,8 @@ class Compile(object):
         if (tok.type == "OPERATOR") and (tok.value == '|'):
             self.parse_inst_vars()
             tok = self._lex.token()
-        print("Instance Variables: ", self._cur_inst_var)
+        if self._verbose:
+            print("Instance Variables: ", self._cur_inst_var)
             
         # check for attributes
         while (tok.type == "OPERATOR") and (tok.value == '<'):
@@ -165,14 +168,16 @@ class Compile(object):
                 raise CompileError("bad method syntax")
         
         if (not self._cur_klass.get_class().is_nil()) and (not self._cur_klass.get_class().methodDictionary.is_nil()):
-            print("Class Meth Dict:")
-            self._sys.identdict_print(self._cur_klass.get_class().methodDictionary)
-            print()
+            if self._verbose:
+                print("Class Meth Dict:")
+                self._sys.identdict_print(self._cur_klass.get_class().methodDictionary)
+                print()
         
         if not self._cur_klass.methodDictionary.is_nil():
-            print("Inst Meth Dict:")
-            self._sys.identdict_print(self._cur_klass.methodDictionary)
-            print()
+            if self._verbose:
+                print("Inst Meth Dict:")
+                self._sys.identdict_print(self._cur_klass.methodDictionary)
+                print()
                 
     def parse_class_attr(self):
         """
@@ -221,7 +226,8 @@ class Compile(object):
             raise CompileError("class var %s not defined" % varName)
         varObj = self._nil      # just set to NIL for now, need to parse statement
         self._sys.dict_add(varDict, symObj, varObj)
-        print("Class Variable:", symObj, varObj)
+        if self._verbose:
+            print("Class Variable:", symObj, varObj)
         
     def parse_method(self, methName, argNames, parseBrack, opName, klassMeth):
         """
@@ -252,8 +258,9 @@ class Compile(object):
         if (numArgs > 0) and not opName:
             methName += ":"
         methSym = self._sys.symbol_find_or_add(methName)
-        print("Method:", methSym)
-        print("Args:", argNames)
+        if self._verbose:
+            print("Method:", methSym)
+            print("Args:", argNames)
         
         # create Method and MethodInfo objects
         self._cur_meth = methObj = CompiledMethod()
@@ -272,7 +279,8 @@ class Compile(object):
             if value is not None:
                 primId = value
             tok = self._lex.token()
-        print("Primitive:", primId)
+        if self._verbose:
+            print("Primitive:", primId)
             
         # skip more comment
         while tok.type == "DSTRING":
@@ -284,7 +292,8 @@ class Compile(object):
             tok = self._lex.token()
         else:
             tempNames = []
-        print("Temps:", tempNames)
+        if self._verbose:
+            print("Temps:", tempNames)
         
         # setup environment
         self._cur_local = argNames + tempNames
@@ -338,10 +347,11 @@ class Compile(object):
         # create literals Array for method
         if len(self._cur_literal) > 0:
             methObj.literals = Array.from_seq(self._cur_literal)
-            if self._max_depth:
-                print()
-            print("Method Literals:", len(self._cur_literal))
-            self._sys.arr_print(methObj.literals)
+            if self._verbose:
+                if self._max_depth:
+                    print()
+                print("Method Literals:", len(self._cur_literal))
+                self._sys.arr_print(methObj.literals)
             
         # add method to class dictionary
         # or metaclass dictionary if class method
@@ -356,10 +366,11 @@ class Compile(object):
         self._sys.identdict_add(methDict, methSym, methObj)
             
         byteCode = methObj.get_code()
-        print("Method Bytecodes:", len(byteCode))
-        self._sys.dis_bytecode(byteCode)
-        print("Max Depth:", self._max_depth)
-        print()
+        if self._verbose:
+            print("Method Bytecodes:", len(byteCode))
+            self._sys.dis_bytecode(byteCode)
+            print("Max Depth:", self._max_depth)
+            print()
             
         # setup lexer to continue parsing module text
         self._lex.input(remainder[pos:])
@@ -403,7 +414,8 @@ class Compile(object):
         Compile a python string of Smalltalk statements
         """
         # setup parser
-        print(text)
+        if self._verbose:
+            print(text)
         self._lex.input(text)
         self._parse.reset()
         
@@ -679,13 +691,14 @@ class Compile(object):
         blkObj.literals = Array.from_seq(self._cur_literal)
         blkObj.method = self._cur_meth
         
-        print("Block------")
-        print("Args:", args)
-        print("Depth: ", self._cur_depth)
-        print("Block Literals", blkObj.literals.size)
-        self._sys.arr_print(blkObj.literals)
-        print("Block Bytecodes:", len(blkObj.get_code()))
-        self._sys.dis_bytecode(blkObj.get_code())
+        if self._verbose:
+            print("Block------")
+            print("Args:", args)
+            print("Depth: ", self._cur_depth)
+            print("Block Literals", blkObj.literals.size)
+            self._sys.arr_print(blkObj.literals)
+            print("Block Bytecodes:", len(blkObj.get_code()))
+            self._sys.dis_bytecode(blkObj.get_code())
         
         # restore context state
         self.context_pop()

@@ -95,7 +95,7 @@ class Smalltalk(object):
         self.g_dis = [None] * 256
     
     @classmethod
-    def rebuild(klass, debug):
+    def rebuild(klass, debug, verbose):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
@@ -156,15 +156,17 @@ class Smalltalk(object):
             inst.g_interp.set_debug(inst.debug_hook_pre, inst.debug_hook_post)
         
         # initialize primitive ops
-        inst.build_primitives()
+        inst.build_primitives(verbose)
         
         # compile the Kernel modules
-        inst.g_compile = Compile(inst)
+        inst.g_compile = Compile(inst, verbose)
         for mod in init.Init_Kernel_Mod:
+            print("Compiling module ", mod)
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
-        print("ST Dictionary:")
-        inst.dict_print(inst.g_st_dict, True)
+        if verbose:
+            print("ST Dictionary:")
+            inst.dict_print(inst.g_st_dict, True)
             
         #for klassInfo in init.Init_Class:
         #    cacheName = klassInfo[2]
@@ -180,9 +182,9 @@ class Smalltalk(object):
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        x = inst.g_interp.send_message_extern(inst.o_nil, 
+        x = inst.g_interp.send_message_extern(inst.o_true, 
                                               "isKindOf:", 
-                                              (inst.k_boolean,))
+                                              (inst.k_false,))
         print()
         print(x)
         
@@ -305,7 +307,7 @@ class Smalltalk(object):
         disTbl[B_STORE_RECEIVER_VARIABLE]   = ("STORE_RECV_VARIABLE", 2, 1)
         disTbl[B_STORE_OUTER_TEMP]          = ("STORE_OUTER_VARIABLE", 4, 2)
     
-    def build_primitives(self):
+    def build_primitives(self, verbose):
         """
         Create the primitives dictionary and register ops with
         interpreter.
@@ -319,9 +321,10 @@ class Smalltalk(object):
                 self.fatal_err("cannot find primitive handler", primName)
             symObj = self.symbol_add("VMpr_" + primName)
             self.dict_add(primDict, symObj, primId)
-        print("VM Primitives:")
-        self.dict_print(primDict)
-        print()
+        if verbose:
+            print("VM Primitives:")
+            self.dict_print(primDict)
+            print()
     
     def symbol_add(self, symName):
         """
