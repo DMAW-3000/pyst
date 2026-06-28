@@ -21,6 +21,7 @@ tokens = [
     'PERIOD',
     'ASSIGN',
     'SYMBOL',
+    "BLOCKARG",
     'MESSAGEARG',
     'OPERATOR',
     'IDENT',
@@ -116,6 +117,11 @@ def t_CARET(t):
 def t_SYMBOL(t):
     r'\#([a-zA-Z_][a-zA-Z_\d]*:?)+'
     t.value = t.value.lstrip('#')
+    return t
+    
+def t_BLOCKARG(t):
+    r':[a-zA-Z_][a-zA-Z_\d]*'
+    t.value = t.value.lstrip(':')
     return t
     
 def t_MESSAGEARG(t):
