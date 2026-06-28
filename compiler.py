@@ -356,7 +356,7 @@ class Compile(object):
         self._sys.identdict_add(methDict, methSym, methObj)
             
         byteCode = methObj.get_code()
-        print("Meghod Bytecodes:", len(byteCode))
+        print("Method Bytecodes:", len(byteCode))
         self._sys.dis_bytecode(byteCode)
         print("Max Depth:", self._max_depth)
         print()
