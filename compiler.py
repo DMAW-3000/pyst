@@ -517,7 +517,8 @@ class Compile(object):
         elif isinstance(s, ParseExecStatement):
             self.compile_exec_statement(s.data)
         else:
-            raise CompileError("bad statement syntax %s" % s)
+            pass
+            #raise CompileError("bad statement syntax %s" % s)
             
     def compile_unary_message(self, recv, name):
         """
