@@ -407,6 +407,7 @@ class Interp(object):
     def p_BlockClosure_value(self, ctx, recv, numArg):
         """
         Primitive handler for BlockClosure value
+        recv = BlockSlosure object
         """
         # get block info znc verify number of args
         blkObj = recv.block
@@ -420,6 +421,13 @@ class Interp(object):
         newCtx.receiver = recv.receiver
         newCtx.method = blkObj
         newCtx.outerContext = recv.outerContext
+        
+        # copy arguments to new stack
+        if numArg > 0:
+            n = 0
+            while n < numArg:
+                newCtx.push(ctx[7 + n])
+                n += 1
 
         # transfer control to new context
         self.i_context = newCtx
