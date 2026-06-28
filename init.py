@@ -58,7 +58,7 @@ Init_Class = (
     ("LookupTable", False, "lookup_table", "dictionary", False, (), (), ()),
     ("IdentityDictionary", False, "ident_dictionary", "lookup_table", False, (), (), ()),
     ("MethodDictionary", True, "meth_dictionary", "ident_dictionary", False, ("mutex",), (), ()),
-    ("Test", False, "test", "object", True, ("testInst1", "testInst2"), (), ()),
+    ("TestSuite", False, "test", "object", True, ("testInst1", "testInst2"), (), ()),
 )
 
 # the instance variable names for Metaclass
@@ -79,7 +79,7 @@ Init_Kernel_Mod = (
     "True.st",
     "BlkClosure.st",
     "Behavior.st",
-    "Test.st",
+    "TestSuite.st",
 )
 
 # the list of primitive ops handled by the interpreter

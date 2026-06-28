@@ -5,13 +5,13 @@
 |
  ======================================================================"
  
- Object subclass: Test [
+ Object subclass: TestSuite [
 	| testInst1 testInst2 |
 	
 	runAll [
 		"Run all of the tests"
-		self test1
-		"self test2"
+		self test1.
+		self test2
 	]
 	
 	test1 [
