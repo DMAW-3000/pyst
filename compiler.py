@@ -334,12 +334,13 @@ class Compile(object):
                         len(tempNames), 
                         self._max_depth,
                         primId)
-        print("Depth:", self._max_depth)
         
         # create literals Array for method
         if len(self._cur_literal) > 0:
             methObj.literals = Array.from_seq(self._cur_literal)
-            print("Literals:", len(self._cur_literal))
+            if self._max_depth:
+                print()
+            print("Method Literals:", len(self._cur_literal))
             self._sys.arr_print(methObj.literals)
             
         # add method to class dictionary
@@ -355,8 +356,9 @@ class Compile(object):
         self._sys.identdict_add(methDict, methSym, methObj)
             
         byteCode = methObj.get_code()
-        print("Bytecodes:", len(byteCode))
+        print("Meghod Bytecodes:", len(byteCode))
         self._sys.dis_bytecode(byteCode)
+        print("Max Depth:", self._max_depth)
         print()
             
         # setup lexer to continue parsing module text
@@ -676,9 +678,12 @@ class Compile(object):
         blkObj.literals = Array.from_seq(self._cur_literal)
         blkObj.method = self._cur_meth
         
-        print("Literals", blkObj.literals.size)
+        print("Block------")
+        print("Args:", args)
+        print("Depth: ", self._cur_depth)
+        print("Block Literals", blkObj.literals.size)
         self._sys.arr_print(blkObj.literals)
-        print("Bytecodes:", len(blkObj.get_code()))
+        print("Block Bytecodes:", len(blkObj.get_code()))
         self._sys.dis_bytecode(blkObj.get_code())
         
         # restore context state
