@@ -86,6 +86,56 @@ method dictionary, and iterating over the class hierarchy.'>
         ^"SystemExceptions." WrongClass signalOn: numInstanceVariables mustBe: SmallInteger
     ]
 	
+	instanceVariableNames: instVarNames [
+        "Set the instance variables for the receiver to be those
+         in instVarNames"
+
+        <category: 'instance variables'>
+        | variableArray oldInstVarNames oldSize removed changed added |
+        variableArray := self parseInstanceVariableString: instVarNames.
+        variableArray := self subclassInstVarNames, variableArray.
+        oldInstVarNames := self allInstVarNames.
+
+        "If instance variables change, update  instance variables and
+         instance spec of the class and all its subclasses"
+        variableArray = oldInstVarNames ifTrue: [^self].
+        self updateInstanceVars: variableArray shape: self shape.
+
+        "If this class or the subclasses' variables changed, need to recompile."
+        oldSize := oldInstVarNames size.
+        changed := variableArray size < oldSize or: [
+            (variableArray first: oldSize) ~= (oldInstVarNames first: oldSize)].
+        removed := oldInstVarNames anySatisfy: [:each |
+            (variableArray includes: each) not].
+        added := variableArray anySatisfy: [:each |
+            (oldInstVarNames includes: each) not].
+
+        changed | removed | added ifFalse: [^self].
+        changed | removed ifTrue: [self compileAll].
+        self compileAllSubclasses
+    ]
+
+    parseInstanceVariableString: variableString [
+	"As with #parseVariableString:, but answer symbols that name
+	 the variables instead of strings."
+        <category: 'parsing class declarations'>
+        | variableArray |
+        variableArray := self parseVariableString: variableString.
+        ^variableArray collect: [:each | each asSymbol]
+    ]
+
+    parseVariableString: aString [
+	"Answer an array of instance variable names.  aString should
+	 specify these in traditional file-in `instanceVariableNames'
+	 format.  Signal an error if aString contains something other
+	 than valid Smalltalk variables."
+        <category: 'parsing class declarations'>
+        | tokens |
+        tokens := aString subStrings asArray.
+        tokens do: [:token | self validateIdentifier: token].
+        ^tokens
+    ]
+	
 	methodDictionary [
 	"Answer the receiver's method dictionary. Don't modify the method
 	 dictionary unless you exactly know what you're doing"
@@ -103,6 +153,250 @@ method dictionary, and iterating over the class hierarchy.'>
 	    ifFalse: [self methodDictionary keysAndValuesDo: aBlock]
     ]
 	
+	methodDictionary: aDictionary [
+	"Set the receiver's method dictionary to aDictionary"
+
+	<category: 'method dictionary'>
+	| newDictionary |
+	aDictionary isNil ifFalse: [
+	    newDictionary := aDictionary 
+		    collect: [:each | each withNewMethodClass: self].
+	    aDictionary become: newDictionary
+	].
+	Behavior flushCache.
+	methodDictionary := aDictionary
+    ]
+	
+	addSelector: selector withMethod: compiledMethod [
+	"Add the given compiledMethod to the method dictionary, giving it
+	 the passed selector. Answer compiledMethod"
+
+	<category: 'method dictionary'>
+	self methodDictionary isNil 
+	    ifTrue: [methodDictionary := MethodDictionary new].
+	^self methodDictionary at: selector
+	    put: (compiledMethod withNewMethodClass: self selector: selector)
+    ]
+
+    removeSelector: selector [
+	"Remove the given selector from the method dictionary, answer
+	 the CompiledMethod attached to that selector"
+
+	<category: 'method dictionary'>
+	^self removeSelector: selector
+	    ifAbsent: ["SystemExceptions." NotFound signalOn: selector what: 'method']
+    ]
+
+    removeSelector: selector ifAbsent: aBlock [
+	"Remove the given selector from the method dictionary, answer
+	 the CompiledMethod attached to that selector. If the selector cannot
+	 be found, answer the result of evaluating aBlock."
+
+	<category: 'method dictionary'>
+	self methodDictionary isNil ifTrue: [^aBlock value].
+	(self methodDictionary includesKey: selector) ifFalse: [^aBlock value].
+	^self methodDictionary removeKey: selector ifAbsent: [self error: 'huh?!?']
+    ]
+	
+	formattedSourceStringAt: aSelector ifAbsent: aBlock [
+	"Answer the method source code as a formatted string. Requires
+	 package Parser."
+
+	<category: 'accessing the method dictionary'>
+	self notYetImplemented
+    ]
+
+    formattedSourceStringAt: selector [
+	"Answer the method source code as a formatted string (if available)
+	 for the given selector.  Requires package Parser."
+
+	<category: 'accessing the method dictionary'>
+	^self formattedSourceStringAt: selector ifAbsent: [
+	    '" *** SOURCE CODE NOT AVAILABLE *** "']
+    ]
+
+    compile: code [
+	"Compile method source.  If there are parsing errors, answer nil.
+	 Else, return a CompiledMethod result of compilation"
+
+	<category: 'method dictionary'>
+	(code isKindOf: WriteStream) ifTrue: [^self primCompile: code readStream].
+	(code isKindOf: Stream) ifTrue: [^self primCompile: code].
+	^self primCompile: code asString
+    ]
+
+    compile: code ifError: block [
+	"Compile method source.  If there are parsing errors, invoke
+	 exception block, 'block' passing file name, line number and
+	 error.  Return a CompiledMethod result of compilation"
+
+	<category: 'method dictionary'>
+	(code isKindOf: WriteStream) 
+	    ifTrue: [^self primCompile: code readStream ifError: block].
+	(code isKindOf: Stream) ifTrue: [^self primCompile: code ifError: block].
+	^self primCompile: code asString ifError: block
+    ]
+
+    compile: code notifying: requestor [
+	"Compile method source.  If there are parsing errors, send #error:
+	 to the requestor object, else return a CompiledMethod result of
+	 compilation"
+
+	<category: 'method dictionary'>
+	| method |
+	method := self compile: code.
+	method isNil ifTrue: [requestor error: 'Compilation failed'].
+	^method
+    ]
+
+    compileAllSubclasses: aNotifier [
+	"Recompile all selector of all subclasses. Notify aNotifier by sending
+	#error: messages if something goes wrong."
+
+	<category: 'method dictionary'>
+	self allSubclassesDo: [:subclass | subclass compileAll: aNotifier]
+    ]
+
+    compileAllSubclasses [
+	"Recompile all selector of all subclasses. Notify aNotifier by sending
+	#error: messages if something goes wrong."
+
+	<category: 'method dictionary'>
+	self allSubclassesDo: [:subclass | subclass compileAll]
+    ]
+
+    decompile: selector [
+	"Decompile the bytecodes for the given selector."
+
+	<category: 'method dictionary'>
+	| method source |
+	method := self >> selector.
+	source := method methodSourceString.
+	^source isNil & self decompilerClass notNil 
+	    ifTrue: [self decompilerClass decompile: selector in: self]
+	    ifFalse: [source]
+    ]
+	
+    compileAll [
+	"Recompile all selectors in the receiver. Ignore errors."
+
+	<category: 'method dictionary'>
+	self methodDictionary notNil 
+	    ifTrue: 
+		[self methodDictionary do: [:method | method recompile]]
+    ]
+
+    compileAll: aNotifier [
+	"Recompile all selectors in the receiver. Notify aNotifier by sending
+	#error: messages if something goes wrong."
+
+	<category: 'method dictionary'>
+	self methodDictionary notNil 
+	    ifTrue: 
+		[self methodDictionary do: [:method | method recompileNotifying: aNotifier]]
+    ]
+
+    evalString: aString to: anObject [
+	"Answer the stack top at the end of the evaluation of the code in
+	 aString. The code is executed as part of anObject"
+
+	<category: 'evaluating'>
+	| s result next method |
+	s := ReadStream on: aString.
+	
+	[next := self extractEvalChunk: s.
+	method := anObject class compile: 'Doit [ ^ [
+' , next , ' ] value ]'
+		    ifError: [:fname :line :error | nil].
+	method isNil | (next allSatisfy: [:each | each = Character space]) 
+	    ifFalse: [[result := anObject perform: method] valueWithUnwind].
+	s atEnd] 
+		whileFalse.
+	anObject class removeSelector: #Doit ifAbsent: [].
+	^result
+    ]
+
+    evalString: aString to: anObject ifError: aBlock [
+	"Answer the stack top at the end of the evaluation of the code in
+	 aString. If aString cannot be parsed, evaluate aBlock (see
+	 compile:ifError:). The code is executed as part of anObject"
+
+	<category: 'evaluating'>
+	| s result next method |
+	s := ReadStream on: aString.
+	
+	[next := self extractEvalChunk: s.
+	method := anObject class compile: 'Doit [ ^ [
+' , next , ' ] value ] '
+		    ifError: 
+			[:fname :lineNo :errorString | 
+			aBlock 
+			    value: fname
+			    value: lineNo - 1
+			    value: errorString.
+			nil].
+	method isNil | (next allSatisfy: [:each | each = Character space]) 
+	    ifFalse: [[result := anObject perform: method] valueWithUnwind].
+	s atEnd] 
+		whileFalse.
+	anObject class removeSelector: #Doit ifAbsent: [].
+	^result
+    ]
+
+    evaluate: code [
+	"Evaluate Smalltalk expression in 'code' and return result."
+
+	<category: 'evaluating'>
+	^self evaluate: code to: nil
+    ]
+
+    evaluate: code ifError: block [
+	"Evaluate 'code'.  If a parsing error is detected, invoke 'block'"
+
+	<category: 'evaluating'>
+	^self 
+	    evaluate: code
+	    to: nil
+	    ifError: block
+    ]
+
+    evaluate: code to: anObject ifError: block [
+	"Evaluate Smalltalk expression as part of anObject's method definition.  This
+	 method is used to support Inspector expression evaluation.  If a parsing error
+	 is encountered, invoke error block, 'block'"
+
+	<category: 'evaluating'>
+	(code isKindOf: Stream) 
+	    ifTrue: 
+		[^self 
+		    evalString: code contents
+		    to: anObject
+		    ifError: block].
+	^self 
+	    evalString: code
+	    to: anObject
+	    ifError: block
+    ]
+
+    evaluate: code to: anObject [
+	"Evaluate Smalltalk expression as part of anObject's method definition"
+
+	<category: 'evaluating'>
+	(code isKindOf: Stream) 
+	    ifTrue: [^self evalString: code contents to: anObject].
+	^self evalString: code to: anObject
+    ]
+
+    evaluate: code notifying: requestor [
+	"Evaluate Smalltalk expression in 'code'. If a parsing error is encountered,
+	 send #error: to requestor"
+
+	<category: 'evaluating'>
+	| method aStream |
+	^self evaluate: code
+	    ifError: [:fname :lineNo :errorString | requestor error: 'line ' , lineNo printString , ': ' , errorString]
+    ]
+
 	superclass: aClass [
 	"Set the receiver's superclass."
 
@@ -112,7 +406,7 @@ method dictionary, and iterating over the class hierarchy.'>
 	    ifTrue: 
 		[instanceSpec := aClass isNil ifTrue: [0] ifFalse: [aClass instanceSpec]]
     ]
-
+	
     addSubclass: aClass [
 	"Add aClass asone of the receiver's subclasses."
 
@@ -140,6 +434,16 @@ method dictionary, and iterating over the class hierarchy.'>
 	self methodDictionary isNil 
 	    ifTrue: [^Set new]
 	    ifFalse: [^self methodDictionary keys]
+    ]
+	
+	allSelectors [
+	"Answer a Set of all the selectors understood by the receiver"
+
+	<category: 'accessing the method dictionary'>
+	| aSet |
+	aSet := self selectors.
+	self allSuperclassesDo: [:superclass | aSet addAll: superclass selectors].
+	^aSet
     ]
 	
 	lookupSelector: aSelector [
@@ -231,6 +535,31 @@ method dictionary, and iterating over the class hierarchy.'>
 	self shouldNotImplement
     ]
 	
+	allInstances [
+	"Returns a set of all instances of the receiver"
+
+	<category: 'accessing instances and variables'>
+	| result weakResult anInstance |
+	result := WriteStream on: (Array new: 100).
+	anInstance := self someInstance.
+	[anInstance notNil] whileTrue: 
+		[result nextPut: anInstance.
+		anInstance := anInstance nextInstance].
+	result := result contents.
+	weakResult := WeakArray new: result size.
+	1 to: result size do: [:i | weakResult at: i put: (result at: i)].
+	^weakResult
+    ]
+
+    instanceCount [
+	"Return a count of all the instances of the receiver"
+
+	<category: 'accessing instances and variables'>
+	| count anInstance |
+	count := 0.
+	anInstance := self someInstance.
+
+	
 	instanceCount [
 	"Return a count of all the instances of the receiver"
 
@@ -260,6 +589,65 @@ method dictionary, and iterating over the class hierarchy.'>
 	^self allInstVarNames indexOfLast: aString asSymbol ifAbsent: aBlock
     ]
 	
+	allClassVarNames [
+	"Return all the class variables understood by the receiver"
+
+	<category: 'accessing instances and variables'>
+	| result |
+	result := WriteStream with: self classVarNames asArray.
+	self allSuperclassesDo: [:each | result nextPutAll: each classVarNames].
+	^result contents
+    ]
+
+    classPool [
+	"Answer the class pool dictionary. Since Behavior does not support
+	 classes with class variables, we answer an empty one; adding
+	 variables to it results in an error."
+
+	<category: 'accessing instances and variables'>
+	^(Dictionary new)
+	    makeReadOnly: true;
+	    yourself
+    ]
+
+    sharedPools [
+	"Return the names of the shared pools defined by the class"
+
+	<category: 'accessing instances and variables'>
+	^self superclass isNil ifTrue: [#()] ifFalse: [self superclass sharedPools]
+    ]
+
+    allSharedPoolDictionariesDo: aBlock [
+        "Answer the shared pools visible from methods in the metaclass,
+         in the correct search order."
+
+        self superclass allSharedPoolDictionariesDo: aBlock
+    ]
+
+    allSharedPoolDictionaries [
+	"Return the shared pools defined by the class and any of
+	 its superclasses, in the correct search order."
+
+	<category: 'accessing instances and variables'>
+	| result |
+	result := OrderedCollection new.
+	self allSharedPoolDictionariesDo: [:each | result add: each].
+	^result
+    ]
+
+    allSharedPools [
+	"Return the names of the shared pools defined by the class and any of
+	 its superclasses, in the correct search order."
+
+	<category: 'accessing instances and variables'>
+	| result |
+	result := OrderedCollection new.
+	self allSharedPoolDictionariesDo: [:each |
+		result add: (each nameIn: self environment)].
+	^result
+    ]
+    ]
+	
 	subclasses [
 	"Answer the direct subclasses of the receiver in a Set"
 
@@ -284,6 +672,43 @@ method dictionary, and iterating over the class hierarchy.'>
 	<category: 'accessing class hierarchy'>
 	^superClass
     ]
+	
+	withAllSuperclasses [
+	"Answer the receiver and all of its superclasses in a collection"
+
+	<category: 'accessing class hierarchy'>
+	| supers |
+	supers := OrderedCollection with: self.
+	self allSuperclassesDo: [:superclass | supers addLast: superclass].
+	^supers
+    ]
+
+    allSuperclasses [
+	"Answer all the receiver's superclasses in a collection"
+
+	<category: 'accessing class hierarchy'>
+	| supers |
+	supers := OrderedCollection new.
+	self allSuperclassesDo: [:superclass | supers addLast: superclass].
+	^supers
+    ]
+
+    whichSelectorsReferToByteCode: aByteCode [
+	"Return the collection of selectors in the class which
+	 reference the byte code, aByteCode"
+
+	<category: 'testing the method dictionary'>
+	| s method specialSelector |
+	s := Set new.
+	self methodDictionary isNil ifTrue: [^s].
+	self methodDictionary keysAndValuesDo: 
+		[:sel :method | 
+		((1 to: method numBytecodes) 
+		    detect: [:i | aByteCode = (method bytecodeAt: i)]
+		    ifNone: [0]) > 0 
+		    ifTrue: [s add: sel]].
+	^s
+    ]
 
 	hasMethods [
 	"Return whether the receiver has any methods defined"
@@ -306,6 +731,79 @@ method dictionary, and iterating over the class hierarchy.'>
 
 	<category: 'testing the method dictionary'>
 	^(self lookupSelector: selector) notNil
+    ]
+	
+	whichClassIncludesSelector: selector [
+	"Answer which class in the receiver's hierarchy contains the implementation
+	 of selector used by instances of the class (nil if none does)"
+
+	<category: 'testing the method dictionary'>
+	self withAllSuperclassesDo: 
+		[:superclass | 
+		(superclass includesSelector: selector) ifTrue: [^superclass]].
+	^nil
+    ]
+
+    whichSelectorsRead: instVarName [
+	"Answer a Set of selectors which read the given instance variable"
+
+	<category: 'testing the method dictionary'>
+	| md index |
+	index := self allInstVarNames indexOf: instVarName asSymbol
+		    ifAbsent: [^Set new].	"### should it raise an error?"
+	md := self methodDictionary.
+	md isNil ifTrue: [^Set new].
+	^(md select: [:each | each reads: index - 1]) keys
+    ]
+
+    whichSelectorsAssign: instVarName [
+	"Answer a Set of selectors which read the given instance variable"
+
+	<category: 'testing the method dictionary'>
+	| md index |
+	index := self allInstVarNames indexOf: instVarName asSymbol
+		    ifAbsent: [^Set new].	"### should it raise an error?"
+	md := self methodDictionary.
+	md isNil ifTrue: [^Set new].
+	^(md select: [:each | each assigns: index - 1]) keys
+    ]
+
+    whichSelectorsAccess: instVarName [
+	"Answer a Set of selectors which access the given instance variable"
+
+	<category: 'testing the method dictionary'>
+	| md index |
+	index := self allInstVarNames indexOf: instVarName asSymbol
+		    ifAbsent: [^Set new].	"### should it raise an error?"
+	md := self methodDictionary.
+	md isNil ifTrue: [^Set new].
+	^(md select: [:each | each accesses: index - 1]) keys
+    ]
+
+    whichSelectorsReferTo: anObject [
+	"Returns a Set of selectors that refer to anObject"
+
+	<category: 'testing the method dictionary'>
+	| md |
+	md := self methodDictionary.
+	md isNil ifTrue: [^Set new].
+	^(md select: [:each | each refersTo: anObject]) keys
+    ]
+	
+	scopeHas: name ifTrue: aBlock [
+	"If methods understood by the receiver's instances have access to a
+	 symbol named 'name', evaluate aBlock"
+
+	<category: 'testing the method dictionary'>
+	| nameSym |
+	nameSym := name asSymbol.
+	(self allInstVarNames includes: nameSym) ifTrue: [^aBlock value].
+	(self allClassVarNames includes: nameSym) ifTrue: [^aBlock value].
+	(self environment includesKey: nameSym) ifTrue: [^aBlock value].
+	self allSharedPools do: 
+		[:dictName | 
+		((self environment at: dictName asGlobalKey) includesKey: nameSym) 
+		    ifTrue: [^aBlock value]]
     ]
 	
 	isBits [
@@ -440,6 +938,28 @@ method dictionary, and iterating over the class hierarchy.'>
 	[anInstance notNil] whileTrue: 
 		[aBlock value: anInstance.
 		anInstance := anInstance nextInstance]
+    ]
+
+    selectSubclasses: aBlock [
+	"Return a Set of subclasses of the receiver satisfying aBlock."
+
+	<category: 'enumerating'>
+	| aSet |
+	aSet := Set new.
+	self 
+	    allSubclassesDo: [:subclass | (aBlock value: subclass) ifTrue: [aSet add: subclass]].
+	^aSet
+    ]
+
+    selectSuperclasses: aBlock [
+	"Return a Set of superclasses of the receiver satisfying aBlock."
+
+	<category: 'enumerating'>
+	| aSet |
+	aSet := Set new.
+	self 
+	    allSuperclassesDo: [:superclass | (aBlock value: superclass) ifTrue: [aSet add: superclass]].
+	^aSet
     ]
 
     subclassesDo: aBlock [
@@ -634,6 +1154,13 @@ method dictionary, and iterating over the class hierarchy.'>
     ]
 
    	hierarchyIndent [
+	"Answer the indent to be used by #printHierarchy - 4 by default"
+
+	<category: 'printing hierarchy'>
+	^4
+    ]
+
+    hierarchyIndent [
 	"Answer the indent to be used by #printHierarchy - 4 by default"
 
 	<category: 'printing hierarchy'>
