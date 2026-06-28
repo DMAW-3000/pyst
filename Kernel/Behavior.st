@@ -550,15 +550,15 @@ method dictionary, and iterating over the class hierarchy.'>
 	1 to: result size do: [:i | weakResult at: i put: (result at: i)].
 	^weakResult
     ]
-
-    instanceCount [
+	
+	instanceCount [
 	"Return a count of all the instances of the receiver"
 
 	<category: 'accessing instances and variables'>
 	| count anInstance |
 	count := 0.
 	anInstance := self someInstance.
-
+	]
 	
 	instanceCount [
 	"Return a count of all the instances of the receiver"
@@ -599,24 +599,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	^result contents
     ]
 
-    classPool [
-	"Answer the class pool dictionary. Since Behavior does not support
-	 classes with class variables, we answer an empty one; adding
-	 variables to it results in an error."
-
-	<category: 'accessing instances and variables'>
-	^(Dictionary new)
-	    makeReadOnly: true;
-	    yourself
-    ]
-
-    sharedPools [
-	"Return the names of the shared pools defined by the class"
-
-	<category: 'accessing instances and variables'>
-	^self superclass isNil ifTrue: [#()] ifFalse: [self superclass sharedPools]
-    ]
-
     allSharedPoolDictionariesDo: aBlock [
         "Answer the shared pools visible from methods in the metaclass,
          in the correct search order."
@@ -645,7 +627,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	self allSharedPoolDictionariesDo: [:each |
 		result add: (each nameIn: self environment)].
 	^result
-    ]
     ]
 	
 	subclasses [
