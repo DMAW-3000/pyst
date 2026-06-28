@@ -182,9 +182,9 @@ class Smalltalk(object):
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        x = inst.g_interp.send_message_extern(inst.o_true, 
-                                              "isKindOf:", 
-                                              (inst.k_false,))
+        testObj = inst.g_interp.send_message_extern(inst.k_test, "new", ())
+        print(testObj)
+        x = inst.g_interp.send_message_extern(testObj, "runAll", ())
         print()
         print(x)
         

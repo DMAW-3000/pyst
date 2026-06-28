@@ -7,13 +7,20 @@
  
  Object subclass: Test [
 	| testInst1 testInst2 |
- 
-	test1 [
-        "test1"
-		| b |
-		b := nil.
-		self ifNotNil: [b ifNil: [b := self]].
-		^b
-    ]
 	
+	runAll [
+		"Run all of the tests"
+		self test1
+		"self test2"
+	]
+	
+	test1 [
+		"test1"
+		^true isKindOf: false class
+	]
+ 
+	test2 [
+        "test2"
+		^[:x | true and: [x]] value: false
+    ]
 ]
