@@ -183,10 +183,9 @@ class Smalltalk(object):
     def run(klass):
         inst = klass._SmalltalkInstance
         testObj = inst.g_interp.send_message_extern(inst.k_test, "new", ())
-        print(testObj)
-        x = inst.g_interp.send_message_extern(testObj, "runAll", ())
+        result = inst.g_interp.send_message_extern(testObj, "runAll", ())
         print()
-        print(x)
+        print(result)
         
     def build_classes_1(self):
         """
