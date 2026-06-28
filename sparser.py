@@ -329,5 +329,5 @@ class Parser(object):
         self.lex()
         slist = self.parse_statements()
         self.lex_skip_manditory("RBRACK")
-        return ParseLiteralBlock(ParseLiteralBlock(slist))
+        return ParseLiteral(ParseLiteralBlock(slist))
             
