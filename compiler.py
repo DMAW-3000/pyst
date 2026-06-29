@@ -541,7 +541,7 @@ class Compile(object):
         elif isinstance(recv, ParseExecStatement):
             self.compile_exec_statement(recv)
         else:
-            self.compile_load_literal(recv.value)
+            raise CompileError("unary recv")
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)

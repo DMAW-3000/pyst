@@ -299,7 +299,7 @@ class Parser(object):
         """
         sel = self.val(0)
         self.lex()
-        return ParseUnaryMessage(recv, sel)
+        return ParseUnaryMessage(ParseExecStatement(recv), sel)
     
     def parse_message_binary(self, recv, kind):
         """
