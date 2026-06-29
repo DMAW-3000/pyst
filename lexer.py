@@ -19,6 +19,7 @@ tokens = [
     'RBRACK',
     'CARET',
     'PERIOD',
+    'SEMICOLON',
     'ASSIGN',
     'SYMBOL',
     "BLOCKARG",
@@ -104,6 +105,10 @@ def t_RPARENS(t):
     
 def t_PERIOD(t):
     r'\.'
+    return t
+    
+def t_SEMICOLON(t):
+    r';'
     return t
     
 def t_ASSIGN(t):
