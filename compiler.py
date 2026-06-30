@@ -600,7 +600,6 @@ class Compile(object):
         Compile a cascade list of messages
         """
         # load the receiver
-        print("comp cascade")
         self.compile_exec_statement(recv.data)
         
         # compile each message
