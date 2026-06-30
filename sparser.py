@@ -353,6 +353,8 @@ class Parser(object):
             tok = self.token(0)
             if tok == "IDENT":
                 casList.append(ParseExecStatement(self.parse_message_unary(noLoad, self.EXPR_CASCADED)))
+            elif tok == "MESSAGEARG":
+                casList.append(ParseExecStatement(self.parse_message_keyword(noLoad, self.EXPR_CASCADED)))
             else:
                 raise ParseError("incomplete cascade")
         return ParseCascadeMessage(head, casList)
