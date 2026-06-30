@@ -39,6 +39,7 @@ class Interp(object):
         bTbl[B_PUSH_TEMPORARY_VARIABLE]     = self.b_push_temp_var
         bTbl[B_PUSH_OUTER_TEMP]             = self.b_push_outer_var
         bTbl[B_PUSH_RECEIVER_VARIABLE]      = self.b_push_recv_var
+        bTbl[B_DUP_STACK_TOP]               = self.b_dup_top
         bTbl[B_POP_STACK_TOP]               = self.b_pop_top
         bTbl[B_STORE_TEMPORARY_VARIABLE]    = self.b_store_temp_var
         bTbl[B_STORE_OUTER_TEMP]            = self.b_store_outer_var
@@ -301,9 +302,18 @@ class Interp(object):
         ctx.push(ctx.receiver[arg])
         return 2
         
+    def b_dup_top(self, ctx, arg):
+        """
+        Execute the duplicate stack top bytecode.
+        Push the last value on the stack.
+        """
+        ctx.push(ctx[-1])
+        return 2
+        
     def b_pop_top(self, ctx, arg):
         """
-        Execute the pop stack top bytecode
+        Execute the pop stack top bytecode.
+        Pop the last value from the stack and discard.
         """
         ctx.pop()
         return 2
