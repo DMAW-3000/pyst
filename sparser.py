@@ -78,6 +78,14 @@ class ParseMessageArg(object):
     def __init__(self, name, value):
         self.name = name
         self.value = value
+        
+class ParseCascadeMessage(ParseMessage):
+    """
+    Represent a message cascade
+    """
+    def __init__(self, recv, mlist):
+        super().__init__(recv)
+        self.mlist = mlist
 
 class ParseLiteral(object):
     """
@@ -278,15 +286,19 @@ class Parser(object):
         while True:
             tok = self.token(0)
             if tok == "IDENT":
-                node = self.parse_message_unary(node, kind)
+                node = self.parse_message_unary(node, kind & ~self.EXPR_CASCADE)
             elif tok == "OPERATOR":
                 if not (kind & self.EXPR_BINOP):
                     return node
-                node = self.parse_message_binary(node, kind)
+                node = self.parse_message_binary(node, kind & ~self.EXPR_CASCADE)
             elif tok == "MESSAGEARG":
                 if not (kind & self.EXPR_KEYWORD):
                     return node
-                node = self.parse_message_keyword(node, kind)
+                node = self.parse_message_keyword(node, kind & ~self.EXPR_CASCADE)
+            elif tok == "SEMICOLON":
+                if (n == 0) or not (kind & self.EXPR_CASCADE):
+                    return node
+                return self.parse_message_cascade(node, kind)
             else:
                 return node
             n += 1
@@ -323,6 +335,22 @@ class Parser(object):
             if self.token(0) != "MESSAGEARG":
                 break
         return ParseArgumentMessage(ParseExecStatement(recv), aList)
+        
+    def parse_message_cascade(self, recv, kind):
+        """
+        Parse a cascaded message
+        """
+        head = recv.recv
+        recv.recv = ParseExecStatement(ParseLiteral(None))
+        casList = [ParseExecStatement(recv)]
+        
+        while self.lex_skip_if("SEMICOLON"):
+            tok = self.token(0)
+            if tok == "IDENT":
+                casList.append(ParseExecStatement(self.parse_message_unary(ParseLiteral(None), self.EXPR_CASCADED)))
+            else:
+                raise ParseError("incomplete cascade")
+        return ParseCascadeMessage(head, casList)
         
     def parse_block(self):
         """

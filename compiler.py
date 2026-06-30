@@ -524,6 +524,8 @@ class Compile(object):
             self.compile_expr_message(s.recv, s.name, s.send)
         elif isinstance(s, ParseArgumentMessage):
             self.compile_arg_message(s.recv, s.args)
+        elif isinstance(s, ParseCascadeMessage):
+            self.compile_cas_message(s.recv, s.mlist)
         elif isinstance(s, ParseLiteral):
             self.compile_load_literal(s.value)
         elif isinstance(s, ParseExecStatement):
@@ -541,7 +543,8 @@ class Compile(object):
         elif isinstance(recv, ParseExecStatement):
             self.compile_exec_statement(recv)
         else:
-            raise CompileError("unary recv")
+            raise CompileError("unary recv:", recv)
+            
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)
@@ -592,6 +595,24 @@ class Compile(object):
         # send message
         self.emit_bytes(B_SEND, numArgs)
         
+    def compile_cas_message(self, recv, mlist):
+        """
+        Compile a cascade list of messages
+        """
+        # load the receiver
+        print("comp cascade")
+        self.compile_exec_statement(recv.data)
+        
+        # compile each message
+        # reload receiver each time except last
+        # remove reply each time except last
+        for msg in mlist:
+            if msg is not mlist[-1]:
+                self.emit_bytes(B_DUP_STACK_TOP, 0)
+            self.compile_exec_statement(msg.data)
+            if msg is not mlist[-1]:
+                self.emit_bytes(B_POP_STACK_TOP, 0)
+        
     def compile_load_literal(self, x):
         """
         Compile the code to load a literal value
@@ -599,6 +620,10 @@ class Compile(object):
         """
         global Int_Max
         
+        # empty
+        if x is None:
+            return 
+            
         # keyeord or variable name
         if isinstance(x, str):
             # keywords
