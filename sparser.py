@@ -340,14 +340,19 @@ class Parser(object):
         """
         Parse a cascaded message
         """
+        noLoad = ParseLiteral(None)
+        
+        # remove receiver from first element in cascade and set to none
         head = recv.recv
-        recv.recv = ParseExecStatement(ParseLiteral(None))
+        recv.recv = ParseExecStatement(noLoad)
         casList = [ParseExecStatement(recv)]
         
+        # parse each element in cascade
+        # receiver is implicit
         while self.lex_skip_if("SEMICOLON"):
             tok = self.token(0)
             if tok == "IDENT":
-                casList.append(ParseExecStatement(self.parse_message_unary(ParseLiteral(None), self.EXPR_CASCADED)))
+                casList.append(ParseExecStatement(self.parse_message_unary(noLoad, self.EXPR_CASCADED)))
             else:
                 raise ParseError("incomplete cascade")
         return ParseCascadeMessage(head, casList)
