@@ -114,7 +114,7 @@ creation of Processes from blocks.'>
 	 by the compiler"
 
 	<category: 'control structures'>
-	self value repeat
+	self value; repeat
     ]
 
     whileTrue: aBlock [
