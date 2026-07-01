@@ -8,6 +8,7 @@ states = ( ('dstring', 'exclusive'),
            ('sstring', 'exclusive'), )
 
 tokens = [
+    'CHARACTER',
     'BASENUMBER',
     'FLTNUMBER',
     'DECNUMBER',
@@ -27,6 +28,11 @@ tokens = [
     'OPERATOR',
     'IDENT',
 ]
+
+def t_CHARACTER(t):
+    r'\$\S'
+    t.value = t.value.lstrip('$')
+    return t
 
 def t_BASENUMBER(t):
     r'\d+r[\dA-F]+'
@@ -120,7 +126,7 @@ def t_CARET(t):
     return t
     
 def t_SYMBOL(t):
-    r'\#([a-zA-Z_][a-zA-Z_\d]*:?)+'
+    r'\#([a-zA-Z_\+\-\*\/\,<>=%~&\\\|][a-zA-Z_\d\+\-\*\/\,<>=%~&\\]*:?)+'
     t.value = t.value.lstrip('#')
     return t
     
