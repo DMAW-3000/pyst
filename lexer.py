@@ -30,7 +30,7 @@ tokens = [
 ]
 
 def t_CHARACTER(t):
-    r'\$\S'
+    r'\$(\S|\x20)'
     t.value = t.value.lstrip('$')
     return t
 
