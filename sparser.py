@@ -247,12 +247,11 @@ class Parser(object):
             else:
                 node = ParseLiteral(self.val(0))
                 self.lex()
-                if self.lex_skip_if("ASSIGN"):
-                    assign = node
-                else:
+                if not (kind & self.EXPR_ASSIGNMENT) or not self.lex_skip_if("ASSIGN"):
                     break
+                assign = node
                     
-        node = self.parse_message(node, kind)
+        node = self.parse_message(node, kind & ~self.EXPR_ASSIGNMENT)
         
         if assign is not None:
             return ParseAssignStatement(assign, ParseExecStatement(node))
