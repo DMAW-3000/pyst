@@ -113,6 +113,12 @@ class ParseLiteralBlock(ParseLiteral):
     def __init__(self, x, args):
         super().__init__(x)
         self.args = args
+        
+class ParseLiteralChar(ParseLiteral):
+    """
+    Represens a character literal
+    """
+    pass
  
 class ParseError(Exception):
     """
@@ -268,6 +274,9 @@ class Parser(object):
             self.lex()
         elif tok == "SSTRING":
             node = ParseLiteral(ParseLiteralString(self.val(0)))
+            self.lex()
+        elif tok == "CHARACTER":
+            node = ParseLiteral(ParseLiteralChar(self.val(0)))
             self.lex()
         elif tok == "LBRACK":
             node = self.parse_block()
