@@ -663,6 +663,11 @@ class Compile(object):
         elif isinstance(x, ParseLiteralBlock):
             self.compile_blk_closure(x.value, x.args)
             
+        # literal character
+        elif isinstance(x, ParseLiteralChar):
+            idx = self.add_literal(ord(x.value))
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            
         # unknown type
         else:
             raise CompileError("unknown literal type %s" % x)
