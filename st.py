@@ -1256,20 +1256,22 @@ class CompiledBlock(_Code):
     
     _Cover = None
     
-    def set_hdr(self, numArg, depth):
+    def set_hdr(self, numArg, numTemp, depth):
         """
         Set the method header info
         """
         self.header = (numArg & 0x1f) | \
+                      ((numTemp & 0x3f) << 11) | \
                       ((depth & 0x3f) << 5)
                       
     def get_hdr(self):
         """
         Return the method header info as a tuple:
-        (num_arg, depth)
+        (num_arg, num_temp, depth)
         """
         hdr = self.header
         return (hdr & 0x1f,
+               (hdr >> 11) & 0x3f,
                (hdr >> 5) & 0x3f)
         
     def get_num_arg(self):
@@ -1280,9 +1282,9 @@ class CompiledBlock(_Code):
         
     def get_num_temp(self):
         """
-        Get number of block temporary variables
+        Get number of method temporary variables
         """
-        return 0
+        return (self.header >> 11) & 0x3f
         
     def get_depth(self):
         """

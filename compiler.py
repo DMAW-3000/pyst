@@ -731,7 +731,7 @@ class Compile(object):
         
         # create new block object and its literals array
         blkObj = CompiledBlock()
-        blkObj.set_hdr(len(args), self._cur_depth)
+        blkObj.set_hdr(len(args), 0, self._cur_depth)
         blkObj.set_code(self._cur_bytes)
         blkObj.literals = Array.from_seq(self._cur_literal)
         blkObj.method = self._cur_meth

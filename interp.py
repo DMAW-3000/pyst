@@ -421,7 +421,7 @@ class Interp(object):
         """
         # get block info znc verify number of args
         blkObj = recv.block
-        numHdrArgs, depth = blkObj.get_hdr()
+        numHdrArgs, numTemp, depth = blkObj.get_hdr()
         if numHdrArgs != numArg:
             return False
 
