@@ -468,7 +468,7 @@ class Compile(object):
         elif isinstance(s, ParseExecStatement):
             self.compile_exec_statement(s.data)
         elif isinstance(s, ParseAssignStatement):
-            self.compile_assign_statement(s.var, s.data, nested)
+            self.compile_assign_statement(s.vlist, s.data, nested)
         else:
             raise CompileError("unknown statement type %s" % s)
         
@@ -482,43 +482,51 @@ class Compile(object):
         # add return instruction
         self.emit_bytes(B_RETURN_METHOD_STACK_TOP, 0)
         
-    def compile_assign_statement(self, var, s, nested):
+    def compile_assign_statement(self, vlist, s, nested):
         """
         Compile a := assignment statement
         """
-        # check variable name
-        var = var.value
-        if var in self._Keyword_Names:
-            raise CompileError("assign to %s not allowed" % var)
+        # process the assign list
+        for var in vlist:
         
-        # generate value
-        self.compile_exec_statement(s.data)
+            # check variable name
+            varName = var.value
+            if varName in self._Keyword_Names:
+                raise CompileError("assign to %s not allowed" % var)
         
-        # if this is a nested assign, duplicate the value
-        # since the store will consume a single copy
-        if nested:
-            self.emit_bytes(B_DUP_STACK_TOP, 0)
+            # generate value
+            if var is vlist[0]:
+                self.compile_exec_statement(s.data)
+                
+            # duplicate value for chained assign
+            if var is not vlist[-1]:
+                self.emit_bytes(B_DUP_STACK_TOP, 0)
         
-        # assign value
-        # look in locals first
-        idx, scope = self.find_local(var)
-        if idx is not None:
-            if scope == 0:
-                # current context
-                self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
+            # if this is a nested assign, duplicate the value
+            # since the store will consume a single copy
+            if nested:
+                self.emit_bytes(B_DUP_STACK_TOP, 0)
+        
+            # assign value
+            # look in locals first
+            idx, scope = self.find_local(varName)
+            if idx is not None:
+                if scope == 0:
+                    # current context
+                    self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
+                else:
+                    # parent context
+                    self.emit_bytes(B_STORE_OUTER_TEMP, idx, scope - 1, 0)
             else:
-                # parent context
-                self.emit_bytes(B_STORE_OUTER_TEMP, idx, scope - 1, 0)
-        else:
-            # look in instance variables
-            try:
-                idx = self._cur_inst_var.index(var)
-                self.emit_bytes(B_STORE_RECEIVER_VARIABLE, idx)
-            except ValueError:
-                # variable is global
-                sym = self._sys.symbol_find_or_add(var)
-                idx = self.add_literal(sym)
-                self.emit_bytes(B_STORE_LIT_VARIABLE, idx)
+                # look in instance variables
+                try:
+                    idx = self._cur_inst_var.index(var)
+                    self.emit_bytes(B_STORE_RECEIVER_VARIABLE, idx)
+                except ValueError:
+                    # variable is global
+                    sym = self._sys.symbol_find_or_add(varName)
+                    idx = self.add_literal(sym)
+                    self.emit_bytes(B_STORE_LIT_VARIABLE, idx)
         
     def compile_exec_statement(self, s):
         """
@@ -537,7 +545,7 @@ class Compile(object):
         elif isinstance(s, ParseExecStatement):
             self.compile_exec_statement(s.data)
         elif isinstance(s, ParseAssignStatement):
-            self.compile_assign_statement(s.var, s.data, True)
+            self.compile_assign_statement(s.vlist, s.data, True)
         else:
             pass
             #raise CompileError("bad statement syntax %s" % s)

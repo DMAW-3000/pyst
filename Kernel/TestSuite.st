@@ -33,7 +33,8 @@
 	
 	test4 [
 		"test4"
-		| x |
+		| x y |
+		x := y := true.
 		(x := false) ifFalse: [	x := true ]
 	]
 ]
