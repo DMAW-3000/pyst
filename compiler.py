@@ -677,7 +677,7 @@ class Compile(object):
             
         # block closure
         elif isinstance(x, ParseLiteralBlock):
-            self.compile_blk_closure(x.value, x.args)
+            self.compile_blk_closure(x.value, x.args, x.temps)
             
         # literal character
         elif isinstance(x, ParseLiteralChar):
@@ -713,13 +713,14 @@ class Compile(object):
                 idx = self.add_literal(sym)
                 self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
             
-    def compile_blk_closure(self, s, args):
+    def compile_blk_closure(self, s, args, temps):
         """
         Compile a block closure expresion
         """
         # save current context state and prepare new
         self.context_push()
         self._cur_local.extend(args)
+        self._cur_local.extend(temps)
         
         # compile the block statements
         # check for empty closure
@@ -731,7 +732,7 @@ class Compile(object):
         
         # create new block object and its literals array
         blkObj = CompiledBlock()
-        blkObj.set_hdr(len(args), 0, self._cur_depth)
+        blkObj.set_hdr(len(args), len(temps), self._cur_depth)
         blkObj.set_code(self._cur_bytes)
         blkObj.literals = Array.from_seq(self._cur_literal)
         blkObj.method = self._cur_meth
@@ -739,6 +740,7 @@ class Compile(object):
         if self._verbose:
             print("Block------")
             print("Args:", args)
+            print("Temps:", temps)
             print("Depth: ", self._cur_depth)
             print("Block Literals", blkObj.literals.size)
             self._sys.arr_print(blkObj.literals)

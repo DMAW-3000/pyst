@@ -438,6 +438,9 @@ class Interp(object):
             while n < numArg:
                 newCtx.push(ctx[7 + n])
                 n += 1
+                
+        # mske room for any temporary variables
+        newCtx.expand(numTemp)
 
         # transfer control to new context
         self.i_context = newCtx

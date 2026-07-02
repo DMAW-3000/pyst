@@ -110,9 +110,10 @@ class ParseLiteralBlock(ParseLiteral):
     """
     Represent a [block] value
     """
-    def __init__(self, x, args):
+    def __init__(self, x, args, temps):
         super().__init__(x)
         self.args = args
+        self.temps = temps
         
 class ParseLiteralChar(ParseLiteral):
     """
@@ -372,15 +373,30 @@ class Parser(object):
         Parse a block closure
         """
         self.lex()                                  # [
+        aList = []
+        tList = []
+        args = False
+        temps = False
         
         # check for argument list
-        aList = []
         while self.token(0) == "BLOCKARG":
+            args = True
             aList.append(self.val(0))
             self.lex()
-        if len(aList):
-            self.lex_skip_manditory("OPERATOR");    # |
+        if args:
+            self.lex_skip_manditory("OPERATOR")     # |
+        
+        # check for temp variable list
+        if self.lex_skip_if("OPERATOR"):            # |
+            while self.token(0) == "IDENT":
+                temps = True
+                tList.append(self.val(0))
+                self.lex()
+        if temps:
+            self.lex_skip_manditory("OPERATOR")     # |
+            
+        # parse block statements
         slist = self.parse_statements()
         self.lex_skip_manditory("RBRACK")           # ]
-        return ParseLiteral(ParseLiteralBlock(slist, aList))
+        return ParseLiteral(ParseLiteralBlock(slist, aList, tList))
             
