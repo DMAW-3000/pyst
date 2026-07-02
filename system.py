@@ -649,6 +649,7 @@ class Smalltalk(object):
         Debug bytecode after execution
         """
         self.context_print_state(self.g_interp.i_context)
+        print()
         
     def debug_user_input(self):
         """
@@ -659,39 +660,52 @@ class Smalltalk(object):
             if len(line) < 1:
                 print()
                 continue
-            c = line[0]
+            c = line.split()[0]
             if c == 's':
                 break
             elif c == 'c':
                 self.g_interp.set_debug(*self.d_save)
                 break
             elif c == 'd':
+                print()
                 self.context_print_byte()
                 print()
-                continue
-            elif c == '0':
+            elif c == 'i':
+                ctx = self.g_interp.i_context
+                if len(ctx) <= 7:
+                    print("STACK EMPTY")
+                else:
+                    print()
+                    if is_obj(ctx[-1]):
+                        self.object_print_state(ctx[-1])
+                    else:
+                        print("Primitive: ", str(ctx[-1]))
+                    print()
+            elif c == 'x':
+                print()
                 self.context_print_state(self.g_interp.i_context)
                 print()
-                continue
-            elif c == '1':
+            elif c == 'p':
                 parent = self.g_interp.i_context.parent
+                print()
                 if not parent.is_nil():
                     self.context_print_state(parent)
                 else:
-                    print("NO CONTEXT")
+                    print("ROOT CONTEXT")
+                print()
             elif c == 'h':
                 print("s = step")
                 print("c = continue")
                 print("d = disassemble current bytecode")
                 print("h = help")
+                print("i = inspect stack top object")
                 print("q = quit immediately")
+                print("x = examine context")
                 print()
-                continue
             elif c == 'q':
                 sys.exit(0)
             else:
                 print("???\n")
-                continue
                 
     def context_print_byte(self):
         """
@@ -736,7 +750,17 @@ class Smalltalk(object):
         print("\nStack (%d):" % (ctx.sp - (6 + numTemp),))
         for n,r in enumerate(ctx[7 + numTemp:]):
             print("[%d]" % n, r)
-        print()
+        
+    def object_print_state(self, obj):
+        """
+        Print the state of an object
+        """
+        print(str(obj.get_class()))
+        print("ID:    ", obj.get_id())
+        print("Flags: ", obj._flags)
+        print("Cache: ", obj._py_cache)
+        if obj.size > 0:
+            self.arr_print(obj)
         
     def fatal_err(self, *s):
         """
