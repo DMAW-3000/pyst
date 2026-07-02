@@ -179,6 +179,7 @@ class UndefinedObject(Object):
         Create an UndefinedObject innstance.  This should only
         be called once.  The new object has special ID '0'.
         """
+        self._py_cache = None
         self._obj_id = 0
         self._klass = self._Cover
         self._flags = 0
@@ -202,6 +203,7 @@ class CFalse(Object):
         Create a False object innstance.  This should only
         be called once.  The new object has special ID '1'.
         """
+        self._py_cache = None
         self._obj_id = 1
         self._klass = self._Cover
         self._flags = 0
@@ -233,6 +235,7 @@ class CTrue(Object):
         Create a True object innstance.  This should only
         be called once.  The new object has special ID '2'.
         """
+        self._py_cache = None
         self._obj_id = 2
         self._klass = self._Cover
         self._flags = 0
