@@ -80,6 +80,7 @@ Init_Kernel_Mod = (
     "True.st",
     "BlkClosure.st",
     "Behavior.st",
+    "Magnitude.st",
     "TestSuite.st",
 )
 
