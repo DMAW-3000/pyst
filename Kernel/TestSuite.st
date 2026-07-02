@@ -10,6 +10,7 @@
 	
 	runAll [
 		"Run all of the tests"
+		self test4.
 		self test1.
 		self test2.
 		self test3
@@ -29,4 +30,12 @@
         "test3"
 		^[:x | true and: [x]] value: false
     ]
+	
+	test4 [
+		"test4"
+		| x y |
+		x := y := false.
+		(x := y := true) isNil.
+		(x := false) ifFalse: [	x := true ]
+	]
 ]

@@ -35,9 +35,9 @@ class ParseAssignStatement(ParseStatement):
     """
     Represent an assignment statement
     """
-    def __init__(self, var, x):
+    def __init__(self, vlist, x):
         super().__init__(x)
-        self.var = var
+        self.vlist = vlist
 
 class ParseMessage(object):
     """
@@ -239,7 +239,7 @@ class Parser(object):
         """
         Parse a general expression
         """
-        assign = None
+        aList = []
         while True:
             if self.token(0) != "IDENT":
                 node = self.parse_primary()
@@ -247,15 +247,14 @@ class Parser(object):
             else:
                 node = ParseLiteral(self.val(0))
                 self.lex()
-                if self.lex_skip_if("ASSIGN"):
-                    assign = node
-                else:
+                if not (kind & self.EXPR_ASSIGNMENT) or not self.lex_skip_if("ASSIGN"):
                     break
+                aList.append(node)
                     
-        node = self.parse_message(node, kind)
+        node = self.parse_message(node, kind & ~self.EXPR_ASSIGNMENT)
         
-        if assign is not None:
-            return ParseAssignStatement(assign, ParseExecStatement(node))
+        if len(aList):
+            return ParseAssignStatement(aList, ParseExecStatement(node))
         else:
             return ParseExecStatement(node)
         
