@@ -269,7 +269,32 @@ class Array(Object):
         
     def __str__(self):
         return "ARRAY(%d)" % self.size
+        
+        
+class Character(Object):
+    """
+    Internal representation of Smalltalk Character
+    Instance variables:
+       codePoint
+    """
+   
+    _Cover = None
     
+    def __init__(self, c):
+        super().__init__(1)
+        self.codePoint = c
+
+    @property
+    def codePoint(self):
+        return self[0]
+    
+    @codePoint.setter
+    def codePoint(self, c):
+        self[0] = c
+    
+    def __str__(self):
+        return "$\'" + chr(self.codePoint) + "\'"
+   
     
 class String(Array):
     """
@@ -1090,13 +1115,13 @@ class _Code(Object):
         """
         super().__init__(3)
         self._bc_arr = bytearray(1)
-        
+ 
     def get_code(self):
         """
         Get the bytecode array
         """
         return self._bc_arr
-        
+
     def set_code(self, x):
         """
         Set the bytecode array
