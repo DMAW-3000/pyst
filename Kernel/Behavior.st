@@ -558,15 +558,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	| count anInstance |
 	count := 0.
 	anInstance := self someInstance.
-	]
-	
-	instanceCount [
-	"Return a count of all the instances of the receiver"
-
-	<category: 'accessing instances and variables'>
-	| count anInstance |
-	count := 0.
-	anInstance := self someInstance.
 	[anInstance notNil] whileTrue: 
 		[count := count + 1.
 		anInstance := anInstance nextInstance].
