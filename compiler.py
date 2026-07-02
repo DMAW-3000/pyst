@@ -504,7 +504,7 @@ class Compile(object):
         
             # if this is a nested assign, duplicate the value
             # since the store will consume a single copy
-            if nested:
+            if nested and (var is vlist[-1]):
                 self.emit_bytes(B_DUP_STACK_TOP, 0)
         
             # assign value

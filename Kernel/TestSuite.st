@@ -34,7 +34,8 @@
 	test4 [
 		"test4"
 		| x y |
-		x := y := true.
+		x := y := false.
+		(x := y := true) isNil.
 		(x := false) ifFalse: [	x := true ]
 	]
 ]
