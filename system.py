@@ -64,6 +64,7 @@ class Smalltalk(object):
         self.k_number = None
         self.k_integer = None
         self.k_small_int = None
+        self.k_character = None
         self.k_context_part = None
         self.k_blk_context = None
         self.k_meth_context = None
@@ -122,6 +123,10 @@ class Smalltalk(object):
         # create Smalltalk Boolean singletons
         inst.o_false = CFalse()
         inst.o_true = CTrue()
+        
+        # create Smalltalk Character singletons
+        for n in range(256):
+            inst.o_char[n] = Character(n)
         
         # create global symbol table
         inst.g_sym_table = Array(512)
