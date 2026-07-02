@@ -434,7 +434,8 @@ class Compile(object):
         """
         # compile each statement
         for s in slist:
-            self.compile_statement(s)
+            notLast = slist.index(s) != (len(slist) - 1)
+            self.compile_statement(s, isBlk and not notLast)
             
             # discard stack top if result not used
             # unless it is not the last statement of a block
@@ -442,7 +443,7 @@ class Compile(object):
                 if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
                     self.emit_bytes(B_POP_STACK_TOP, 0)
             else:
-                if slist.index(s) != (len(slist) - 1):
+                if notLast:
                     if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
                         self.emit_bytes(B_POP_STACK_TOP, 0)
             
@@ -458,7 +459,7 @@ class Compile(object):
             if not isinstance(slist[-1], ParseReturnStatement):
                 self.emit_bytes(B_RETURN_CONTEXT_STACK_TOP, 0)
         
-    def compile_statement(self, s):
+    def compile_statement(self, s, nested):
         """
         Compile a single statement
         """
@@ -467,7 +468,7 @@ class Compile(object):
         elif isinstance(s, ParseExecStatement):
             self.compile_exec_statement(s.data)
         elif isinstance(s, ParseAssignStatement):
-            self.compile_assign_statement(s.var, s.data, False)
+            self.compile_assign_statement(s.var, s.data, nested)
         else:
             raise CompileError("unknown statement type %s" % s)
         

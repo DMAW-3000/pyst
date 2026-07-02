@@ -34,6 +34,6 @@
 	test4 [
 		"test4"
 		| x |
-		(x := false) ifFalse: [true]
+		(x := false) ifFalse: [	x := true ]
 	]
 ]
