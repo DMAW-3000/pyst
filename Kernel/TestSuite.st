@@ -34,7 +34,6 @@
 	test4 [
 		"test4"
 		| x |
-		x := nil.
-		^x isNil
+		(x := false) ifFalse: [true]
 	]
 ]

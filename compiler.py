@@ -467,7 +467,7 @@ class Compile(object):
         elif isinstance(s, ParseExecStatement):
             self.compile_exec_statement(s.data)
         elif isinstance(s, ParseAssignStatement):
-            self.compile_assign_statement(s.var, s.data)
+            self.compile_assign_statement(s.var, s.data, False)
         else:
             raise CompileError("unknown statement type %s" % s)
         
@@ -481,7 +481,7 @@ class Compile(object):
         # add return instruction
         self.emit_bytes(B_RETURN_METHOD_STACK_TOP, 0)
         
-    def compile_assign_statement(self, var, s):
+    def compile_assign_statement(self, var, s, nested):
         """
         Compile a := assignment statement
         """
@@ -492,6 +492,11 @@ class Compile(object):
         
         # generate value
         self.compile_exec_statement(s.data)
+        
+        # if this is a nested assign, duplicate the value
+        # since the store will consume a single copy
+        if nested:
+            self.emit_bytes(B_DUP_STACK_TOP, 0)
         
         # assign value
         # look in locals first
@@ -530,6 +535,8 @@ class Compile(object):
             self.compile_load_literal(s.value)
         elif isinstance(s, ParseExecStatement):
             self.compile_exec_statement(s.data)
+        elif isinstance(s, ParseAssignStatement):
+            self.compile_assign_statement(s.var, s.data, True)
         else:
             pass
             #raise CompileError("bad statement syntax %s" % s)
