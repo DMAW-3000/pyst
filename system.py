@@ -240,7 +240,7 @@ class Smalltalk(object):
         self.g_cover_map["False"] = self.k_false
         CFalse.set_cover(self.k_false)
         self.g_cover_map["True"] = self.k_true
-        CTrue._Cover = self.k_true
+        CTrue.set_cover(self.k_true)
                 
     def build_classes_3(self):
         """
