@@ -759,6 +759,7 @@ class Smalltalk(object):
         print("ID:    ", obj.get_id())
         print("Flags: ", obj._flags)
         print("Cache: ", obj._py_cache)
+        print("Size:  ", obj.size)
         if obj.size > 0:
             self.arr_print(obj)
         
