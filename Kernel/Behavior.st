@@ -461,6 +461,20 @@ method dictionary, and iterating over the class hierarchy.'>
 		repeat
     ]
 	
+	lookupAllSelectors: aSelector [
+	"Answer a Set of all the compiled method associated with selector.
+	 from the local method dictionary and all of the superclasses."
+
+	<category: 'accessing the method dictionary'>
+	| implementors |
+
+	implementors := Set new.
+	self withAllSuperclassesDo: [:c | | m |
+	    m := c compiledMethodAt: aSelector ifAbsent: [nil].
+	    m ifNotNil: [implementors add: m]].
+	^implementors
+    ]
+	
 	compiledMethodAt: selector ifAbsent: aBlock [
 	"Return the compiled method associated with selector, from the local
 	 method dictionary.  Evaluate aBlock if not found."
@@ -1069,6 +1083,93 @@ method dictionary, and iterating over the class hierarchy.'>
 	    shape: shape
     ]
 	
+	updateInstanceVars: variableArray superclass: newSuper shape: shape [
+	"Update instance variables and instance spec of the class and all
+	 its subclasses.  variableArray lists the new variables, including
+	 those inherited from newSuper."
+
+	<category: 'private'>
+	| instVarMap newInstVars oldInstVars oldClass instances oldSuper |
+
+	"Find a common superclass."
+	oldSuper := self superclass.
+	newSuper == oldSuper ifFalse: [
+	    [ newSuper includesBehavior: oldSuper ] whileFalse: [
+	        oldSuper := oldSuper superclass ] ].
+
+	"Make map for inherited instance variables."
+	oldInstVars := self allInstVarNames.
+	instVarMap := Array new: oldInstVars size.
+	1 to: oldSuper instSize do: [ :i |
+	    instVarMap at: i put: i ].
+
+	"Make map for this class's instance variables."
+	newInstVars := variableArray copyFrom: newSuper instSize + 1.
+	oldInstVars
+	    from: oldSuper instSize + 1 to: oldInstVars size
+	    keysAndValuesDo: [ :index :var |
+	        | map |
+	        map := newInstVars findLast: [:each | each = var].
+	        map > 0 ifTrue: [instVarMap at: index put: map + newSuper instSize]].
+
+	"Fix up all subclasses."
+	self allSubclassesDo: 
+		[:sc | 
+		| iv |
+		oldClass := Behavior new.
+		oldClass superclass: sc.
+		instances := sc allInstances.
+		instances do: [:each | each changeClassTo: oldClass].
+		iv := variableArray, (sc allInstVarNames 
+			    copyFrom: oldInstVars size + 1
+			    to: sc allInstVarNames size).
+		sc setInstanceVariables: iv.
+		sc setInstanceSpec: sc shape instVars: sc allInstVarNames size.
+
+		"Mutate all instances of the class to conform to new memory model
+		 of the class."
+		instances do: [:each | 
+		    sc mutate: each via: instVarMap]].
+
+	"Now update this class' instance vars"
+	oldClass := Behavior new.
+	oldClass superclass: self.
+	instances := self allInstances.
+	instances do: [:each | each changeClassTo: oldClass].
+	self setInstanceVariables: variableArray.
+	self setInstanceSpec: shape instVars: variableArray size.
+	instances do: [:each | 
+	    self mutate: each via: instVarMap]
+    ]
+	
+	mutate: object via: instVarMap [
+        "Private - Mutate object to a new class representation. instVarMap
+         maps from old instVarAt: indices to new instVarAt:put: indices.
+         start is the first instance variable to change."
+
+        <category: 'private'>
+        | aCopy mappedValue end adjustment |
+        aCopy := object class isVariable
+                    ifTrue: [self basicNew: object basicSize]
+                    ifFalse: [self basicNew].
+
+        "Copy old instance variables to their new positions using instVarMap."
+        1 to: instVarMap size do: [:i |
+            mappedValue := instVarMap at: i.
+            mappedValue notNil
+                ifTrue: [aCopy instVarAt: mappedValue put: (object instVarAt: i)]].
+
+        "If mutating a subclass, instVarMap is smaller than `object class instSize';
+         in this case, everything after it must be copied."
+        adjustment := self instSize - object class instSize.
+        instVarMap size + 1 to: object class instSize
+            do: [:i | aCopy instVarAt: i + adjustment put: (object instVarAt: i)].
+
+        "Copy the indexed variables, if any."
+        1 to: object basicSize do: [:i | aCopy basicAt: i put: (object basicAt: i)].
+        ^object become: aCopy
+    ]
+	
 	isBehavior [
 	<category: 'testing functionality'>
 	^true
@@ -1123,6 +1224,45 @@ method dictionary, and iterating over the class hierarchy.'>
 
 	<category: 'printing hierarchy'>
 	self printSubclasses: 0
+    ]
+	
+	printFullHierarchy [
+	"Print my full hierarchy (i.e. all my superclasses and subclasses)
+	 on the terminal."
+
+	<category: 'printing hierarchy'>
+	self printSuperclasses: 0; printSubclasses: self allSuperclasses size
+    ]
+	
+	printSuperclasses: level [
+	"I print all my superclasses, each indented according to its position in
+	the hierarchy. I pass aBlock a class name and a level."
+
+	<category: 'private'>
+	| mySuperclass currentLevel |
+	currentLevel := level.
+	self allSuperclasses reverseDo:
+	    [:superclass |
+	    Transcript
+		space: currentLevel * self hierarchyIndent;
+		nextPutAll: (superclass nameIn: Namespace current);
+		nl.
+	    currentLevel := currentLevel + 1]
+    ]
+
+    printSubclasses: level [
+	"I print my name, and then all my subclasses, each indented according
+	 to its position in the hierarchy. I pass aBlock a class name and a level"
+
+	<category: 'private'>
+	| mySubclasses |
+	Transcript
+	    space: level * self hierarchyIndent;
+	    nextPutAll: (self nameIn: Namespace current);
+	    nl.
+	mySubclasses := self subclasses reject: [ :a | a isMetaclass ].
+	(mySubclasses asSortedCollection: [:a :b | a name <= b name]) do: 
+		[:subclass | subclass printSubclasses: level + 1]
     ]
 
    	hierarchyIndent [
