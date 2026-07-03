@@ -257,7 +257,7 @@ class Parser(object):
         aList = []
         while True:
             if self.token(0) != "IDENT":
-                node = self.parse_primary()
+                node = self.parse_primary(False)
                 break
             else:
                 node = ParseLiteral(self.val(0))
@@ -273,7 +273,7 @@ class Parser(object):
         else:
             return ParseExecStatement(node)
         
-    def parse_primary(self):
+    def parse_primary(self, inArray):
         """
         Parse an isolated token
         """
@@ -297,11 +297,17 @@ class Parser(object):
         elif tok == "LBYTEARRAY":
             node = self.parse_bytearray()
         elif tok == "LBRACK":
-            node = self.parse_block()
+            if inArray:
+                node = self.parse_bytearray()
+            else:
+                node = self.parse_block()
         elif tok == "LPARENS":
-            self.lex()
-            node = self.parse_expr(self.EXPR_ANY)
-            self.lex_skip_manditory("RPARENS")
+            if inArray:
+                node = self.parse_array()
+            else:
+                self.lex()
+                node = self.parse_expr(self.EXPR_ANY)
+                self.lex_skip_manditory("RPARENS")
         return node
         
     def parse_message(self, recv, kind):
@@ -425,7 +431,7 @@ class Parser(object):
         self.lex()
         aList = []
         while not self.lex_skip_if("RPARENS"):
-            aList.append(self.parse_primary())
+            aList.append(self.parse_primary(True))
         return ParseLiteral(ParseLiteralArray(aList))
             
     def parse_bytearray(self):
@@ -438,5 +444,5 @@ class Parser(object):
             tok = self.token(0)
             if (tok != "DECNUMBER") and (tok != "BASENUMBER"):
                 raise ParseError("bytearray must be int: %s" % self.val(0))
-            aList.append(self.parse_primary())
+            aList.append(self.parse_primary(True))
         return ParseLiteral(ParseLiteralBytearray(aList))

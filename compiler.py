@@ -789,6 +789,10 @@ class Compile(object):
                 itemObj = Symbol.from_str(x.value)
             elif isinstance(x, ParseLiteralString):
                 itemObj = String.from_str(x.value)
+            elif isinstance(x, ParseLiteralBytearray):
+                itemObj = self.build_bytearray(x.value)
+            elif isinstance(x, ParseLiteralArray):
+                itemObj = self.build_array(x.value)
             else:
                 raise CompileError("illegal array member: %s" % x)
             arrObj[n] = itemObj
