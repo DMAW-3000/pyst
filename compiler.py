@@ -809,7 +809,7 @@ class Compile(object):
         # store values in array
         for n,item in enumerate(alist):
             x = item.value
-            if isinstance(x, int):
+            if isinstance(x, int) and (x >= 0) and (x < 255):
                 arrObj[n] = x
             else:
                 raise CompileError("bytearray must be int 0 - 255: %s" % x)
