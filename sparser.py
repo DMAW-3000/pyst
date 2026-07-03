@@ -123,7 +123,13 @@ class ParseLiteralChar(ParseLiteral):
     
 class ParseLiteralArray(ParseLiteral):
     """
-    Represent a literal array of value
+    Represent a literal array
+    """
+    pass
+    
+class ParseLiteralBytearray(ParseLiteral):
+    """
+    Represent a literal bytearray 
     """
     pass
  
@@ -131,6 +137,8 @@ class ParseError(Exception):
     """
     Signal a parser error
     """
+    pass
+    
 
 class Parser(object):
     """
@@ -286,6 +294,8 @@ class Parser(object):
             self.lex()
         elif tok == "LARRAY":
             node = self.parse_array()
+        elif tok == "LBYTEARRAY":
+            node = self.parse_bytearray()
         elif tok == "LBRACK":
             node = self.parse_block()
         elif tok == "LPARENS":
@@ -418,3 +428,15 @@ class Parser(object):
             aList.append(self.parse_primary())
         return ParseLiteral(ParseLiteralArray(aList))
             
+    def parse_bytearray(self):
+        """
+        Parse a literal bytearray declaration
+        """
+        self.lex()
+        aList = []
+        while not self.lex_skip_if("RBRACK"):
+            tok = self.token(0)
+            if (tok != "DECNUMBER") and (tok != "BASENUMBER"):
+                raise ParseError("bytearray must be int: %s" % self.val(0))
+            aList.append(self.parse_primary())
+        return ParseLiteral(ParseLiteralBytearray(aList))

@@ -50,6 +50,8 @@
 	
 	test6 [
 		"test6"
+		| a |
+		a := #[5 6 7 100].
 		^ #(1 2 3 'hello' false true nil #new)
 	]
 ]

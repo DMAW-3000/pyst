@@ -15,6 +15,7 @@ tokens = [
     'DSTRING',
     'SSTRING',
     'LARRAY',
+    'LBYTEARRAY',
     'LPARENS',
     'RPARENS',
     'LBRACK',
@@ -96,6 +97,10 @@ t_dstring_ignore = '\r'
 
 def t_LARRAY(t):
     r'\#\('
+    return t
+    
+def t_LBYTEARRAY(t):
+    r'\#\['
     return t
 
 def t_LBRACK(t):

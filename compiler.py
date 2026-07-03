@@ -689,6 +689,11 @@ class Compile(object):
             idx = self.add_literal(self.build_array(x.value))
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
+        # literal bytearray
+        elif isinstance(x, ParseLiteralBytearray):
+            idx = self.add_literal(self.build_bytearray(x.value))
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            
         # unknown type
         else:
             raise CompileError("unknown literal type %s" % x)
@@ -788,6 +793,23 @@ class Compile(object):
                 raise CompileError("illegal array member: %s" % x)
             arrObj[n] = itemObj
         
+        return arrObj
+        
+    def build_bytearray(self, alist):
+        """
+        Construct a literal bytearray
+        """
+        # create empty array
+        arrObj = Array(len(alist))
+        
+        # store values in array
+        for n,item in enumerate(alist):
+            x = item.value
+            if isinstance(x, int):
+                arrObj[n] = x
+            else:
+                raise CompileError("bytearray must be int 0 - 255: %s" % x)
+            
         return arrObj
         
     def context_push(self):
