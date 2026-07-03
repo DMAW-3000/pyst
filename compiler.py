@@ -763,7 +763,31 @@ class Compile(object):
         """
         Construct a literal array
         """
+        # create empty array
         arrObj = Array(len(alist))
+        
+        # create array items and store references in array
+        for n,item in enumerate(alist):
+            x = item.value
+            if isinstance(x, str):
+                if x == "nil":
+                    itemObj = self._nil
+                elif x == "true":
+                    itemObj = self._true
+                elif x == "false":
+                    itemObj = self._false
+                else:
+                    raise CompileError("variable not allowed in array: %s", x)
+            elif isinstance(x, int):
+                itemObj = x
+            elif isinstance(x, ParseLiteralSymbol):
+                itemObj = Symbol.from_str(x.value)
+            elif isinstance(x, ParseLiteralString):
+                itemObj = String.from_str(x.value)
+            else:
+                raise CompileError("illegal array member: %s" % x)
+            arrObj[n] = itemObj
+        
         return arrObj
         
     def context_push(self):

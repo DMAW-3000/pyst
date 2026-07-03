@@ -50,6 +50,6 @@
 	
 	test6 [
 		"test6"
-		^ #(1 2 3 'hello')
+		^ #(1 2 3 'hello' false true nil #new)
 	]
 ]
