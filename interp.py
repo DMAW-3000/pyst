@@ -390,7 +390,10 @@ class Interp(object):
         This is the number of index references, not counting
         the class defined instance variables.
         """
-        ctx.parent.push(recv.size - recv.get_class().get_num_inst())
+        sz = 0
+        if is_obj(recv):
+            sz = recv.size - (recv.get_class().instanceSpec >> 12)
+        ctx.parent.push(sz)
         return True
         
     def p_Object_identity(self, ctx, recv, numArg):

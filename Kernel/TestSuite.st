@@ -10,16 +10,17 @@
 	
 	runAll [
 		"Run all of the tests"
-		self test5.
 		self test1.
 		self test2.
 		self test3.
-		self test4
+		self test4.
+		self test5
 	]
 	
 	test1 [
 		"test1"
-		testInst1 isNil; notNil; isInteger; isNil
+		testInst1 isNil; notNil; isInteger; isNil.
+		true size; basicSize
 	]
 	
 	test2 [
