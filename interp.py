@@ -387,13 +387,17 @@ class Interp(object):
     def p_Object_basicSize(self, ctx, recv, numArg):
         """
         Primitive hander for Object basicSize
+        This is the number of index references, not counting
+        the class defined instance variables.
         """
-        ctx.parent.push(recv.size)
+        ctx.parent.push(recv.size - recv.get_class().get_num_inst())
         return True
         
     def p_Object_identity(self, ctx, recv, numArg):
         """
         Primitive handler for Object identity (==)
+        Check if two objects are identical, that is, have
+        the same object ID.
         """
         send = ctx[7]
         if is_obj(send) and recv.is_same(send):
@@ -406,6 +410,7 @@ class Interp(object):
     def p_Object_class(self, ctx, recv, numArg):
         """
         Primitive handler for Object class
+        Get a reference to an object's class.
         """
         if is_int(recv):
             klass = self._sys.k_small_int
@@ -417,6 +422,7 @@ class Interp(object):
     def p_BlockClosure_value(self, ctx, recv, numArg):
         """
         Primitive handler for BlockClosure value
+        Evaluate a block closure with zero arguments.
         recv = BlockSlosure object
         """
         # get block info znc verify number of args
@@ -449,6 +455,8 @@ class Interp(object):
     def p_Behavior_basicNew(self, ctx, recv, numArg):
         """
         Primitiive handler for Behavior basicNew
+        Create a new instance of a object based on class definition.
+        For objects of fixed size.
         """
         status = False
         if is_obj(recv) and (recv.get_class().get_class() is self._sys.k_metaclass):
@@ -463,6 +471,8 @@ class Interp(object):
     def p_Behavior_basicNewColon(self, ctx, recv, numArg):
         """
         Primitiive handler for Behavior basicNew:
+        Create a new instance of a object based on class definition.
+        For objects of veriable size.
         """
         status = False
         sz = ctx[7]
@@ -478,7 +488,9 @@ class Interp(object):
     def p_Behavior_newInitialize(self, ctx, recv, numArg):
         """
         Primitive handler for Bahavior new.
-        Send initialize message to new object.
+        Create a new instance of a object based on class definition.
+        Send initialize message to the new object after creation.
+        For objects of fixed size.
         """
         # create the object
         status = self.p_Behavior_basicNew(ctx, recv, numArg)
@@ -491,7 +503,9 @@ class Interp(object):
     def p_Behavior_newColonInitialize(self, ctx, recv, numArg):
         """
         Primitive handler for Bahavior mew:
-        Send initialize message to new object.
+        Create a new instance of a object based on class definition.
+        Send initialize message to the new object after creation.
+        For objects of variable size.
         """
         # create the object
         status = self.p_Behavior_basicNewColon(ctx, recv, numArg)
