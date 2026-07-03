@@ -10,6 +10,7 @@
 	
 	runAll [
 		"Run all of the tests"
+		self test6.
 		self test1.
 		self test2.
 		self test3.
@@ -45,5 +46,10 @@
 		"test5"
 		true ifTrue: [ | r s | r := false. s := true].
 		[:a | | x | x := a] value: #nil
+	]
+	
+	test6 [
+		"test6"
+		^ #(1 2 3 'hello')
 	]
 ]

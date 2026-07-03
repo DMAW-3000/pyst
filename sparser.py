@@ -120,6 +120,12 @@ class ParseLiteralChar(ParseLiteral):
     Represens a character literal
     """
     pass
+    
+class ParseLiteralArray(ParseLiteral):
+    """
+    Represent a literal array of value
+    """
+    pass
  
 class ParseError(Exception):
     """
@@ -278,6 +284,8 @@ class Parser(object):
         elif tok == "CHARACTER":
             node = ParseLiteral(ParseLiteralChar(self.val(0)))
             self.lex()
+        elif tok == "LARRAY":
+            node = self.parse_array()
         elif tok == "LBRACK":
             node = self.parse_block()
         elif tok == "LPARENS":
@@ -399,4 +407,14 @@ class Parser(object):
         slist = self.parse_statements()
         self.lex_skip_manditory("RBRACK")           # ]
         return ParseLiteral(ParseLiteralBlock(slist, aList, tList))
+    
+    def parse_array(self):
+        """
+        Parse a literal array declaration
+        """
+        self.lex()
+        aList = []
+        while not self.lex_skip_if("RPARENS"):
+            aList.append(self.parse_primary())
+        return ParseLiteral(ParseLiteralArray(aList))
             

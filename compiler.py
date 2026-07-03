@@ -684,6 +684,11 @@ class Compile(object):
             idx = self.add_literal(ord(x.value))
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
+        # literal array
+        elif isinstance(x, ParseLiteralArray):
+            idx = self.add_literal(self.build_array(x.value))
+            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            
         # unknown type
         else:
             raise CompileError("unknown literal type %s" % x)
@@ -753,6 +758,13 @@ class Compile(object):
         # add new block to context literals
         idx = self.add_literal(blkObj)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        
+    def build_array(self, alist):
+        """
+        Construct a literal array
+        """
+        arrObj = Array(len(alist))
+        return arrObj
         
     def context_push(self):
         """
