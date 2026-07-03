@@ -44,6 +44,7 @@ class Smalltalk(object):
         self.k_seq_collection = None
         self.k_arr_collection = None
         self.k_array = None
+        self.k_bytearray = None
         self.k_link = None
         self.k_sym_link = None
         self.k_hash_collection = None

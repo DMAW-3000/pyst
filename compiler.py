@@ -804,7 +804,7 @@ class Compile(object):
         Construct a literal bytearray
         """
         # create empty array
-        arrObj = Array(len(alist))
+        arrObj = ByteArray(len(alist))
         
         # store values in array
         for n,item in enumerate(alist):

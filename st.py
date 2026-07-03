@@ -272,8 +272,27 @@ class Array(Object):
         
     def __str__(self):
         return "ARRAY(%d)" % self.size
+
         
-        
+class ByteArray(Array):
+    """
+    Internal representation of Smalltalk ByteArray
+    """
+    
+    _Cover = None
+    
+    def resize(self, sz):
+        """
+        Resize the ByteArray storage. For efficiency, a python 
+        bytearray is used instead of the usual python list.  The old 
+        values stored in the object are not preserved.
+        """
+        self._refs = bytearray(sz)
+    
+    def __str__(self):
+        return "BYTEARRAY(%d)" % self.size    
+
+  
 class Character(Object):
     """
     Internal representation of Smalltalk Character
