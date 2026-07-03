@@ -367,6 +367,26 @@ All classes in the system are subclasses of me.'>
 	^stream contents
     ]
 	
+	printOn: aStream [
+	"Print a represention of the receiver on aStream"
+
+	<category: 'printing'>
+	aStream
+	    nextPutAll: self class article;
+	    space;
+	    nextPutAll: self class name
+    ]
+
+    basicPrintOn: aStream [
+	"Print a represention of the receiver on aStream"
+
+	<category: 'printing'>
+	aStream
+	    nextPutAll: self class article;
+	    space;
+	    nextPutAll: self class name
+    ]
+	
 	print [
 	"Print a represention of the receiver on the Transcript (stdout the GUI
 	 is not active)"
@@ -583,6 +603,24 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	<primitive: VMpr_Object_become>
 	^"SystemExceptions." ReadOnlyObject signal
+    ]
+	
+	shallowCopy [
+	"Returns a shallow copy of the receiver (the instance variables are
+	 not copied)"
+	<primitive: VMpr_Object_shallowCopy>
+	<category: 'built ins'>
+
+	| class aCopy |
+	class := self class.
+	class isVariable 
+	    ifTrue: [aCopy := class basicNew: self basicSize]
+	    ifFalse: [aCopy := class basicNew].
+
+	"copy the instance variables (if any)"
+	1 to: class instSize + self basicSize
+	    do: [:i | aCopy instVarAt: i put: (self instVarAt: i)].
+	^aCopy
     ]
 
     makeFixed [
