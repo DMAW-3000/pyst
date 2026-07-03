@@ -14,6 +14,7 @@ tokens = [
     'DECNUMBER',
     'DSTRING',
     'SSTRING',
+    'LARRAY',
     'LPARENS',
     'RPARENS',
     'LBRACK',
@@ -92,6 +93,10 @@ def t_dstring_error(t):
     print("ERROR: ", t)
 
 t_dstring_ignore = '\r'
+
+def t_LARRAY(t):
+    r'\#\('
+    return t
 
 def t_LBRACK(t):
     r'\['
