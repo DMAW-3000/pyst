@@ -99,4 +99,13 @@ Init_Primitive = (
     "Behavior_basicNewColon",
     "Behavior_newInitialize",
     "Behavior_newColonInitialize",
+    "SmallInteger_plus",
+    "SmallInteger_minus",
+    "SmallInteger_lt",
+    "SmallInteger_gt",
+    "SmallInteger_le",
+    "SmallInteger_ge",
+    "SmallInteger_eq",
+    "SmallInteger_ne",
+    "SmallInteger_times",
 )

@@ -518,6 +518,118 @@ class Interp(object):
             self.send_message_intern(ctx.parent[-1], "initialize", ())
         return status
         
+    def p_SmallInteger_plus(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger +
+        """
+        send = ctx[7]
+        if is_int(send):
+            ctx.parent.push((recv + send) & Int_Max)
+            return True
+        return False
+        
+    def p_SmallInteger_minus(self, ctx, recv, numArg):
+        """
+        Primirive handler for SmallInteger -
+        """
+        send = ctx[7]
+        if is_int(send):
+            ctx.parent.push((recv - send) & Int_Max)
+            return True
+        return False
+        
+    def p_SmallInteger_times(self, ctx, recv, numArg):
+        """
+        Primirive handler for SmallInteger *
+        """
+        send = ctx[7]
+        if is_int(send):
+            ctx.parent.push((recv * send) & Int_Max)
+            return True
+        return False
+        
+    def p_SmallInteger_lt(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger <
+        """
+        send = ctx[7]
+        if is_int(send):
+            if recv < send:
+                ctx.parent.push(self._true)
+            else:
+                ctx.parent.push(self._false)
+            return True
+        return False
+        
+    def p_SmallInteger_gt(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger >
+        """
+        send = ctx[7]
+        if is_int(send):
+            if recv > send:
+                ctx.parent.push(self._true)
+            else:
+                ctx.parent.push(self._false)
+            return True
+        return False
+        
+    def p_SmallInteger_le(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger <=
+        """
+        send = ctx[7]
+        if is_int(send):
+            if recv <= send:
+                ctx.parent.push(self._true)
+            else:
+                ctx.parent.push(self._false)
+            return True
+        return False
+        
+    def p_SmallInteger_ge(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger >=
+        """
+        send = ctx[7]
+        if is_int(send):
+            if recv >= send:
+                ctx.parent.push(self._true)
+            else:
+                ctx.parent.push(self._false)
+            return True
+        return False
+        
+    def p_SmallInteger_eq(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger =
+        """
+        send = ctx[7]
+        if is_int(send):
+            if recv == send:
+                ctx.parent.push(self._true)
+            else:
+                ctx.parent.push(self._false)
+            return True
+        return False
+        
+    def p_SmallInteger_ne(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger ~=
+        """
+        send = ctx[7]
+        if is_int(send):
+            if recv != send:
+                ctx.parent.push(self._true)
+            else:
+                ctx.parent.push(self._false)
+            return True
+        return False
+        
+        
+        
+        
+        
         
         
 

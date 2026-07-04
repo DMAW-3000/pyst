@@ -10,12 +10,13 @@
 	
 	runAll [
 		"Run all of the tests"
-		self test6.
+		self test7.
 		self test1.
 		self test2.
 		self test3.
 		self test4.
-		self test5
+		self test5.
+		self test6
 	]
 	
 	test1 [
@@ -55,5 +56,15 @@
 		b := #([1 2 3] [8 9 10 11 23]).
 		c := #(('abc' 'xyz') (1 2 9 7 3 19) 20).
 		^ #(1 2 3 'hello' false true nil #new)
+	]
+	
+	test7 [
+		"test7"
+		| x y |
+		y := 1000 * 4 * 2.
+		x := 1 + 2 - 100 + 105.
+		x < 4000 and: [x > 2].
+		x >= 0 and: [x <= 8].
+		^x = 8 and: [x ~= 12359303]
 	]
 ]
