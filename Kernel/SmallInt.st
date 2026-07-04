@@ -48,7 +48,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	 directly in an object pointer"
 
 	<category: 'getting limits'>
-	^CLongSize * 8 - 3
+	^63
     ]
 
     SmallInteger class >> largest [
@@ -56,7 +56,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 
 	<category: 'getting limits'>
 	| maxBit |
-	maxBit := 1 bitShift: CLongSize * 8 - 3.
+	maxBit := 1 bitShift: 63.
 	^maxBit - 1 + maxBit
     ]
 
@@ -65,7 +65,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 
 	<category: 'getting limits'>
 	| maxBit |
-	maxBit := 1 bitShift: CLongSize * 8 - 3.
+	maxBit := 1 bitShift: 63.
 	^maxBit negated - maxBit
     ]
 
