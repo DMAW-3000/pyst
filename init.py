@@ -108,4 +108,7 @@ Init_Primitive = (
     "SmallInteger_eq",
     "SmallInteger_ne",
     "SmallInteger_times",
+    "SmallInteger_intDiv",
+    "SmallInteger_modulo",
+    "SmallInteger_quo",
 )

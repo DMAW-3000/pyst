@@ -560,6 +560,45 @@ class Interp(object):
             return True
         return False
         
+    def p_SmallInteger_intDiv(self, ctx, recv, numArg):
+        """
+        Primirive handler for SmallInteger //
+        """
+        global Int_Max
+        send = ctx[7]
+        if is_int(send):
+            if send == 0:
+                return False
+            ctx.parent.push(recv // send)
+            return True
+        return False
+        
+    def p_SmallInteger_modulo(self, ctx, recv, numArg):
+        """
+        Primirive handler for SmallInteger \\
+        """
+        global Int_Max
+        send = ctx[7]
+        if is_int(send):
+            if send == 0:
+                return False
+            ctx.parent.push(recv % send)
+            return True
+        return False
+        
+    def p_SmallInteger_quo(self, ctx, recv, numArg):
+        """
+        Primirive handler for SmallInteger quo:
+        """
+        global Int_Max
+        send = ctx[7]
+        if is_int(send):
+            if send == 0:
+                return False
+            ctx.parent.push(int(recv / send))
+            return True
+        return False
+        
     def p_SmallInteger_lt(self, ctx, recv, numArg):
         """
         Primitive handler for SmallInteger <
