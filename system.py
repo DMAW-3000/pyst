@@ -679,7 +679,7 @@ class Smalltalk(object):
                 print()
             elif c == 'i':
                 ctx = self.g_interp.i_context
-                if len(ctx) <= 7:
+                if ctx.size <= 7:
                     print("STACK EMPTY")
                 else:
                     print()
