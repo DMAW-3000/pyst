@@ -413,6 +413,53 @@ All classes in the system are subclasses of me.'>
 	^stream contents
     ]
 	
+	storeLiteralOn: aStream [
+	"Put a Smalltalk literal compiling to the receiver on aStream"
+
+	<category: 'storing'>
+	aStream nextPutAll: '##('.
+	self storeOn: aStream.
+	aStream nextPut: $)
+    ]
+
+    storeOn: aStream [
+	"Put Smalltalk code compiling to the receiver on aStream"
+
+	<category: 'storing'>
+	| class hasSemi |
+	class := self class.
+	aStream nextPut: $(.
+	aStream nextPutAll: self class storeString.
+	hasSemi := false.
+	class isVariable 
+	    ifTrue: 
+		[aStream nextPutAll: ' basicNew: '.
+		self basicSize printOn: aStream]
+	    ifFalse: [aStream nextPutAll: ' basicNew'].
+	1 to: class instSize
+	    do: 
+		[:i | 
+		aStream nextPutAll: ' instVarAt: '.
+		i printOn: aStream.
+		aStream nextPutAll: ' put: '.
+		(self instVarAt: i) storeOn: aStream.
+		aStream nextPut: $;.
+		hasSemi := true].
+	class isVariable 
+	    ifTrue: 
+		[1 to: self validSize
+		    do: 
+			[:i | 
+			aStream nextPutAll: ' basicAt: '.
+			i printOn: aStream.
+			aStream nextPutAll: ' put: '.
+			(self basicAt: i) storeOn: aStream.
+			aStream nextPut: $;.
+			hasSemi := true]].
+	hasSemi ifTrue: [aStream nextPutAll: ' yourself'].
+	aStream nextPut: $)
+    ]
+	
 	store [
 	"Put a String of Smalltalk code compiling to the receiver on
 	 the Transcript (stdout the GUI is not active)"
