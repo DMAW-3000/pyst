@@ -111,4 +111,8 @@ Init_Primitive = (
     "SmallInteger_intDiv",
     "SmallInteger_modulo",
     "SmallInteger_quo",
+    "SmallInteger_bitAnd",
+    "SmallInteger_bitOr",
+    "SmallInteger_bitXor",
+    "SmallInteger_bitShift",
 )

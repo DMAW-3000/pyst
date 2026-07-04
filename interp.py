@@ -677,6 +677,55 @@ class Interp(object):
             return True
         return False
         
+    def p_SmallInteger_bitAnd(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger bitAnd:
+        """
+        send = ctx[7]
+        if is_int(send):
+            ctx.parent.push(recv & send)
+            return True
+        return False
+        
+    def p_SmallInteger_bitOr(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger bitOr:
+        """
+        send = ctx[7]
+        if is_int(send):
+            ctx.parent.push(recv | send)
+            return True
+        return False
+        
+    def p_SmallInteger_bitXor(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger bitXor:
+        """
+        send = ctx[7]
+        if is_int(send):
+            ctx.parent.push(recv ^ send)
+            return True
+        return False
+        
+    def p_SmallInteger_bitShift(self, ctx, recv, numArg):
+        """
+        Primitive handler for SmallInteger bitShift
+        """
+        global Int_Max
+        send = ctx[7]
+        if is_int(send):
+            if send <= 0:
+                x = recv >> abs(send)
+            else:
+                x = recv << send
+                if abs(x) > Int_Max:
+                    return False
+            ctx.parent.push(x)
+            return True
+        return False
+        
+        
+        
         
         
         

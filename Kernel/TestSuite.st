@@ -61,6 +61,9 @@
 	test7 [
 		"test7"
 		| x y z |
+		z := SmallInteger largest.
+		y := z bitShift: -30.
+		x := ((16r10FF bitAnd: 16rB010) bitOr: 32) bitXor: 33.
 		x := 139302 quo: -234.
 		z := 1229 // 14.
 		y := 1229 \\ 14.
