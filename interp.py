@@ -153,6 +153,14 @@ class Interp(object):
         # check number of arguments
         if numArgs != numHdrArgs:
             raise RuntimeError("wrong number of args %d for %s" % (numArgs, selObj))
+            
+        # check for primitive operation
+        # return control immediately to sender if
+        # the primitive op is successful
+        if primId > 0:
+            primFunc = self.i_primitive[primId]
+            if primFunc(oldCtx, recvObj, argList):
+                return
         
         # allocate a new context and link to old
         newCtx = MethodContext()
@@ -163,14 +171,6 @@ class Interp(object):
         # push args onto new stack
         for a in argList:
             newCtx.push(a)
-            
-        # check for primitive operation
-        # return control immediately to sender if
-        # the primitive op is successful
-        if primId > 0:
-            primFunc = self.i_primitive[primId]
-            if primFunc(newCtx, recvObj, numArgs):
-                return
             
         # make room for temp variables on new stack
         newCtx.expand(numTemp)
@@ -383,7 +383,7 @@ class Interp(object):
         self.i_context = newCtx
         return 0
 
-    def p_Object_basicSize(self, ctx, recv, numArg):
+    def p_Object_basicSize(self, ctx, recv, argList):
         """
         Primitive hander for Object basicSize
         This is the number of index references, not counting
@@ -392,24 +392,24 @@ class Interp(object):
         sz = 0
         if is_obj(recv):
             sz = recv.size - (recv.get_class().instanceSpec >> 12)
-        ctx.parent.push(sz)
+        ctx.push(sz)
         return True
         
-    def p_Object_identity(self, ctx, recv, numArg):
+    def p_Object_identity(self, ctx, recv, argList):
         """
         Primitive handler for Object identity (==)
         Check if two objects are identical, that is, have
         the same object ID.
         """
-        send = ctx[7]
+        send = argList[0]
         if is_obj(send) and recv.is_same(send):
             ret = self._true
         else:
             ret = self._false
-        ctx.parent.push(ret)
+        ctx.push(ret)
         return True
         
-    def p_Object_class(self, ctx, recv, numArg):
+    def p_Object_class(self, ctx, recv, argList):
         """
         Primitive handler for Object class
         Get a reference to an object's class.
@@ -418,16 +418,17 @@ class Interp(object):
             klass = self._sys.k_small_int
         else:
             klass = recv.get_class()
-        ctx.parent.push(klass)
+        ctx.push(klass)
         return True
         
-    def p_BlockClosure_value(self, ctx, recv, numArg):
+    def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value
         Evaluate a block closure with zero arguments.
         recv = BlockSlosure object
         """
         # get block info znc verify number of args
+        numArg = len(argList)
         blkObj = recv.block
         numHdrArgs, numTemp, depth = blkObj.get_hdr()
         if numHdrArgs != numArg:
@@ -435,17 +436,14 @@ class Interp(object):
 
         # allocate a new context and link to old
         newCtx = BlockContext()
-        newCtx.parent = ctx.parent
+        newCtx.parent = ctx
         newCtx.receiver = recv.receiver
         newCtx.method = blkObj
         newCtx.outerContext = recv.outerContext
         
         # copy arguments to new stack
-        if numArg > 0:
-            n = 0
-            while n < numArg:
-                newCtx.push(ctx[7 + n])
-                n += 1
+        for arg in argList:
+            newCtx.push(arg)
                 
         # mske room for any temporary variables
         newCtx.expand(numTemp)
@@ -454,7 +452,7 @@ class Interp(object):
         self.i_context = newCtx
         return True
         
-    def p_Behavior_basicNew(self, ctx, recv, numArg):
+    def p_Behavior_basicNew(self, ctx, recv, argList):
         """
         Primitiive handler for Behavior basicNew
         Create a new instance of a object based on class definition.
@@ -466,28 +464,28 @@ class Interp(object):
             if spec & 0x10:
                 obj = Object(spec >> 12)
                 obj._klass = recv
-                ctx.parent.push(obj)
+                ctx.push(obj)
                 status = True
         return status
         
-    def p_Behavior_basicNewColon(self, ctx, recv, numArg):
+    def p_Behavior_basicNewColon(self, ctx, recv, argList):
         """
         Primitiive handler for Behavior basicNew:
         Create a new instance of a object based on class definition.
         For objects of veriable size.
         """
         status = False
-        sz = ctx[7]
+        sz = argList[0]
         if is_obj(recv) and is_int(sz) and (recv.get_class().get_class() is self._sys.k_metaclass):
             spec = recv.instanceSpec
             if not (spec & 0x10):
                 obj = Object((spec >> 12) + sz)
                 obj._klass = recv
-                ctx.parent.push(obj)
+                ctx.push(obj)
                 status = True
         return status
         
-    def p_Behavior_newInitialize(self, ctx, recv, numArg):
+    def p_Behavior_newInitialize(self, ctx, recv, argList):
         """
         Primitive handler for Bahavior new.
         Create a new instance of a object based on class definition.
@@ -495,14 +493,14 @@ class Interp(object):
         For objects of fixed size.
         """
         # create the object
-        status = self.p_Behavior_basicNew(ctx, recv, numArg)
+        status = self.p_Behavior_basicNew(ctx, recv, argList)
         
         if status:
             # send the new object initialize message
-            self.send_message_intern(ctx.parent[-1], "initialize", ())
+            self.send_message_intern(ctx[-1], "initialize", ())
         return status
         
-    def p_Behavior_newColonInitialize(self, ctx, recv, numArg):
+    def p_Behavior_newColonInitialize(self, ctx, recv, argList):
         """
         Primitive handler for Bahavior mew:
         Create a new instance of a object based on class definition.
@@ -510,208 +508,208 @@ class Interp(object):
         For objects of variable size.
         """
         # create the object
-        status = self.p_Behavior_basicNewColon(ctx, recv, numArg)
+        status = self.p_Behavior_basicNewColon(ctx, recv, argList)
         
         if status:
             # send the new object initialize message
-            self.send_message_intern(ctx.parent[-1], "initialize", ())
+            self.send_message_intern(ctx[-1], "initialize", ())
         return status
         
-    def p_SmallInteger_plus(self, ctx, recv, numArg):
+    def p_SmallInteger_plus(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger +
         """
         global Int_Max
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             x = recv + send
             if abs(x) > Int_Max:
                 return False
-            ctx.parent.push(x)
+            ctx.push(x)
             return True
         return False
         
-    def p_SmallInteger_minus(self, ctx, recv, numArg):
+    def p_SmallInteger_minus(self, ctx, recv, argList):
         """
         Primirive handler for SmallInteger -
         """
         global Int_Max
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             x = recv - send
             if abs(x) > Int_Max:
                 return False
-            ctx.parent.push(x)
+            ctx.push(x)
             return True
         return False
         
-    def p_SmallInteger_times(self, ctx, recv, numArg):
+    def p_SmallInteger_times(self, ctx, recv, argList):
         """
         Primirive handler for SmallInteger *
         """
         global Int_Max
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             x = recv * send
             if abs(x) > Int_Max:
                 return False
-            ctx.parent.push(x)
+            ctx.push(x)
             return True
         return False
         
-    def p_SmallInteger_intDiv(self, ctx, recv, numArg):
+    def p_SmallInteger_intDiv(self, ctx, recv, argList):
         """
         Primirive handler for SmallInteger //
         """
         global Int_Max
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if send == 0:
                 return False
-            ctx.parent.push(recv // send)
+            ctx.push(recv // send)
             return True
         return False
         
-    def p_SmallInteger_modulo(self, ctx, recv, numArg):
+    def p_SmallInteger_modulo(self, ctx, recv, argList):
         """
         Primirive handler for SmallInteger \\
         """
         global Int_Max
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if send == 0:
                 return False
-            ctx.parent.push(recv % send)
+            ctx.push(recv % send)
             return True
         return False
         
-    def p_SmallInteger_quo(self, ctx, recv, numArg):
+    def p_SmallInteger_quo(self, ctx, recv, argList):
         """
         Primirive handler for SmallInteger quo:
         """
         global Int_Max
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if send == 0:
                 return False
-            ctx.parent.push(int(recv / send))
+            ctx.push(int(recv / send))
             return True
         return False
         
-    def p_SmallInteger_lt(self, ctx, recv, numArg):
+    def p_SmallInteger_lt(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger <
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if recv < send:
-                ctx.parent.push(self._true)
+                ctx.push(self._true)
             else:
-                ctx.parent.push(self._false)
+                ctx.push(self._false)
             return True
         return False
         
-    def p_SmallInteger_gt(self, ctx, recv, numArg):
+    def p_SmallInteger_gt(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger >
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if recv > send:
-                ctx.parent.push(self._true)
+                ctx.push(self._true)
             else:
-                ctx.parent.push(self._false)
+                ctx.push(self._false)
             return True
         return False
         
-    def p_SmallInteger_le(self, ctx, recv, numArg):
+    def p_SmallInteger_le(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger <=
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if recv <= send:
-                ctx.parent.push(self._true)
+                ctx.push(self._true)
             else:
-                ctx.parent.push(self._false)
+                ctx.push(self._false)
             return True
         return False
         
-    def p_SmallInteger_ge(self, ctx, recv, numArg):
+    def p_SmallInteger_ge(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger >=
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if recv >= send:
-                ctx.parent.push(self._true)
+                ctx.push(self._true)
             else:
-                ctx.parent.push(self._false)
+                ctx.push(self._false)
             return True
         return False
         
-    def p_SmallInteger_eq(self, ctx, recv, numArg):
+    def p_SmallInteger_eq(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger =
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if recv == send:
-                ctx.parent.push(self._true)
+                ctx.push(self._true)
             else:
-                ctx.parent.push(self._false)
+                ctx.push(self._false)
             return True
         return False
         
-    def p_SmallInteger_ne(self, ctx, recv, numArg):
+    def p_SmallInteger_ne(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger ~=
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if recv != send:
-                ctx.parent.push(self._true)
+                ctx.push(self._true)
             else:
-                ctx.parent.push(self._false)
+                ctx.push(self._false)
             return True
         return False
         
-    def p_SmallInteger_bitAnd(self, ctx, recv, numArg):
+    def p_SmallInteger_bitAnd(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger bitAnd:
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
-            ctx.parent.push(recv & send)
+            ctx.push(recv & send)
             return True
         return False
         
-    def p_SmallInteger_bitOr(self, ctx, recv, numArg):
+    def p_SmallInteger_bitOr(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger bitOr:
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
-            ctx.parent.push(recv | send)
+            ctx.push(recv | send)
             return True
         return False
         
-    def p_SmallInteger_bitXor(self, ctx, recv, numArg):
+    def p_SmallInteger_bitXor(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger bitXor:
         """
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
-            ctx.parent.push(recv ^ send)
+            ctx.push(recv ^ send)
             return True
         return False
         
-    def p_SmallInteger_bitShift(self, ctx, recv, numArg):
+    def p_SmallInteger_bitShift(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger bitShift
         """
         global Int_Max
-        send = ctx[7]
+        send = argList[0]
         if is_int(send):
             if send <= 0:
                 x = recv >> abs(send)
@@ -719,7 +717,7 @@ class Interp(object):
                 x = recv << send
                 if abs(x) > Int_Max:
                     return False
-            ctx.parent.push(x)
+            ctx.push(x)
             return True
         return False
         
