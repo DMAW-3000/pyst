@@ -522,9 +522,13 @@ class Interp(object):
         """
         Primitive handler for SmallInteger +
         """
+        global Int_Max
         send = ctx[7]
         if is_int(send):
-            ctx.parent.push((recv + send) & Int_Max)
+            x = recv + send
+            if abs(x) > Int_Max:
+                return False
+            ctx.parent.push(x)
             return True
         return False
         
@@ -532,9 +536,13 @@ class Interp(object):
         """
         Primirive handler for SmallInteger -
         """
+        global Int_Max
         send = ctx[7]
         if is_int(send):
-            ctx.parent.push((recv - send) & Int_Max)
+            x = recv - send
+            if abs(x) > Int_Max:
+                return False
+            ctx.parent.push(x)
             return True
         return False
         
@@ -542,9 +550,13 @@ class Interp(object):
         """
         Primirive handler for SmallInteger *
         """
+        global Int_Max
         send = ctx[7]
         if is_int(send):
-            ctx.parent.push((recv * send) & Int_Max)
+            x = recv * send
+            if abs(x) > Int_Max:
+                return False
+            ctx.parent.push(x)
             return True
         return False
         
