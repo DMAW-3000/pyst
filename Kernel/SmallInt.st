@@ -48,7 +48,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	 directly in an object pointer"
 
 	<category: 'getting limits'>
-	^63
+	^62
     ]
 
     SmallInteger class >> largest [
