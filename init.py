@@ -48,6 +48,8 @@ Init_Class = (
     ("Number", False, "number", "magnitude", True, (), (), ()),
     ("Integer", False, "integer", "number", True, (), (), ("PySymbols",)),
     ("SmallInteger", False, "small_int", "integer", True, (), (), ()),
+    ("Float", False, "float", "number", True, (), (), ()),
+    ("FloatD", False, "float_d", "float", True, (), (), ()),
     ("Character", True, "character", "magnitude", True, ("codePoint",), (), ()),
     ("ContextPart", False, "context_part", "object", False, ("parent", "nativeIP", "ip", "sp", "receiver", "method"), (), ()),
     ("BlockContext", True, "blk_context", "context_part", False, ("outerContext",), (), ()),

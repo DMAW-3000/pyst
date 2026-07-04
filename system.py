@@ -65,6 +65,8 @@ class Smalltalk(object):
         self.k_number = None
         self.k_integer = None
         self.k_small_int = None
+        self.k_float = None
+        self.k_float_d = None
         self.k_character = None
         self.k_context_part = None
         self.k_blk_context = None
