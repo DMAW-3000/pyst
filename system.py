@@ -128,6 +128,7 @@ class Smalltalk(object):
         # create Smalltalk Character singletons
         for n in range(256):
             inst.o_char[n] = Character(n)
+        set_obj_char(inst.o_char)
         
         # create global symbol table
         inst.g_sym_table = Array(512)
@@ -325,23 +326,12 @@ class Smalltalk(object):
             primId += 1     # 0 is reserved
             if not self.g_interp.add_primitive(primName):
                 self.fatal_err("cannot find primitive handler", primName)
-            symObj = self.symbol_add("VMpr_" + primName)
+            symObj = self.symbol_find_or_add("VMpr_" + primName)
             self.dict_add(primDict, symObj, primId)
         if verbose:
             print("VM Primitives:")
             self.dict_print(primDict)
             print()
-    
-    def symbol_add(self, symName):
-        """
-        Add a new Symbol to the global symbol table if it
-        does not already exist.
-        """
-        symTable = self.g_sym_table
-        symObj = Symbol.from_str(symName)
-        idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
-        symTable[idx] = SymLink(symObj, symTable[idx])
-        return symObj
         
     def symbol_find(self, symName):
         """
@@ -377,7 +367,7 @@ class Smalltalk(object):
         Add an item to a Namespace instance using
         a newly created Symbol as the key.
         """
-        symObj = self.symbol_add(symName)
+        symObj = self.symbol_find_or_add(symName)
         self.dict_add(dictObj, symObj, VariableBinding(symObj, itemObj, dictObj))
         return symObj
         
@@ -419,7 +409,7 @@ class Smalltalk(object):
         numInst = dictObj.get_class().get_num_inst()
         arrSize = dictObj.size - numInst
         mask = arrSize - 1
-        idx = keyObj.hsh() 
+        idx = hsh_scram(keyObj.get_id()) 
         while arrSize > 0:
             idx &= mask
             assoc = dictObj[idx + numInst]
@@ -489,7 +479,7 @@ class Smalltalk(object):
         global Int_Max
         numInst = dictObj.get_class().get_num_inst()
         arrSize = dictObj.size - numInst
-        idx = (keyObj.hsh() << 1) & Int_Max
+        idx = (hsh_scram(keyObj.get_id()) << 1) & Int_Max
         mask = arrSize - 1
         arrSize >>= 1
         while arrSize > 0:

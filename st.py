@@ -9,8 +9,9 @@ from obj import Obj_Table
 
 
 # globals
-_Obj_Nil = None
-Int_Max = sys.maxsize
+_Obj_Nil    = None
+_Obj_Char   = None
+Int_Max     = sys.maxsize
 
 
 def is_int(x):
@@ -34,17 +35,12 @@ def set_obj_nil(x):
     global _Obj_Nil
     _Obj_Nil = x
     
-def hsh_seq(x):
+def set_obj_char(x):
     """
-    Create a hash key from a sequence of values
+    Set the global Smalltalk Character instance table
     """
-    h = 1497032417
-    m = 0xffffffff
-    for c in x:
-        h = (h + c) & m
-        h = (h + ((h << 10) & m)) & m
-        h ^= (h >> 6)
-    return h
+    global _Obj_Char
+    _Obj_Char = x
     
 def hsh_scram(x):
     """
@@ -58,6 +54,18 @@ def hsh_scram(x):
     x = (x * 0xc2b2ae35) & m
     x ^= (x >> 16)
     return x
+    
+def hsh_seq(x):
+    """
+    Create a hash key from a sequence of values
+    """
+    h = 1497032417
+    m = 0xffffffff
+    for c in x:
+        h = (h + c) & m
+        h = (h + ((h << 10) & m)) & m
+        h ^= (h >> 6)
+    return h
 
 
 class Object(object):
@@ -114,12 +122,6 @@ class Object(object):
         Return the Object's unique id (integer)
         """
         return self._obj_id
-        
-    def hsh(self):
-        """
-        Return a hash key for the object.
-        """
-        return hsh_scram(self._obj_id)
         
     def is_same(self, other):
         """
@@ -330,9 +332,10 @@ class String(Array):
         """
         Create Smalltalk String from Python str
         """
+        global _Obj_Char
         strObj = klass(len(s))
         for n,c in enumerate(s):
-            strObj[n] = ord(c)
+            strObj[n] = _Obj_Char[ord(c)]
         return strObj
         
     def to_str(self):
@@ -341,7 +344,7 @@ class String(Array):
         """
         s = ""
         for n in range(self.size):
-            s += chr(self[n])
+            s += chr(self[n].codePoint)
         return s
         
     def __str__(self):
@@ -363,14 +366,6 @@ class Symbol(String):
         symObj = super().from_str(s)
         symObj._py_cache = s
         return symObj
-        
-    def resize(self, sz):
-        """
-        Resize the Symbol storage. For efficiency, a python 
-        bytearray is used instead of the usual python list.  The old 
-        values stored in the object are not preserved.
-        """
-        self._refs = bytearray(sz)
             
     def to_str(self):
         """
