@@ -33,10 +33,9 @@
 
 Number subclass: Integer [
     
-    <import: CSymbols>
     <category: 'Language-Data types'>
     <comment: 'I am the abstract integer class of the GNU Smalltalk system.  My
-subclasses'' instances can represent signed integers of various
+subclasses instances can represent signed integers of various
 sizes (a subclass is picked according to the size), with varying
 efficiency.'>
 
