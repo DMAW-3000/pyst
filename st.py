@@ -21,12 +21,19 @@ def is_int(x):
     """
     return isinstance(x, int)
     
+def is_flt(x):
+    """
+    Returns True if x is a FloatD,
+    False otherwise.
+    """
+    return isinstance(x, float)
+    
 def is_obj(x):
     """
     Returns True if x is an object reference,
     False otherwise.
     """
-    return not isinstance(x, int)
+    return not isinstance(x, (int, float)) 
 
 def set_obj_nil(x):
     """

@@ -131,6 +131,8 @@ class Interp(object):
         # superclasses until Object's nil superclass
         if is_int(recvObj):
             klassObj = self._sys.k_small_int
+        elif is_flt(recvObj):
+            klassObj = self._sys.k_float_d
         else:
             klassObj = recvObj.get_class()
         while True:
