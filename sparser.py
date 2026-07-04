@@ -280,7 +280,8 @@ class Parser(object):
         node = None
         tok = self.token(0)
         if      (tok == "IDENT") or \
-                (tok == "DECNUMBER"):
+                (tok == "DECNUMBER") or \
+                (tok == "BASENUMBER"):
             node = ParseLiteral(self.val(0))
             self.lex()
         elif tok == "SYMBOL":
