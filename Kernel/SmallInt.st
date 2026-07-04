@@ -328,7 +328,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	<category: 'built ins'>
 	<primitive: VMpr_SmallInteger_bitAnd>
 	^arg isInteger 
-	    ifFalse: [SystemExceptions.WrongClass signalOn: arg mustBe: Integer]
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: arg mustBe: Integer]
 	    ifTrue: [(LargeInteger fromInteger: self) bitAnd: arg]
     ]
 
@@ -338,7 +338,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	<category: 'built ins'>
 	<primitive: VMpr_SmallInteger_bitOr>
 	^arg isInteger 
-	    ifFalse: [SystemExceptions.WrongClass signalOn: arg mustBe: Integer]
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: arg mustBe: Integer]
 	    ifTrue: [(LargeInteger fromInteger: self) bitOr: arg]
     ]
 
@@ -348,7 +348,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	<category: 'built ins'>
 	<primitive: VMpr_SmallInteger_bitXor>
 	^arg isInteger 
-	    ifFalse: [SystemExceptions.WrongClass signalOn: arg mustBe: Integer]
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: arg mustBe: Integer]
 	    ifTrue: [(LargeInteger fromInteger: self) bitXor: arg]
     ]
 
@@ -359,7 +359,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	<category: 'built ins'>
 	<primitive: VMpr_SmallInteger_bitShift>
 	^arg isSmallInteger 
-	    ifFalse: [SystemExceptions.WrongClass signalOn: arg mustBe: Integer]
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: arg mustBe: Integer]
 	    ifTrue: [(LargeInteger fromInteger: self) bitShift: arg]
     ]
 
@@ -434,7 +434,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	 This method always fails."
 
 	<category: 'builtins'>
-	SystemExceptions.NotIndexable signalOn: self
+	"SystemExceptions." NotIndexable signalOn: self
     ]
 
     basicAt: anIndex [
@@ -442,7 +442,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	 This method always fails."
 
 	<category: 'builtins'>
-	SystemExceptions.NotIndexable signalOn: self
+	"SystemExceptions." NotIndexable signalOn: self
     ]
 
     at: anIndex put: value [
@@ -450,7 +450,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	 This method always fails."
 
 	<category: 'builtins'>
-	SystemExceptions.NotIndexable signalOn: self
+	"SystemExceptions." NotIndexable signalOn: self
     ]
 
     basicAt: anIndex put: value [
@@ -458,7 +458,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	 This method always fails."
 
 	<category: 'builtins'>
-	SystemExceptions.NotIndexable signalOn: self
+	"SystemExceptions." NotIndexable signalOn: self
     ]
 ]
 
