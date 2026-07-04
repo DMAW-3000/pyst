@@ -56,7 +56,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 
 	<category: 'getting limits'>
 	| maxBit |
-	maxBit := 1 bitShift: 63.
+	maxBit := 1 bitShift: 62.
 	^maxBit - 1 + maxBit
     ]
 
@@ -65,7 +65,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 
 	<category: 'getting limits'>
 	| maxBit |
-	maxBit := 1 bitShift: 63.
+	maxBit := 1 bitShift: 62.
 	^maxBit negated - maxBit
     ]
 
