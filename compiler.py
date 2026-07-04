@@ -681,7 +681,7 @@ class Compile(object):
             
         # literal character
         elif isinstance(x, ParseLiteralChar):
-            idx = self.add_literal(ord(x.value))
+            idx = self.add_literal(self._sys.o_char[ord(x.value)])
             self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
         # literal array
