@@ -172,8 +172,12 @@ class Smalltalk(object):
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
         if verbose:
-            print("ST Dictionary:")
+            print("Smalltalk Dictionary:")
             inst.dict_print(inst.g_st_dict, True)
+            
+        #if verbose:
+        #    print("Symbol Table")
+        #    inst.symbol_tbl_print()
             
         #for klassInfo in init.Init_Class:
         #    cacheName = klassInfo[2]
@@ -361,6 +365,18 @@ class Smalltalk(object):
         symObj = Symbol.from_str(symName)
         symTable[idx] = SymLink(symObj, symTable[idx])
         return symObj
+        
+    def symbol_tbl_print(self):
+        """
+        Print contents of global symbol table.
+        """
+        symTable = self.g_sym_table 
+        for n,link in enumerate(symTable):
+            print("[%d]" % n, end = "")
+            while not link.is_nil():
+                print(link.symbol, end = " ")
+                link = link.nextLink
+            print()
         
     def name_add_sym(self, dictObj, symName, itemObj):
         """
