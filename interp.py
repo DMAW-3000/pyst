@@ -168,11 +168,8 @@ class Interp(object):
         # return control immediately to sender if
         # the primitive op is successful
         if primId > 0:
-            try:
-                primFunc = self.i_primitive[primId]
-            except IndexError:
-                primFunc = None
-            if (primFunc is not None) and primFunc(newCtx, recvObj, numArgs):
+            primFunc = self.i_primitive[primId]
+            if primFunc(newCtx, recvObj, numArgs):
                 return
             
         # make room for temp variables on new stack
