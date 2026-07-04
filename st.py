@@ -343,8 +343,8 @@ class String(Array):
         Return the String contents as a Python str
         """
         s = ""
-        for n in range(self.size):
-            s += chr(self[n].codePoint)
+        for c in self:
+            s += chr(c.codePoint)
         return s
         
     def __str__(self):
