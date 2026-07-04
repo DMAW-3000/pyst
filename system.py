@@ -413,7 +413,7 @@ class Smalltalk(object):
         while arrSize > 0:
             idx &= mask
             assoc = dictObj[idx + numInst]
-            if assoc.is_nil() or (keyObj.is_same(assoc.key)):
+            if assoc.is_nil() or keyObj.is_same(assoc.key):
                 return idx + numInst
             idx += 1
             arrSize -= 1
