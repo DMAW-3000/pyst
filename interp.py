@@ -566,7 +566,6 @@ class Interp(object):
         """
         Primirive handler for SmallInteger //
         """
-        global Int_Max
         send = argList[0]
         if is_int(send):
             if send == 0:
@@ -579,7 +578,6 @@ class Interp(object):
         """
         Primirive handler for SmallInteger \\
         """
-        global Int_Max
         send = argList[0]
         if is_int(send):
             if send == 0:
@@ -592,7 +590,6 @@ class Interp(object):
         """
         Primirive handler for SmallInteger quo:
         """
-        global Int_Max
         send = argList[0]
         if is_int(send):
             if send == 0:
