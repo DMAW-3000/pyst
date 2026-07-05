@@ -39,6 +39,7 @@ class Interp(object):
         bTbl[B_PUSH_TEMPORARY_VARIABLE]     = self.b_push_temp_var
         bTbl[B_PUSH_OUTER_TEMP]             = self.b_push_outer_var
         bTbl[B_PUSH_RECEIVER_VARIABLE]      = self.b_push_recv_var
+        bTbl[B_PUSH_INTEGER]                = self.b_push_int
         bTbl[B_DUP_STACK_TOP]               = self.b_dup_top
         bTbl[B_POP_STACK_TOP]               = self.b_pop_top
         bTbl[B_STORE_TEMPORARY_VARIABLE]    = self.b_store_temp_var
@@ -304,6 +305,13 @@ class Interp(object):
         Execute the push receiver variable bytecode
         """
         ctx.push(ctx.receiver[arg])
+        return 2
+        
+    def b_push_int(self, ctx, arg):
+        """
+        Execute the push integer literal bytecode
+        """
+        ctx.push(arg)
         return 2
         
     def b_dup_top(self, ctx, arg):

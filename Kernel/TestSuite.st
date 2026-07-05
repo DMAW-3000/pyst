@@ -10,13 +10,14 @@
 	
 	runAll [
 		"Run all of the tests"
-		self test7.
 		self test1.
 		self test2.
 		self test3.
 		self test4.
 		self test5.
-		self test6
+		self test6.
+		self test7.
+		self test8
 	]
 	
 	test1 [
@@ -72,5 +73,10 @@
 		x < 4000 and: [x > 2].
 		x >= 0 and: [x <= 8].
 		^x = 8 and: [x ~= 12359303]
+	]
+	
+	test8 [
+		"test8"
+		^24 gcd: 32
 	]
 ]

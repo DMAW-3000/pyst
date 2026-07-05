@@ -661,8 +661,12 @@ class Compile(object):
         elif isinstance(x, int):
             if x > Int_Max:
                 raise CompileError("integer value %d too large" % x)
-            idx = self.add_literal(x)
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            # optimize with push direct if value is small enough
+            if (x >= 0) and (x < 256):
+                self.emit_bytes(B_PUSH_INTEGER, x)
+            else:
+                idx = self.add_literal(x)
+                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
             
         # float constant
         elif isinstance(x, float):
