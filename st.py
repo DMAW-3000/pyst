@@ -1475,8 +1475,6 @@ B_NOT_NIL_SPECIAL           = 21
 B_VALUE_SPECIAL             = 22
 B_VALUE_COLON_SPECIAL       = 23
 B_SAME_OBJECT_SPECIAL       = 24
-B_JAVA_AS_INT_SPECIAL       = 25
-B_JAVA_AS_LONG_SPECIAL      = 26
 
 B_SEND                      = 28
 B_SEND_SUPER                = 29
