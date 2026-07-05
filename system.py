@@ -93,13 +93,14 @@ class Smalltalk(object):
         
         # debug support
         self.d_save = None
+        self.d_breakpoint = None
         
         # bytecode disassembly table
         # each entry is (name, num_arg)
         self.g_dis = [None] * 256
     
     @classmethod
-    def rebuild(klass, debug, verbose):
+    def rebuild(klass, verbose, brkpoint):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
@@ -160,9 +161,13 @@ class Smalltalk(object):
         
         # initialize interpreter
         inst.g_interp = Interp(inst)
-        if debug:
+        
+        # seetup requested debug options
+        if brkpoint is not None:
+            # break at [Class, method]
+            inst.d_breakpoint = brkpoint
             inst.d_save = inst.g_interp.get_debug()
-            inst.g_interp.set_debug(inst.debug_hook_pre, inst.debug_hook_post)
+            inst.g_interp.set_debug(inst.break_hook_pre, inst.d_save[1])
         
         # initialize primitive ops
         inst.build_primitives(verbose)
@@ -645,6 +650,29 @@ class Smalltalk(object):
         else:
             prStr = info[0]
         return prStr
+        
+    def break_hook_pre(self):
+        """
+        Check for breakpoints before execution
+        """
+        # get current context
+        ctx = self.g_interp.i_context
+        
+        # check for method context and get name
+        methObj = ctx.method
+        if (ctx.ip != 0) or methObj.is_nil() or (not is_int(ctx[6])):
+            return
+        descObj = methObj.descriptor
+        methName = descObj.selector
+        klassName = descObj.klass.name
+        if (klassName.to_str() == self.d_breakpoint[0]) and \
+           (methName.to_str() == self.d_breakpoint[1]):
+            # switch to debug hooks
+            print("BREAK: ", klassName, methName)
+            print()
+            self.d_save = self.g_interp.get_debug()
+            self.g_interp.set_debug(self.debug_hook_pre, self.debug_hook_post)
+            self.debug_hook_pre()
         
     def debug_hook_pre(self):
         """
