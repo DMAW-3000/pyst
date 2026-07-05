@@ -14,7 +14,7 @@ def parse_break(argIn):
         return None
     argList = argIn[0].split('.')
     if len(argList) != 2:
-        print("bad breakpoint: ", arg)
+        print("error: bad breakpoint: ", argIn[0])
         sys.exit(-1)
     return argList
 
