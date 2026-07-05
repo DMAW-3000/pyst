@@ -957,9 +957,8 @@ class _Context(Object):
         """
         if self.size == 7:
             raise IndexError("stack underflow")
-        x = self._refs.pop()
         self.sp -= 1
-        return x
+        return self._refs.pop()
         
     def expand(self, n):
         """
