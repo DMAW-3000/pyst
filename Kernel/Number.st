@@ -62,7 +62,7 @@ implicit type coercing code for binary operations.'>
      
         c := aStream peek.
         c isNil ifTrue: [ ^0 ].
-        c = $- ifTrue: [ sgn := -1. aStream next. ].
+        c = $- ifTrue: [ sgn := -1. aStream next ].
      
         c := aStream peek.
         c isNil ifTrue: [ ^0 ].
