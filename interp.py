@@ -32,7 +32,7 @@ class Interp(object):
         self.i_debug_post = self._debug_default
         
         # the bytecode handler table
-        self.b_table = bTbl = [None] * 256
+        self.b_table = bTbl = [self._op_undef] * 256
         bTbl[B_PUSH_SELF]                   = self.b_push_self
         bTbl[B_PUSH_LIT_CONSTANT]           = self.b_push_lit_const
         bTbl[B_PUSH_LIT_VARIABLE]           = self.b_push_lit_var
@@ -52,6 +52,13 @@ class Interp(object):
         Default debug handler - does nothing
         """
         return
+        
+    def _op_undef(self, ctx, arg):
+        """
+        Called when an undefined bytecode is encountered
+        """
+        code = ctx.method.get_code()
+        raise RuntimeError("unknown bytecode %d" % code[ctx.ip]) 
         
     def send_message_extern(self, recvObj, selName, argValues):
         """
@@ -221,9 +228,7 @@ class Interp(object):
         ctx = self.i_context
         ip = ctx.ip
         code = ctx.method.get_code()
-        op = self.b_table[code[ip]]
-        if op is None:
-            raise RuntimeError("unknown bytecode %d" % code[ip]) 
+        op = self.b_table[code[ip]]    
         ctx.ip = ip + op(ctx, code[ip + 1])
     
     def b_push_self(self, ctx, arg):
