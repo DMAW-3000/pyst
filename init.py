@@ -84,6 +84,7 @@ Init_Kernel_Mod = (
     "BlkClosure.st",
     "Behavior.st",
     "Magnitude.st",
+    "Number.st",
     "Integer.st",
     "SmallInt.st",
     "TestSuite.st",
