@@ -917,7 +917,7 @@ implicit type coercing code for binary operations.'>
 
 	<category: 'misc math'>
 	anInteger isInteger 
-	    ifFalse: [SystemExceptions.WrongClass signalOn: anInteger mustBe: Integer].
+	    ifFalse: ["SystemExceptions." WrongClass signalOn: anInteger mustBe: Integer].
 	anInteger < 0 ifTrue: [^self reciprocal raisedToInteger: 0 - anInteger].
 	anInteger = 0 ifTrue: [
 	    self = self zero ifTrue: [self arithmeticError: 'invalid operands'].
