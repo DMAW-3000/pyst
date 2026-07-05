@@ -833,7 +833,7 @@ method dictionary, and iterating over the class hierarchy.'>
 	"Answer whether the receiver's instances have indexed instance variables"
 
 	<category: 'testing the form of the instances'>
-	^(self instanceSpec bitAt: 5) ~= 0
+	^(self instanceSpec bitAt: 5) == 0
     ]
 
     instSize [
