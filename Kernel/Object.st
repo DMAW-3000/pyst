@@ -609,6 +609,23 @@ All classes in the system are subclasses of me.'>
 	self checkIndexableBounds: anIndex
     ]
 	
+	at: anIndex put: value [
+	"Store value in the index-th indexed instance variable of the receiver"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_basicAtPut>
+	self checkIndexableBounds: anIndex put: value
+    ]
+
+    basicAt: anIndex put: value [
+	"Store value in the index-th indexed instance variable of the receiver
+	 This method must not be overridden, override at:put: instead"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_basicAtPut>
+	self checkIndexableBounds: anIndex put: value
+    ]
+	
     size [
 	"Answer the number of indexed instance variable in the receiver"
 
