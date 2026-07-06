@@ -29,6 +29,8 @@
 	
 	test2 [
 		"test2"
+		| d |
+		d := FinalizableObjects.
 		^true isKindOf: false class
 	]
  

@@ -265,9 +265,22 @@ class Interp(object):
         # get symbol
         sym = ctx.method.literals[arg]
         
-        # TODO - do full namespace resolution
-        # look in all places for variable
-        
+        # look in all class variables (including superclasses)
+        klassObj = ctx.receiver.get_class()
+        while True:
+            #print("var lookup", klassObj)
+            varDict = klassObj.classVariables
+            if not varDict.is_nil():
+                var = self._sys.dict_find(varDict, sym)
+                if not var.is_nil():
+                    # push variable to stack
+                    ctx.push(var.value)
+                    return 2
+            superObj = klassObj.superClass
+            if superObj.is_nil():
+                break
+            klassObj = superObj 
+            
         # look in globals
         var = self._sys.dict_find(self._sys.g_st_dict, sym)
         if var.is_nil():
