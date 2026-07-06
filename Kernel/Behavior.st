@@ -603,6 +603,75 @@ method dictionary, and iterating over the class hierarchy.'>
 	self allSuperclassesDo: [:each | result nextPutAll: each classVarNames].
 	^result contents
     ]
+	
+	instVarNames [
+	"Answer an Array containing the instance variables defined by the receiver"
+
+	<category: 'accessing instances and variables'>
+	| superVars |
+	instanceVariables isNil ifTrue: [^#()].
+	superClass isNil 
+	    ifTrue: [^instanceVariables copy]
+	    ifFalse: 
+		[superVars := superClass allInstVarNames.
+		^instanceVariables copyFrom: superVars size + 1 to: instanceVariables size]
+    ]
+
+    subclassInstVarNames [
+	"Answer the names of the instance variables the receiver inherited from its
+	 superclass"
+
+	<category: 'accessing instances and variables'>
+	| superVars |
+	instanceVariables isNil ifTrue: [^#()].
+	superClass isNil ifTrue: [^#()].
+	^superClass allInstVarNames
+    ]
+
+    allInstVarNames [
+	"Answer the names of every instance variables the receiver contained in the
+	 receiver's instances"
+
+	<category: 'accessing instances and variables'>
+	^instanceVariables isNil ifTrue: [#()] ifFalse: [instanceVariables]
+    ]
+
+    classVarNames [
+	"Answer all the class variables for instances of the receiver"
+
+	<category: 'accessing instances and variables'>
+	^self superclass isNil 
+	    ifTrue: [#()]
+	    ifFalse: [self superclass classVarNames]
+    ]
+
+    allClassVarNames [
+	"Return all the class variables understood by the receiver"
+
+	<category: 'accessing instances and variables'>
+	| result |
+	result := WriteStream with: self classVarNames asArray.
+	self allSuperclassesDo: [:each | result nextPutAll: each classVarNames].
+	^result contents
+    ]
+
+    classPool [
+	"Answer the class pool dictionary. Since Behavior does not support
+	 classes with class variables, we answer an empty one; adding
+	 variables to it results in an error."
+
+	<category: 'accessing instances and variables'>
+	^(Dictionary new)
+	    makeReadOnly: true;
+	    yourself
+    ]
+	
+	sharedPools [
+	"Return the names of the shared pools defined by the class"
+
+	<category: 'accessing instances and variables'>
+	^self superclass isNil ifTrue: [#()] ifFalse: [self superclass sharedPools]
+    ]
 
     allSharedPoolDictionariesDo: aBlock [
         "Answer the shared pools visible from methods in the metaclass,
