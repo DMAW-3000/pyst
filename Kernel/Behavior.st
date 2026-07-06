@@ -594,16 +594,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	^self allInstVarNames indexOfLast: aString asSymbol ifAbsent: aBlock
     ]
 	
-	allClassVarNames [
-	"Return all the class variables understood by the receiver"
-
-	<category: 'accessing instances and variables'>
-	| result |
-	result := WriteStream with: self classVarNames asArray.
-	self allSuperclassesDo: [:each | result nextPutAll: each classVarNames].
-	^result contents
-    ]
-	
 	instVarNames [
 	"Answer an Array containing the instance variables defined by the receiver"
 
@@ -1332,13 +1322,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	mySubclasses := self subclasses reject: [ :a | a isMetaclass ].
 	(mySubclasses asSortedCollection: [:a :b | a name <= b name]) do: 
 		[:subclass | subclass printSubclasses: level + 1]
-    ]
-
-   	hierarchyIndent [
-	"Answer the indent to be used by #printHierarchy - 4 by default"
-
-	<category: 'printing hierarchy'>
-	^4
     ]
 
     hierarchyIndent [
