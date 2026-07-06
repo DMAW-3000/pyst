@@ -438,7 +438,7 @@ class Smalltalk(object):
         arrSize = dictObj.size - numInst
         mask = arrSize - 1
         idx = hsh_scram(keyObj.get_id()) 
-        while arrSize > 0:
+        while arrSize:
             idx &= mask
             assoc = dictObj[idx + numInst]
             if assoc.is_nil() or keyObj.is_same(assoc.key):
@@ -487,7 +487,7 @@ class Smalltalk(object):
         if tly / (dictObj.size >> 1) > 0.4:
             self.identdict_grow(dictObj)
         idx = self.identdict_index(dictObj, keyObj)
-        if dictObj[idx - 1].is_nil():
+        if dictObj[idx].is_nil():
             dictObj[idx - 1] = keyObj
             dictObj[idx] = itemObj
             dictObj.tally = tly + 1
@@ -513,7 +513,7 @@ class Smalltalk(object):
         idx = (hsh_scram(keyObj.get_id()) << 1) & Int_Max
         mask = arrSize - 1
         arrSize >>= 1
-        while arrSize > 0:
+        while arrSize:
             idx &= mask
             item = dictObj[idx + numInst]
             if item.is_nil() or item.is_same(keyObj):
