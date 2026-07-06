@@ -167,6 +167,12 @@ class Compile(object):
             else:
                 raise CompileError("bad method syntax")
         
+        if not self._cur_klass.classVariables.is_nil():
+            if self._verbose:
+                print("Class Var Dict:")
+                self._sys.dict_print(self._cur_klass.classVariables)
+                print()
+        
         if (not self._cur_klass.get_class().is_nil()) and (not self._cur_klass.get_class().methodDictionary.is_nil()):
             if self._verbose:
                 print("Class Meth Dict:")
@@ -224,10 +230,6 @@ class Compile(object):
         assoc = self._sys.dict_find(varDict, symObj)
         if assoc.is_nil():
             raise CompileError("class var %s not defined" % varName)
-        varObj = self._nil      # just set to NIL for now, need to parse statement
-        self._sys.dict_add(varDict, symObj, varObj)
-        if self._verbose:
-            print("Class Variable:", symObj, varObj)
         
     def parse_method(self, methName, argNames, parseBrack, opName, klassMeth):
         """
