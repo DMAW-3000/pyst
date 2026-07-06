@@ -85,6 +85,7 @@ Init_Kernel_Mod = (
     "Number.st",
     "Integer.st",
     "SmallInt.st",
+    "Iterable.st",
     "TestSuite.st",
 )
 
