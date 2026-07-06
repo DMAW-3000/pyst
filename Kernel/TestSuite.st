@@ -24,7 +24,8 @@
 	test1 [
 		"test1"
 		testInst1 isNil; notNil; isInteger; isNil.
-		true size; basicSize
+		true size; basicSize.
+		(Array new: 10) size; basicSize
 	]
 	
 	test2 [

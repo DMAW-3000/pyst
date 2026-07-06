@@ -419,9 +419,10 @@ class Interp(object):
         This is the number of index references, not counting
         the class defined instance variables.
         """
-        sz = 0
         if is_obj(recv):
             sz = recv.size - (recv.get_class().instanceSpec >> 12)
+        else:
+            sz = 0
         ctx.push(sz)
         return True
         
