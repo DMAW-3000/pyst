@@ -307,6 +307,90 @@ All classes in the system are subclasses of me.'>
 	<category: 'finalization'>
 	
     ]
+	
+	changed: aParameter [
+	"Send update: for each of the receiver's dependents, passing them
+	 aParameter"
+
+	<category: 'change and update'>
+	| dependencies |
+	dependencies := Object dependencies at: self ifAbsent: [nil].
+	dependencies notNil 
+	    ifTrue: [dependencies do: [:dependent | dependent update: aParameter]]
+    ]
+
+    update: aParameter [
+	"Default behavior is to do nothing. Called by #changed and #changed:"
+
+	<category: 'change and update'>
+	
+    ]
+
+    broadcast: aSymbol [
+	"Send the unary message aSymbol to each of the receiver's dependents"
+
+	<category: 'change and update'>
+	| dependencies |
+	dependencies := Object dependencies at: self ifAbsent: [nil].
+	dependencies notNil 
+	    ifTrue: [dependencies do: [:dependent | dependent perform: aSymbol]]
+    ]
+
+    broadcast: aSymbol with: anObject [
+	"Send the message aSymbol to each of the receiver's dependents, passing
+	 anObject"
+
+	<category: 'change and update'>
+	| dependencies |
+	dependencies := Object dependencies at: self ifAbsent: [nil].
+	dependencies notNil 
+	    ifTrue: 
+		[dependencies do: [:dependent | dependent perform: aSymbol with: anObject]]
+    ]
+
+    broadcast: aSymbol with: arg1 with: arg2 [
+	"Send the message aSymbol to each of the receiver's dependents, passing
+	 arg1 and arg2 as parameters"
+
+	<category: 'change and update'>
+	| dependencies |
+	dependencies := Object dependencies at: self ifAbsent: [nil].
+	dependencies notNil 
+	    ifTrue: 
+		[dependencies do: 
+			[:dependent | 
+			dependent 
+			    perform: aSymbol
+			    with: arg1
+			    with: arg2]]
+    ]
+
+    broadcast: aSymbol withBlock: aBlock [
+	"Send the message aSymbol to each of the receiver's dependents, passing
+	 the result of evaluating aBlock with each dependent as the parameter"
+
+	<category: 'change and update'>
+	| dependencies |
+	dependencies := Object dependencies at: self ifAbsent: [nil].
+	dependencies notNil 
+	    ifTrue: 
+		[dependencies 
+		    do: [:dependent | dependent perform: aSymbol with: (aBlock value: dependent)]]
+    ]
+
+    broadcast: aSymbol withArguments: anArray [
+	"Send the message aSymbol to each of the receiver's dependents, passing
+	 the parameters in anArray"
+
+	<category: 'change and update'>
+	| dependencies |
+	dependencies := Object dependencies at: self ifAbsent: [nil].
+	dependencies notNil 
+	    ifTrue: 
+		[dependencies 
+		    do: [:dependent | dependent perform: aSymbol withArguments: anArray]]
+    ]
+
 
     changed [
 	"Send update: for each of the receiver's dependents, passing them the
