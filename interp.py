@@ -120,11 +120,11 @@ class Interp(object):
         oldCtx = self.i_context
         pop = oldCtx.pop
         
-        # pop the message arguments
-        if numArgs > 0:
+        # pop the message arguments from parent stack
+        if numArgs:
             argList = [None] * numArgs
             n = numArgs
-            while n > 0:
+            while n:
                 argList[n - 1] = pop()
                 n -= 1
         else:
@@ -165,7 +165,7 @@ class Interp(object):
         # check for primitive operation
         # return control immediately to sender if
         # the primitive op is successful
-        if primId > 0:
+        if primId:
             primFunc = self.i_primitive[primId]
             if primFunc(oldCtx, recvObj, argList):
                 return
@@ -177,11 +177,12 @@ class Interp(object):
         newCtx.method = methObj
         
         # push args onto new stack
-        for a in argList:
-            newCtx.push(a)
+        for arg in argList:
+            newCtx.push(arg)
             
         # make room for temp variables on new stack
-        newCtx.expand(numTemp)
+        if numTemp:
+            newCtx.expand(numTemp)
         
         # transfer control to new context
         self.i_context = newCtx
@@ -292,7 +293,7 @@ class Interp(object):
 
         # look through context frames
         outer = ctx.outerContext
-        while level > 0:
+        while level:
             outer = outer.outerContext
             level -= 1
 
@@ -346,7 +347,7 @@ class Interp(object):
 
         # look through context frames
         outer = ctx.outerContext
-        while level > 0:
+        while level:
             outer = outer.outerContext
             level -= 1
         # store temp variable
@@ -501,7 +502,8 @@ class Interp(object):
             newCtx.push(arg)
                 
         # mske room for any temporary variables
-        newCtx.expand(numTemp)
+        if numTemp:
+            newCtx.expand(numTemp)
 
         # transfer control to new context
         self.i_context = newCtx
