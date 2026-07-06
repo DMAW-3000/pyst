@@ -143,6 +143,15 @@ class Object(object):
         """
         return self._obj_id == 0
         
+    def clone(self):
+        """
+        Create a copy of this Object and assign
+        it a fresh ID.
+        """
+        newObj = copy(self)
+        newObj._obj_id = Obj_Table.new_obj()
+        return newObj
+        
     def __getitem__(self, idx):
         """
         Get one of the Object's child references

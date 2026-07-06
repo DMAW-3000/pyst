@@ -466,6 +466,16 @@ class Interp(object):
                 return True
         return False
         
+    def p_Object_shallowCopy(self, ctx, recv, argList):
+        """
+        Primitive handler for Object shallowCopy
+        """
+        if is_obj(recv):
+            ctx.push(recv.clone())
+        else:
+            ctx.push(recv)
+        return True
+        
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value

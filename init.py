@@ -97,6 +97,7 @@ Init_Primitive = (
     "Object_class",
     "Object_basicAt",
     "Object_basicAtPut",
+    "Object_shallowCopy",
     "BlockClosure_value",
     "Behavior_basicNew",
     "Behavior_basicNewColon",

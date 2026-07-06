@@ -83,9 +83,10 @@
 	
 	test9 [
 		"test9"
-		| a |
+		| a b |
 		a := #(1 2 3 4 5).
-		a at: 1; at: 2; at: 5.
+		b := a copy.
+		b at: 1; at: 2; at: 5.
 		a at: 2 put: 10.
 		a at: 3 put: 11.
 		a at: 2; at: 3
