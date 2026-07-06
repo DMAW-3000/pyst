@@ -17,7 +17,8 @@
 		self test5.
 		self test6.
 		self test7.
-		self test8
+		self test8.
+		self test9
 	]
 	
 	test1 [
@@ -78,5 +79,15 @@
 	test8 [
 		"test8"
 		^24 gcd: 32
+	]
+	
+	test9 [
+		"test9"
+		| a |
+		a := #(1 2 3 4 5).
+		a at: 1; at: 2; at: 5.
+		a at: 2 put: 10.
+		a at: 3 put: 11.
+		a at: 2; at: 3
 	]
 ]

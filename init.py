@@ -95,6 +95,8 @@ Init_Primitive = (
     "Object_basicSize",
     "Object_identity",
     "Object_class",
+    "Object_basicAt",
+    "Object_basicAtPut",
     "BlockClosure_value",
     "Behavior_basicNew",
     "Behavior_basicNewColon",

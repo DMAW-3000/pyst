@@ -434,6 +434,38 @@ class Interp(object):
         ctx.push(klass)
         return True
         
+    def p_Object_basicAt(self, ctx, recv, argList):
+        """
+        Primitve handler for Object at:
+        """
+        idx = argList[0]
+        if is_int(idx):
+            spec = recv.get_class().instanceSpec
+            if not (spec & 0x10):
+                try:
+                    ret = recv[(spec >> 12) + idx - 1]
+                except IndexError:
+                    return False
+                ctx.push(ret)
+                return True
+        return False
+        
+    def p_Object_basicAtPut(self, ctx, recv, argList):
+        """
+        Primitve handler for Object at:put:
+        """
+        idx = argList[0]
+        if is_int(idx):
+            spec = recv.get_class().instanceSpec
+            if not (spec & 0x10):
+                try:
+                    recv[(spec >> 12) + idx - 1] = argList[1]
+                except IndexError:
+                    return False
+                ctx.push(recv)
+                return True
+        return False
+        
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value
