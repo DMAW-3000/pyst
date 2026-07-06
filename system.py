@@ -415,8 +415,12 @@ class Smalltalk(object):
         tly = dictObj.tally
         if tly / dictObj.size > 0.4:
             self.dict_grow(dictObj)
-        dictObj[self.dict_index(dictObj, keyObj)] = Association(keyObj, itemObj)
-        dictObj.tally = tly + 1
+        idx = self.dict_index(dictObj, keyObj)
+        if dictObj[idx].is_nil():
+            dictObj[idx] = Association(keyObj, itemObj)
+            dictObj.tally = tly + 1
+        else:
+            raise NameError("duplicate Dictionary key: %s" % keyObj)
         
     def dict_find(self, dictObj, keyObj):
         """
@@ -483,9 +487,12 @@ class Smalltalk(object):
         if tly / (dictObj.size >> 1) > 0.4:
             self.identdict_grow(dictObj)
         idx = self.identdict_index(dictObj, keyObj)
-        dictObj[idx - 1] = keyObj
-        dictObj[idx] = itemObj
-        dictObj.tally = tly + 1
+        if dictObj[idx - 1].is_nil():
+            dictObj[idx - 1] = keyObj
+            dictObj[idx] = itemObj
+            dictObj.tally = tly + 1
+        else:
+            raise NameError("duplicate IdentityDictionary key: %s" % keyObj)
         
     def identdict_find(self, dictObj, keyObj):
         """
