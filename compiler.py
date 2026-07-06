@@ -659,7 +659,7 @@ class Compile(object):
                     
         # small integer
         elif isinstance(x, int):
-            if x > Int_Max:
+            if abs(x) > Int_Max:
                 raise CompileError("integer value %d too large" % x)
             # optimize with push direct if value is small enough
             if (x >= 0) and (x < 256):
