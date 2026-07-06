@@ -29,8 +29,9 @@
 	
 	test2 [
 		"test2"
-		| d |
+		| d e |
 		d := FinalizableObjects.
+		e := Object dependencies.
 		^true isKindOf: false class
 	]
  

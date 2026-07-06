@@ -267,6 +267,9 @@ class Interp(object):
         
         # look in all class variables (including superclasses)
         klassObj = ctx.receiver.get_class()
+        if klassObj.get_class() is self._sys.k_metaclass:
+            # handle special case of access from inside class method
+            klassObj = ctx.receiver
         while True:
             #print("var lookup", klassObj)
             varDict = klassObj.classVariables
