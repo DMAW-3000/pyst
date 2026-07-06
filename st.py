@@ -148,6 +148,7 @@ class Object(object):
         Create a copy of this Object and assign
         it a fresh ID.
         """
+        global Obj_Table
         newObj = copy(self)
         newObj._obj_id = Obj_Table.new_obj()
         return newObj
@@ -975,7 +976,7 @@ class _Context(Object):
         of slots.
         """
         global _Obj_Nil
-        self._refs.extend([_Obj_Nil] * n)
+        self._refs.extend((_Obj_Nil,) * n)
         self.sp += n
         
 
