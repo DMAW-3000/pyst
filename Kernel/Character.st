@@ -261,7 +261,7 @@ itself.'>
 	^result > 32 
 	    ifTrue: [codePoint - result]
 	    ifFalse: 
-		[SystemExceptions.InvalidValue signalOn: self
+		["SystemExceptions." InvalidValue signalOn: self
 		    reason: 'Not a digit character']
     ]
 
