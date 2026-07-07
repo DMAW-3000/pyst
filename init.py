@@ -24,7 +24,7 @@ Init_Class = (
     ("Metaclass", True, "metaclass", "class_desc", True, ("instanceClass",), (), ()),
     ("Iterable", False, "iterable", "object", True, (), (), ()),
     ("Collection", False, "collection", "iterable", True, (), (), ()),
-    ("SequencableCollection", False, "seq_collection", "collection", True, (), (), ()),
+    ("SequenceableCollection", False, "seq_collection", "collection", True, (), (), ()),
     ("ArrayedCollection", False, "arr_collection", "seq_collection", False, (), (), ()),
     ("Array", True, "array", "arr_collection", False, (), (), ()),
     ("ByteArray", True, "bytearray", "arr_collection", False, (), (), ()),
@@ -86,6 +86,10 @@ Init_Kernel_Mod = (
     "Integer.st",
     "SmallInt.st",
     "Iterable.st",
+    "Collection.st",
+    "SeqCollect.st",
+    "ArrayColl.st",
+    "Array.st",
     "TestSuite.st",
 )
 
