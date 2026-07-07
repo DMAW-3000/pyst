@@ -8,17 +8,27 @@
  Object subclass: TestSuite [
 	| testInst1 testInst2 |
 	
+	TestClassVar := nil.
+	
+	TestSuite class >> testClassVar [
+		^TestClassVar
+	]
+	
+	TestSuite class >> testClassVar: val [
+		TestClassVar := val
+	]
+	
 	runAll [
 		"Run all of the tests"
-		self test1.
-		self test2.
-		self test3.
-		self test4.
-		self test5.
-		self test6.
-		self test7.
-		self test8.
-		self test9
+		self 	test1;
+				test2;
+				test3;
+				test4;
+				test5;
+				test6;
+				test7;
+				test8;
+				test9
 	]
 	
 	test1 [
@@ -33,6 +43,10 @@
 		| d e |
 		d := FinalizableObjects.
 		e := Object dependencies.
+		TestSuite testClassVar: #(10 20 30).
+		TestSuite testClassVar.
+		KernelInitialized ifFalse: [KernelInitialized := true.
+									KernelInitialized := false].
 		^true isKindOf: false class
 	]
  

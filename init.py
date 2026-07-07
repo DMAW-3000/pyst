@@ -62,7 +62,7 @@ Init_Class = (
     ("LookupTable", False, "lookup_table", "dictionary", False, (), (), ()),
     ("IdentityDictionary", False, "ident_dictionary", "lookup_table", False, (), (), ()),
     ("MethodDictionary", True, "meth_dictionary", "ident_dictionary", False, ("mutex",), (), ()),
-    ("TestSuite", False, "test", "object", True, ("testInst1", "testInst2"), (), ()),
+    ("TestSuite", False, "test", "object", True, ("testInst1", "testInst2"), ("TestClassVar",), ()),
 )
 
 # the instance variable names for Metaclass

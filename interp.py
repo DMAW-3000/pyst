@@ -44,6 +44,7 @@ class Interp(object):
         bTbl[B_POP_STACK_TOP]               = self.b_pop_top
         bTbl[B_STORE_TEMPORARY_VARIABLE]    = self.b_store_temp_var
         bTbl[B_STORE_OUTER_TEMP]            = self.b_store_outer_var
+        bTbl[B_STORE_LIT_VARIABLE]          = self.b_store_lit_var
         bTbl[B_RETURN_METHOD_STACK_TOP]     = self.b_meth_ret
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
@@ -106,7 +107,6 @@ class Interp(object):
         # restore context and return value
         self.i_context = ctxSave
         return ret
-        
         
     def send_message(self, numArgs):
         """
@@ -369,6 +369,41 @@ class Interp(object):
         # store temp variable
         outer[7 + arg] = ctx.pop()
         return 4
+        
+    def b_store_lit_var(self, ctx, arg):
+        """
+        Execute the store literal var bytecode
+        """
+        # get symbol
+        sym = ctx.method.literals[arg]
+        
+        # look in all class variables (including superclasses)
+        klassObj = ctx.receiver.get_class()
+        if klassObj.get_class() is self._sys.k_metaclass:
+            # handle special case of access from inside class method
+            klassObj = ctx.receiver
+        while True:
+            #print("var lookup", klassObj)
+            varDict = klassObj.classVariables
+            if not varDict.is_nil():
+                var = self._sys.dict_find(varDict, sym)
+                if not var.is_nil():
+                    # pop variable from stack
+                    var.value = ctx.pop()
+                    return 2
+            superObj = klassObj.superClass
+            if superObj.is_nil():
+                break
+            klassObj = superObj 
+            
+        # look in globals
+        var = self._sys.dict_find(self._sys.g_st_dict, sym)
+        if var.is_nil():
+            raise NameError("variable %s not found" % sym)
+        
+        # pop variable from stack
+        var.value.value = ctx.pop()
+        return 2
 
     def b_send(self, ctx, arg):
         """
