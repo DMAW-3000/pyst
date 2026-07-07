@@ -33,7 +33,7 @@ tokens = [
 
 def t_CHARACTER(t):
     r'\$(\S|\x20)'
-    t.value = t.value.lstrip('$')
+    t.value = t.value[1]
     return t
 
 def t_BASENUMBER(t):
