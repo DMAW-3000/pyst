@@ -45,8 +45,7 @@
 		e := Object dependencies.
 		TestSuite testClassVar: #(10 20 30).
 		TestSuite testClassVar.
-		KernelInitialized ifFalse: [KernelInitialized := true.
-									KernelInitialized := false].
+		KernelInitialized ifFalse: [KernelInitialized := true].
 		^true isKindOf: false class
 	]
  
