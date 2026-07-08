@@ -91,6 +91,7 @@ Init_Kernel_Mod = (
     "SeqCollect.st",
     "ArrayColl.st",
     "Array.st",
+    "ByteArray.st",
     "TestSuite.st",
 )
 
