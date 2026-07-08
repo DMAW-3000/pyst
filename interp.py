@@ -567,15 +567,14 @@ class Interp(object):
         Create a new instance of a object based on class definition.
         For objects of fixed size.
         """
-        status = False
         if is_obj(recv) and (recv.get_class().get_class() is self._sys.k_metaclass):
             spec = recv.instanceSpec
             if spec & 0x10:
                 obj = Object(spec >> 12)
                 obj._klass = recv
                 ctx.push(obj)
-                status = True
-        return status
+                return True
+        return False
         
     def p_Behavior_basicNewColon(self, ctx, recv, argList):
         """
@@ -583,7 +582,6 @@ class Interp(object):
         Create a new instance of a object based on class definition.
         For objects of veriable size.
         """
-        status = False
         sz = argList[0]
         if is_obj(recv) and is_int(sz) and (recv.get_class().get_class() is self._sys.k_metaclass):
             spec = recv.instanceSpec
@@ -591,8 +589,8 @@ class Interp(object):
                 obj = Object((spec >> 12) + sz)
                 obj._klass = recv
                 ctx.push(obj)
-                status = True
-        return status
+                return True
+        return False
         
     def p_Behavior_newInitialize(self, ctx, recv, argList):
         """
