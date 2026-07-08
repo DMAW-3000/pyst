@@ -126,4 +126,6 @@ Init_Primitive = (
     "SmallInteger_bitOr",
     "SmallInteger_bitXor",
     "SmallInteger_bitShift",
+    "ByteArray_basicNewColon",
+    "ByteArray_newColonInitialize",
 )

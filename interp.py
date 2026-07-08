@@ -810,7 +810,7 @@ class Interp(object):
         
     def p_SmallInteger_bitShift(self, ctx, recv, argList):
         """
-        Primitive handler for SmallInteger bitShift
+        Primitive handler for SmallInteger bitShift:
         """
         global Int_Max
         send = argList[0]
@@ -825,8 +825,29 @@ class Interp(object):
             return True
         return False
         
+    def p_ByteArray_basicNewColon(self, ctx, recv, argList):
+        """
+        Primitiive handler for ByteArray basicNew:
+        Optimization to get proper storage type.
+        """
+        sz = argList[0]
+        if is_int(sz):
+            ctx.push(ByteArray(sz))
+            return True
+        return False        
+    
+    def p_ByteArray_newColonInitialize(self, ctx, recv, argList):
+        """
+        Primitive handler for ByteArray mew:
+        Send initialize message to the new object after creation.
+        """
+        # create the object
+        status = self.p_ByteArray_basicNewColon(ctx, recv, argList)
         
-        
+        if status:
+            # send the new object initialize message
+            self.send_message_intern(ctx[-1], "initialize", ())
+        return status
         
         
         

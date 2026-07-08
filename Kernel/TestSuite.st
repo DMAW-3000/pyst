@@ -35,6 +35,7 @@
 		"test1"
 		testInst1 isNil; notNil; isInteger; isNil.
 		true size; basicSize.
+		(ByteArray new: 20) size; basicSize.
 		(Array new: 10) size; basicSize
 	]
 	
