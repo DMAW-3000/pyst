@@ -622,6 +622,20 @@ class Interp(object):
             self.send_message_intern(ctx[-1], "initialize", ())
         return status
         
+    def p_Character_create(self, ctx, recv, argList):
+        """
+        Primitve handler for Character value:
+        """
+        idx = argList[0]
+        if is_int(idx):
+            try:
+                ret = self._sys.o_char[idx]
+            except IndexError:
+                return False
+            ctx.push(ret)
+            return True
+        return False
+        
     def p_SmallInteger_plus(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger +

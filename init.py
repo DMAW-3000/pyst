@@ -110,6 +110,7 @@ Init_Primitive = (
     "Behavior_basicNewColon",
     "Behavior_newInitialize",
     "Behavior_newColonInitialize",
+    "Character_create",
     "SmallInteger_plus",
     "SmallInteger_minus",
     "SmallInteger_lt",
