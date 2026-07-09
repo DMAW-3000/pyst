@@ -309,7 +309,14 @@ class Compile(object):
         pos = 0
         remainder = self._lex.lexdata[self._lex.lexpos:]
         if tok.type != "RBRACK":
-            stmtText = str(tok.value)
+            if tok.type == "CHARACTER":
+                stmtText = "$" + tok.value
+            elif tok.type == "SSTRING":
+                stmtText = "\'" + tok.value + "\'"
+            elif tok.type == "SYMBOL":
+                stmtText = "#" + tok.value
+            else:
+                stmtText = str(tok.value)
             if tok.type == "LBRACK":
                 brackCount = 2
             else:
