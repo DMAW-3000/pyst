@@ -95,6 +95,12 @@ Init_Kernel_Mod = (
     "TestSuite.st",
 )
 
+# the list of classes whose 'initialize' message
+# should be sent at startup
+Init_Class_Init = (
+    "Character",
+)
+
 # the list of primitive ops handled by the interpreter
 # the primitive ID is the index of the name in the list
 # plus 1 (0 is reserved)

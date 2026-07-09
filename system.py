@@ -182,6 +182,13 @@ class Smalltalk(object):
             print("Smalltalk Dictionary:")
             inst.dict_print(inst.g_st_dict, True)
             
+        # static class initialization
+        for klassName in init.Init_Class_Init:
+            klassSym = inst.symbol_find(klassName)
+            klassObj = inst.dict_find(inst.g_st_dict, klassSym).value.value
+            print("Initializing class", klassSym)
+            inst.g_interp.send_message_extern(klassObj, "initialize", ())
+            
         #if verbose:
         #    print("Symbol Table")
         #    inst.symbol_tbl_print()

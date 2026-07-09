@@ -42,6 +42,8 @@
 	test2 [
 		"test2"
 		| d e |
+		$A asLowercase.
+		e := $b asUppercase.
 		d := FinalizableObjects.
 		e := Object dependencies.
 		TestSuite testClassVar: #(10 20 30).
@@ -52,6 +54,8 @@
  
 	test3 [
         "test3"
+		#testSym size.
+		'test string' size.
 		^[:x | true and: [x]] value: false
     ]
 	
