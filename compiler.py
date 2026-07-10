@@ -313,6 +313,8 @@ class Compile(object):
                 stmtText = "$" + tok.value
             elif tok.type == "SSTRING":
                 stmtText = "\'" + tok.value + "\'"
+            elif tok.type == "DSTRING":
+                stmtText = ""
             elif tok.type == "SYMBOL":
                 stmtText = "#" + tok.value
             else:
