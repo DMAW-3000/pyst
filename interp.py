@@ -49,6 +49,7 @@ class Interp(object):
         bTbl[B_RETURN_METHOD_STACK_TOP]     = self.b_meth_ret
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
+        bTbl[B_SEND_SUPER]                  = self.b_send_super
         
     def _debug_default(self):
         """
@@ -87,7 +88,7 @@ class Interp(object):
             
         # send message and run until control
         # returns to this root context
-        self.send_message(len(argValues))
+        self.send_message(len(argValues), False)
         self.exec()
         
         # pop return value from stack
@@ -109,7 +110,7 @@ class Interp(object):
         self.i_context = ctxSave
         return ret
         
-    def send_message(self, numArgs):
+    def send_message(self, numArgs, isSuper):
         """
         Send a message.  This assumes that the receiver,
         message selector, and argument values have been
@@ -135,15 +136,21 @@ class Interp(object):
         selObj = pop()
         recvObj = pop()
     
-        # lookup method object from selector symbol
-        # search from receiver's class through its
-        # superclasses until Object's nil superclass
+        # get class type for receiver
+        # handle primitive types specially
         if is_int(recvObj):
             klassObj = self._sys.k_small_int
         elif is_flt(recvObj):
             klassObj = self._sys.k_float_d
         else:
             klassObj = recvObj.get_class()
+            
+        # lookup method object from selector symbol
+        # search from receiver's class through its
+        # superclasses until Object's nil superclass
+        # if send super, start one class up in hierarchy
+        if isSuper:
+            klassObj = klassObj.superClass
         while True:
             #print("meth lookup", klassObj)
             methDict = klassObj.methodDictionary
@@ -423,7 +430,14 @@ class Interp(object):
         """
         Execute the generic send message bytecode
         """
-        self.send_message(arg)
+        self.send_message(arg, False)
+        return 2
+        
+    def b_send_super(self, ctx, arg):
+        """
+        Execute the send message to super bytecode
+        """
+        self.send_message(arg, True)
         return 2
         
     def b_meth_ret(self, ctx, arg):
