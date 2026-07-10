@@ -42,7 +42,7 @@
 	test2 [
 		"test2"
 		| d e |
-		$A asLowercase.
+		$A asLowercase hash.
 		e := $b asUppercase.
 		d := FinalizableObjects.
 		e := Object dependencies.

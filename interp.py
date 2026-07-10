@@ -524,9 +524,10 @@ class Interp(object):
         Primitive handler for Object shallowCopy
         """
         if is_obj(recv):
-            ctx.push(recv.clone())
+            ret = recv.clone()
         else:
-            ctx.push(recv)
+            ret = recv
+        ctx.push(ret)
         return True
         
     def p_Object_isReadOnly(self, ctx, recv, argList):
@@ -537,6 +538,17 @@ class Interp(object):
             ret = self._false
         else:
             ret = self._true
+        ctx.push(ret)
+        return True
+        
+    def p_Object_hash(self, ctx, recv, argList):
+        """
+        Primitive handler for Object hash
+        """
+        if is_obj(recv):
+            ret = recv.get_id()
+        else:
+            ret = recv
         ctx.push(ret)
         return True
         
