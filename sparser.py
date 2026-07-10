@@ -347,7 +347,7 @@ class Parser(object):
         """
         sel = self.val(0)
         self.lex()
-        if isinstance(recv, ParseLiteral) and recv.value == "super":
+        if isinstance(recv, ParseLiteral) and (recv.value == "super"):
             isSuper = True
         else:
             isSuper = False
@@ -359,7 +359,7 @@ class Parser(object):
         """
         sel = self.val(0)
         self.lex()
-        if isinstance(recv, ParseLiteral) and recv.value == "super":
+        if isinstance(recv, ParseLiteral) and (recv.value == "super"):
             isSuper = True
         else:
             isSuper = False
@@ -371,7 +371,7 @@ class Parser(object):
         Parse a keyword list message
         """
         aList = []
-        if isinstance(recv, ParseLiteral) and recv.value == "super":
+        if isinstance(recv, ParseLiteral) and (recv.value == "super"):
             isSuper = True
         else:
             isSuper = False
