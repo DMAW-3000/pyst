@@ -45,6 +45,7 @@ class Interp(object):
         bTbl[B_STORE_TEMPORARY_VARIABLE]    = self.b_store_temp_var
         bTbl[B_STORE_OUTER_TEMP]            = self.b_store_outer_var
         bTbl[B_STORE_LIT_VARIABLE]          = self.b_store_lit_var
+        bTbl[B_STORE_RECEIVER_VARIABLE]     = self.b_store_recv_var
         bTbl[B_RETURN_METHOD_STACK_TOP]     = self.b_meth_ret
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
@@ -305,7 +306,7 @@ class Interp(object):
         Execute the push outer temp variable bytecde
         """
         # get extended bytecode data
-        level = ctx.method.get_code()[ctx.ip + 2]
+        level = ctx.method.get_code()[ctx.ip + 3]
 
         # look through context frames
         outer = ctx.outerContext
@@ -359,7 +360,7 @@ class Interp(object):
         Execute the store outer temp variable bytecde
         """
         # get extended bytecode data
-        level = ctx.method.get_code()[ctx.ip + 2]
+        level = ctx.method.get_code()[ctx.ip + 3]
 
         # look through context frames
         outer = ctx.outerContext
@@ -403,6 +404,13 @@ class Interp(object):
         
         # pop variable from stack
         var.value.value = ctx.pop()
+        return 2
+        
+    def b_store_recv_var(self, ctx, arg):
+        """
+        Execute the store receiver variable bytecode
+        """
+        ctx.receiver[arg] = ctx.pop()
         return 2
 
     def b_send(self, ctx, arg):

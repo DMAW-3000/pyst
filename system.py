@@ -651,7 +651,7 @@ class Smalltalk(object):
             else:
                 prList = ["[%d]" % n, info[0]]
                 for k in range(info[2]):
-                    prList.append(byteCode[n + k + 1])
+                    prList.append(byteCode[n + (k * 2) + 1])
             print(*prList)
             n += info[1]
             

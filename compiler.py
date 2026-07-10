@@ -525,11 +525,11 @@ class Compile(object):
                     self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
                 else:
                     # parent context
-                    self.emit_bytes(B_STORE_OUTER_TEMP, idx, scope - 1, 0)
+                    self.emit_bytes(B_STORE_OUTER_TEMP, idx, B_EXT_BYTE, scope - 1)
             else:
                 # look in instance variables
                 try:
-                    idx = self._cur_inst_var.index(var)
+                    idx = self._cur_inst_var.index(varName)
                     self.emit_bytes(B_STORE_RECEIVER_VARIABLE, idx)
                 except ValueError:
                     # variable is global
@@ -728,7 +728,7 @@ class Compile(object):
                 self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
             else:
                 # parent context
-                self.emit_bytes(B_PUSH_OUTER_TEMP, idx, scope - 1, 0)
+                self.emit_bytes(B_PUSH_OUTER_TEMP, idx, B_EXT_BYTE, scope - 1)
        
         # look in instance variables
         else:

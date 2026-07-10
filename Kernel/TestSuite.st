@@ -28,7 +28,8 @@
 				test6;
 				test7;
 				test8;
-				test9
+				test9;
+				test10
 	]
 	
 	test1 [
@@ -114,5 +115,11 @@
 		a at: 2 put: 10.
 		a at: 3 put: 11.
 		a at: 2; at: 3
+	]
+	
+	test10 [
+		"test10"
+		testInst1 ifNil: [testInst1 := 1].
+		testInst2 ifNil: [testInst2 := 'test instance variable']
 	]
 ]
