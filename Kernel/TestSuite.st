@@ -32,6 +32,12 @@
 				test10
 	]
 	
+	postCopy [
+		| s |
+		s := self.
+		^s
+	]
+	
 	test1 [
 		"test1"
 		testInst1 isNil; notNil; isInteger; isNil.
@@ -72,6 +78,7 @@
 	
 	test5 [
 		"test5"
+		super isNil; notNil; isNil.
 		true ifTrue: [ | r s | r := false. s := true].
 		[:a | | x | x := a] value: #nil
 	]
@@ -119,6 +126,8 @@
 	
 	test10 [
 		"test10"
+		| a |
+		(a := Array new: 6 withAll: 10328) at: 2.
 		testInst1 ifNil: [testInst1 := 1].
 		testInst2 ifNil: [testInst2 := 'test instance variable']
 	]
