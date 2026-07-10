@@ -149,19 +149,19 @@ class Interp(object):
         # search from receiver's class through its
         # superclasses until Object's nil superclass
         # if send super, start one class up in hierarchy
+        methObj = self._nil
         if isSuper:
             klassObj = klassObj.superClass
-        while True:
+        while not klassObj.is_nil():
             #print("meth lookup", klassObj)
             methDict = klassObj.methodDictionary
             if not methDict.is_nil():
                 methObj = self._sys.identdict_find(methDict, selObj)
                 if not methObj.is_nil():
                     break
-            superObj = klassObj.superClass
-            if superObj.is_nil():
-                raise NameError("unknown method %s" % selObj)
-            klassObj = superObj 
+            klassObj = klassObj.superClass 
+        if methObj.is_nil():
+            raise NameError("unknown method %s" % selObj)
 
         # get method info
         numHdrArgs, numTemp, depth, primId = methObj.get_hdr()
