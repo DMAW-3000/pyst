@@ -153,6 +153,19 @@ class Object(object):
         newObj._obj_id = Obj_Table.new_obj()
         return newObj
         
+    def is_readonly(self):
+        """
+        Return True if Object is write
+        protected, False otherwise.
+        """
+        return (self._flags & 0x20) == 0
+        
+    def make_readonly(self):
+        """
+        Make the Object write protected
+        """
+        self._flags |= 0x20
+        
     def __getitem__(self, idx):
         """
         Get one of the Object's child references
@@ -203,6 +216,7 @@ class UndefinedObject(Object):
         self._klass = self._Cover
         self._flags = 0
         self.resize(0)
+        self.make_readonly()
         
     def __str__(self):
         return "NIL"
@@ -227,6 +241,7 @@ class CFalse(Object):
         self._klass = self._Cover
         self._flags = 0
         self.resize(1)
+        self.make_readonly()
         
     @property
     def truthValue(self):
@@ -259,6 +274,7 @@ class CTrue(Object):
         self._klass = self._Cover
         self._flags = 0
         self.resize(1)
+        self.make_readonly()
         
     @property
     def truthValue(self):
@@ -324,6 +340,7 @@ class Character(Object):
     def __init__(self, c):
         super().__init__(1)
         self.codePoint = c
+        self.make_readonly()
 
     @property
     def codePoint(self):
@@ -383,6 +400,13 @@ class Symbol(String):
         symObj = super().from_str(s)
         symObj._py_cache = s
         return symObj
+        
+    def __init__(self, sz):
+        """
+        Symbol constructor
+        """
+        super().__init__(sz)
+        self.make_readonly()
             
     def to_str(self):
         """
@@ -413,6 +437,7 @@ class SymLink(Object):
         super().__init__(2)
         self.nextLink = linkObj
         self.symbol = symObj
+        self.make_readonly()
         
     @property
     def nextLink(self):
@@ -758,6 +783,7 @@ class Class(Object):
         self.instanceSpec = numInstVars << 12
         if isFixed:
             self.instanceSpec |= 0x10
+        self.make_readonly()
         
     def get_num_inst(self):
         return self.instanceSpec >> 12
@@ -887,6 +913,7 @@ class Metaclass(Object):
         super().__init__(6)
         self.instanceSpec = (12 << 13) | 0x20
         self.instanceClass = instKlass
+        self.make_readonly()
             
     @property
     def superClass(self):
@@ -1148,6 +1175,7 @@ class _Code(Object):
         """
         super().__init__(3)
         self._bc_arr = bytearray(1)
+        self.make_readonly()
  
     def get_code(self):
         """
@@ -1371,6 +1399,7 @@ class MethodInfo(Object):
     def __init__(self, linkKlass):
         super().__init__(5)
         self.klass = linkKlass
+        self.make_readonly()
         
     @property
     def sourceCode(self):
