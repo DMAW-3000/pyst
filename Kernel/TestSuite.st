@@ -54,6 +54,8 @@
  
 	test3 [
         "test3"
+		Collection isReadOnly.
+		(Array new: 1) isReadOnly.
 		#testSym size.
 		'test string' size.
 		^[:x | true and: [x]] value: false

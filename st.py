@@ -158,7 +158,7 @@ class Object(object):
         Return True if Object is write
         protected, False otherwise.
         """
-        return (self._flags & 0x20) == 0
+        return (self._flags & 0x20) != 0
         
     def make_readonly(self):
         """

@@ -111,6 +111,7 @@ Init_Primitive = (
     "Object_basicAt",
     "Object_basicAtPut",
     "Object_shallowCopy",
+    "Object_isReadOnly",
     "BlockClosure_value",
     "Behavior_basicNew",
     "Behavior_basicNewColon",

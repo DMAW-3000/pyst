@@ -529,6 +529,17 @@ class Interp(object):
             ctx.push(recv)
         return True
         
+    def p_Object_isReadOnly(self, ctx, recv, argList):
+        """
+        Primitive handler for Object isReadOnly
+        """
+        if is_obj(recv) and not recv.is_readonly():
+            ret = self._false
+        else:
+            ret = self._true
+        ctx.push(ret)
+        return True
+        
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value
