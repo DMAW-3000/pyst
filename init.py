@@ -45,6 +45,7 @@ Init_Class = (
     ("CharacterArray", False, "char_array", "arr_collection", False, (), (), ()),
     ("String", True, "string", "char_array", False, (), (), ()),
     ("Symbol", True, "symbol", "string", False, (), (), ()),
+    ("Stream", False, "stream", "iterable", False, (), (), ()),
     ("Number", False, "number", "magnitude", True, (), (), ()),
     ("Integer", False, "integer", "number", True, (), (), ("PySymbols",)),
     ("SmallInteger", False, "small_int", "integer", True, (), (), ()),
@@ -92,6 +93,7 @@ Init_Kernel_Mod = (
     "ArrayColl.st",
     "Array.st",
     "ByteArray.st",
+    "Stream.st",
     "TestSuite.st",
 )
 
