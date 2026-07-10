@@ -23,7 +23,7 @@ class Compile(object):
     _Ret_Self_Bytes = bytearray((B_PUSH_SELF, 0, B_RETURN_METHOD_STACK_TOP, 0))
     
     # reserved keywords
-    _Keyword_Names = set(("self", "nil", "true", "false"))
+    _Keyword_Names = set(("self", "nil", "true", "false", "super"))
     
     def __init__(self, system, verbose):
         """
@@ -664,6 +664,8 @@ class Compile(object):
             elif x == "false":
                 idx = self.add_literal(self._false)
                 self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            elif x == "super":
+                self.emit_bytes(B_PUSH_SELF, 0)
             # variable name
             else:
                 self.compile_push_var(x)
