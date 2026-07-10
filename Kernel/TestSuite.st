@@ -43,8 +43,8 @@
 	test2 [
 		"test2"
 		| d e |
-		$A asLowercase hash.
-		e := $b asUppercase.
+		(d := $A asLowercase) isUppercase.
+		(e := $b asUppercase) isUppercase.
 		d := FinalizableObjects.
 		e := Object dependencies.
 		TestSuite testClassVar: #(10 20 30).
