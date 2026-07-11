@@ -385,10 +385,16 @@ class Interp(object):
         sym = ctx.method.literals[arg]
         
         # look in all class variables (including superclasses)
-        klassObj = ctx.receiver.get_class()
+        recv = ctx.receiver
+        if is_int(recv):
+            klassObj = self._sys.k_small_int
+        elif is_flt(recv):
+            klassObj = self._sys.k_float_d
+        else:
+            klassObj = recv.get_class()
         if klassObj.get_class() is self._sys.k_metaclass:
             # handle special case of access from inside class method
-            klassObj = ctx.receiver
+            klassObj = recv
         while True:
             #print("var lookup", klassObj)
             varDict = klassObj.classVariables
