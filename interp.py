@@ -533,11 +533,12 @@ class Interp(object):
         if is_int(idx):
             spec = recv.get_class().instanceSpec
             if not (spec & 0x10):
+                val = argList[1]
                 try:
-                    recv[(spec >> 12) + idx - 1] = argList[1]
+                    recv[(spec >> 12) + idx - 1] = val
                 except IndexError:
                     return False
-                ctx.push(recv)
+                ctx.push(val)
                 return True
         return False
         
