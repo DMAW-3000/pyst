@@ -502,6 +502,8 @@ class Interp(object):
         """
         if is_int(recv):
             klass = self._sys.k_small_int
+        elif is_flt(recv):
+            klass = self._sys.k_float_d
         else:
             klass = recv.get_class()
         ctx.push(klass)
