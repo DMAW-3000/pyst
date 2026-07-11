@@ -571,7 +571,7 @@ class Interp(object):
         if is_obj(recv):
             ret = recv.get_id()
         else:
-            ret = recv
+            ret = int(recv)
         ctx.push(ret)
         return True
         
