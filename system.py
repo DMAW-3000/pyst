@@ -612,7 +612,9 @@ class Smalltalk(object):
         numVar = numSuper + numInst
         if numVar == 0:
             return self.o_nil
-        arrObj = Array(numSuper + numInst)
+        arrObj = Array(numVar)
+        for n in range(numSuper):
+            arrObj[n] = superObj.instanceVariables[n]
         for n,s in enumerate(varNames):
             arrObj[numSuper + n] = String.from_str(s)
         return arrObj

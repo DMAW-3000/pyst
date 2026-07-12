@@ -71,6 +71,7 @@
 	test4 [
 		"test4"
 		| x y |
+		x := ReadStream on: 'this is a test string'.
 		x := y := false.
 		(x := y := true) isNil.
 		(x := false) ifFalse: [	x := true ]
@@ -127,8 +128,9 @@
 	test10 [
 		"test10"
 		| a |
-		(a := Array new: 6 withAll: 10328) at: 2.
 		testInst1 ifNil: [testInst1 := 1].
-		testInst2 ifNil: [testInst2 := 'test instance variable']
+		testInst2 ifNil: [testInst2 := 'test instance variable'].
+		testInst2 size. self isNil.
+		(a := Array new: 6 withAll: 10328) at: 2
 	]
 ]

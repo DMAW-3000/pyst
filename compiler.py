@@ -109,6 +109,9 @@ class Compile(object):
         if (tok.type == "OPERATOR") and (tok.value == '|'):
             self.parse_inst_vars()
             tok = self._lex.token()
+        if not self._cur_klass.instanceVariables.is_nil():
+            for var in self._cur_klass.instanceVariables:
+                self._cur_inst_var.append(var.to_str())
         if self._verbose:
             print("Instance Variables: ", self._cur_inst_var)
             
@@ -208,10 +211,6 @@ class Compile(object):
             tok = self._lex.token()
         if (not tok.type == "OPERATOR") or (not tok.value == '|'):
             raise CompileError("inst vars missing |")
-            
-        if not self._cur_klass.instanceVariables.is_nil():
-            for var in self._cur_klass.instanceVariables:
-                self._cur_inst_var.append(var.to_str())
         
     def parse_class_var(self, varName):
         """
