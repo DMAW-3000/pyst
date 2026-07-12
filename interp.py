@@ -586,15 +586,47 @@ class Interp(object):
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value
-        Evaluate a block closure with zero arguments.
         recv = BlockSlosure object
         """
-        # get block info znc verify number of args
+        # get block info and verify number of args
         numArg = len(argList)
         blkObj = recv.block
         numHdrArgs, numTemp, depth = blkObj.get_hdr()
         if numHdrArgs != numArg:
             return False
+
+        # allocate a new context and link to old
+        newCtx = BlockContext()
+        newCtx.parent = ctx
+        newCtx.receiver = recv.receiver
+        newCtx.method = blkObj
+        newCtx.outerContext = recv.outerContext
+        
+        # copy arguments to new stack
+        for arg in argList:
+            newCtx.push(arg)
+                
+        # mske room for any temporary variables
+        if numTemp:
+            newCtx.expand(numTemp)
+
+        # transfer control to new context
+        self.i_context = newCtx
+        return True
+        
+    def p_BlockClosure_cull(self, ctx, recv, argList):
+        """
+        Primitive handler for BlockClosure cull
+        recv = BlockSlosure object
+        """
+        # get block info and verify number of args
+        # trim excess arguments
+        numArg = len(argList)
+        blkObj = recv.block
+        numHdrArgs, numTemp, depth = blkObj.get_hdr()
+        if numHdrArgs > numArg:
+            return False
+        argList = argList[:numHdrArgs]
 
         # allocate a new context and link to old
         newCtx = BlockContext()

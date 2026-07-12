@@ -65,7 +65,8 @@
 		(Array new: 1) isReadOnly.
 		#testSym size.
 		'test string' size.
-		^[:x | true and: [x]] value: false
+		[:x | true and: [x]] value: false.
+		[:x | true and: [x]] cull: false cull:false
     ]
 	
 	test4 [

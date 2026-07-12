@@ -120,6 +120,7 @@ Init_Primitive = (
     "Object_isReadOnly",
     "Object_hash",
     "BlockClosure_value",
+    "BlockClosure_cull",
     "Behavior_basicNew",
     "Behavior_basicNewColon",
     "Behavior_newInitialize",
