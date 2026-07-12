@@ -284,7 +284,7 @@ class Interp(object):
         if klassObj.get_class() is self._sys.k_metaclass:
             # handle special case of access from inside class method
             klassObj = recv
-        while True:
+        while not klassObj.is_nil():
             #print("var lookup", klassObj)
             varDict = klassObj.classVariables
             if not varDict.is_nil():
@@ -293,10 +293,7 @@ class Interp(object):
                     # push variable to stack
                     ctx.push(var.value)
                     return 2
-            superObj = klassObj.superClass
-            if superObj.is_nil():
-                break
-            klassObj = superObj 
+            klassObj = klassObj.superClass
             
         # look in globals
         var = self._sys.dict_find(self._sys.g_st_dict, sym)
@@ -402,7 +399,7 @@ class Interp(object):
         if klassObj.get_class() is self._sys.k_metaclass:
             # handle special case of access from inside class method
             klassObj = recv
-        while True:
+        while not klassObj.is_nil():
             #print("var lookup", klassObj)
             varDict = klassObj.classVariables
             if not varDict.is_nil():
@@ -411,10 +408,7 @@ class Interp(object):
                     # pop variable from stack
                     var.value = ctx.pop()
                     return 2
-            superObj = klassObj.superClass
-            if superObj.is_nil():
-                break
-            klassObj = superObj 
+            klassObj = klassObj.superClass
             
         # look in globals
         var = self._sys.dict_find(self._sys.g_st_dict, sym)
