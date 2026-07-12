@@ -63,6 +63,8 @@ class Smalltalk(object):
         self.k_string = None
         self.k_symbol = None
         self.k_stream = None
+        self.k_pos_stream = None
+        self.k_read_stream = None
         self.k_number = None
         self.k_integer = None
         self.k_small_int = None
