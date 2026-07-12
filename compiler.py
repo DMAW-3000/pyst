@@ -23,7 +23,7 @@ class Compile(object):
     _Ret_Self_Bytes = bytearray((B_PUSH_SELF, 0, B_RETURN_METHOD_STACK_TOP, 0))
     
     # reserved keywords
-    _Keyword_Names = set(("self", "nil", "true", "false"))
+    _Keyword_Names = set(("self", "nil", "true", "false", "super"))
     
     def __init__(self, system, verbose):
         """
@@ -544,13 +544,13 @@ class Compile(object):
         Compile a plain statement
         """
         if isinstance(s, ParseUnaryMessage):
-            self.compile_unary_message(s.recv, s.name)
+            self.compile_unary_message(s.recv, s.name, s.sup)
         elif isinstance(s, ParseExprMessage):
-            self.compile_expr_message(s.recv, s.name, s.send)
+            self.compile_expr_message(s.recv, s.name, s.send, s.sup)
         elif isinstance(s, ParseArgumentMessage):
-            self.compile_arg_message(s.recv, s.args)
+            self.compile_arg_message(s.recv, s.args, s.sup)
         elif isinstance(s, ParseCascadeMessage):
-            self.compile_cas_message(s.recv, s.mlist)
+            self.compile_cas_message(s.recv, s.mlist, s.sup)
         elif isinstance(s, ParseLiteral):
             self.compile_load_literal(s.value)
         elif isinstance(s, ParseExecStatement):
@@ -561,7 +561,7 @@ class Compile(object):
             pass
             #raise CompileError("bad statement syntax %s" % s)
             
-    def compile_unary_message(self, recv, name):
+    def compile_unary_message(self, recv, name, isSuper):
         """
         Compile sending a unary message
         """
@@ -574,9 +574,13 @@ class Compile(object):
             
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
-        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_SEND, 0)
+        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        if isSuper:
+            self.emit_bytes(B_SEND_SUPER, 0)
+        else:
+            self.emit_bytes(B_SEND, 0)
         
-    def compile_expr_message(self, recv, name, send):
+    def compile_expr_message(self, recv, name, send, isSuper):
         """
         Compile sending a binary expression message
         """
@@ -585,9 +589,12 @@ class Compile(object):
         idx = self.add_literal(sym)
         self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
         self.compile_exec_statement(send.data)
-        self.emit_bytes(B_SEND, 1)
+        if isSuper:
+            self.emit_bytes(B_SEND_SUPER, 1)
+        else:
+            self.emit_bytes(B_SEND, 1)
         
-    def compile_arg_message(self, recv, args):
+    def compile_arg_message(self, recv, args, isSuper):
         """
         Comple sending a message with named arguments
         """
@@ -613,16 +620,19 @@ class Compile(object):
             if isinstance(a, ParseLiteral):
                 self.compile_load_literal(a.value)
             elif isinstance(a, ParseUnaryMessage):
-                self.compile_unary_message(a.recv, a.name)
+                self.compile_unary_message(a.recv, a.name, a.sup)
             elif isinstance(a, ParseExecStatement):
                 self.compile_exec_statement(a.data)
             else:
                 raise CompileError("bad message argument syntax "  + str(self._cur_meth))
             
         # send message
-        self.emit_bytes(B_SEND, numArgs)
+        if isSuper:
+            self.emit_bytes(B_SEND_SUPER, numArgs)
+        else:
+            self.emit_bytes(B_SEND, numArgs)
         
-    def compile_cas_message(self, recv, mlist):
+    def compile_cas_message(self, recv, mlist, isSuper):
         """
         Compile a cascade list of messages
         """
@@ -664,6 +674,8 @@ class Compile(object):
             elif x == "false":
                 idx = self.add_literal(self._false)
                 self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            elif x == "super":
+                self.emit_bytes(B_PUSH_SELF, 0)
             # variable name
             else:
                 self.compile_push_var(x)

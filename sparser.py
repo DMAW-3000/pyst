@@ -43,23 +43,24 @@ class ParseMessage(object):
     """
     Represent a message to a receiver
     """
-    def __init__(self, recv):
+    def __init__(self, recv, sup):
         self.recv = recv
+        self.sup = sup
 
 class ParseUnaryMessage(ParseMessage):
     """
     Represent a unary message
     """
-    def __init__(self, recv, name):
-        super().__init__(recv)
+    def __init__(self, recv, name, sup):
+        super().__init__(recv, sup)
         self.name = name
         
 class ParseExprMessage(ParseMessage):
     """
     Represent a binary expression message
     """
-    def __init__(self, recv, name, send):
-        super().__init__(recv)
+    def __init__(self, recv, name, send, sup):
+        super().__init__(recv, sup)
         self.name = name
         self.send = send
         
@@ -67,8 +68,8 @@ class ParseArgumentMessage(ParseMessage):
     """
     Represent an argument list message
     """
-    def __init__(self, recv, args):
-        super().__init__(recv)
+    def __init__(self, recv, args, sup):
+        super().__init__(recv, sup)
         self.args = args
         
 class ParseMessageArg(object):
@@ -84,7 +85,7 @@ class ParseCascadeMessage(ParseMessage):
     Represent a message cascade
     """
     def __init__(self, recv, mlist):
-        super().__init__(recv)
+        super().__init__(recv, False)
         self.mlist = mlist
 
 class ParseLiteral(object):
@@ -346,7 +347,11 @@ class Parser(object):
         """
         sel = self.val(0)
         self.lex()
-        return ParseUnaryMessage(ParseExecStatement(recv), sel)
+        if isinstance(recv, ParseLiteral) and (recv.value == "super"):
+            isSuper = True
+        else:
+            isSuper = False
+        return ParseUnaryMessage(ParseExecStatement(recv), sel, isSuper)
     
     def parse_message_binary(self, recv, kind):
         """
@@ -354,14 +359,22 @@ class Parser(object):
         """
         sel = self.val(0)
         self.lex()
+        if isinstance(recv, ParseLiteral) and (recv.value == "super"):
+            isSuper = True
+        else:
+            isSuper = False
         node = self.parse_expr(kind & ~self.EXPR_BINOP & ~self.EXPR_KEYWORD)
-        return ParseExprMessage(ParseExecStatement(recv), sel, node)
+        return ParseExprMessage(ParseExecStatement(recv), sel, node, isSuper)
         
     def parse_message_keyword(self, recv, kind):
         """
         Parse a keyword list message
         """
         aList = []
+        if isinstance(recv, ParseLiteral) and (recv.value == "super"):
+            isSuper = True
+        else:
+            isSuper = False
         while True:
             name = self.val(0)
             self.lex()
@@ -369,7 +382,7 @@ class Parser(object):
             aList.append(ParseMessageArg(name, arg))
             if self.token(0) != "MESSAGEARG":
                 break
-        return ParseArgumentMessage(ParseExecStatement(recv), aList)
+        return ParseArgumentMessage(ParseExecStatement(recv), aList, isSuper)
         
     def parse_message_cascade(self, recv, kind):
         """
@@ -381,15 +394,23 @@ class Parser(object):
         head = recv.recv
         recv.recv = ParseExecStatement(noLoad)
         casList = [ParseExecStatement(recv)]
+        if isinstance(head.data, ParseLiteral) and (head.data.value == "super"):
+            isSuper = True
+        else:
+            isSuper = False
         
         # parse each element in cascade
         # receiver is implicit
         while self.lex_skip_if("SEMICOLON"):
             tok = self.token(0)
             if tok == "IDENT":
-                casList.append(ParseExecStatement(self.parse_message_unary(noLoad, self.EXPR_CASCADED)))
+                msg = self.parse_message_unary(noLoad, self.EXPR_CASCADED)
+                msg.sup = isSuper
+                casList.append(ParseExecStatement(msg))
             elif tok == "MESSAGEARG":
-                casList.append(ParseExecStatement(self.parse_message_keyword(noLoad, self.EXPR_CASCADED)))
+                msg = self.parse_message_keyword(noLoad, self.EXPR_CASCADED)
+                msg.sup = isSuper
+                casList.append(ParseExecStatement(msg))
             else:
                 raise ParseError("incomplete cascade")
         return ParseCascadeMessage(head, casList)
