@@ -647,6 +647,41 @@ class Interp(object):
         self.i_context = newCtx
         return True
         
+    def p_BlockClosure_valueWithArguments(self, ctx, recv, argList):
+        """
+        Primitive handler for BlockClosure valueWithArguments:
+        """
+        # get argument array
+        argList = argList[0]
+        if not is_obj(argList) or (argList.get_class() is not self._sys.k_array):
+            return
+        numArg = argList.size
+            
+        # get block info and verify number of args
+        blkObj = recv.block
+        numHdrArgs, numTemp, depth = blkObj.get_hdr()
+        if numHdrArgs != numArg:
+            return False
+
+        # allocate a new context and link to old
+        newCtx = BlockContext()
+        newCtx.parent = ctx
+        newCtx.receiver = recv.receiver
+        newCtx.method = blkObj
+        newCtx.outerContext = recv.outerContext
+        
+        # copy arguments to new stack
+        for arg in argList:
+            newCtx.push(arg)
+                
+        # mske room for any temporary variables
+        if numTemp:
+            newCtx.expand(numTemp)
+
+        # transfer control to new context
+        self.i_context = newCtx
+        return True
+        
     def p_Behavior_basicNew(self, ctx, recv, argList):
         """
         Primitiive handler for Behavior basicNew

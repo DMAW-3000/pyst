@@ -121,6 +121,7 @@ Init_Primitive = (
     "Object_hash",
     "BlockClosure_value",
     "BlockClosure_cull",
+    "BlockClosure_valueWithArguments",
     "Behavior_basicNew",
     "Behavior_basicNewColon",
     "Behavior_newInitialize",
