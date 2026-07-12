@@ -394,15 +394,23 @@ class Parser(object):
         head = recv.recv
         recv.recv = ParseExecStatement(noLoad)
         casList = [ParseExecStatement(recv)]
+        if isinstance(head.data, ParseLiteral) and (head.data.value == "super"):
+            isSuper = True
+        else:
+            isSuper = False
         
         # parse each element in cascade
         # receiver is implicit
         while self.lex_skip_if("SEMICOLON"):
             tok = self.token(0)
             if tok == "IDENT":
-                casList.append(ParseExecStatement(self.parse_message_unary(noLoad, self.EXPR_CASCADED)))
+                msg = self.parse_message_unary(noLoad, self.EXPR_CASCADED)
+                msg.sup = isSuper
+                casList.append(ParseExecStatement(msg))
             elif tok == "MESSAGEARG":
-                casList.append(ParseExecStatement(self.parse_message_keyword(noLoad, self.EXPR_CASCADED)))
+                msg = self.parse_message_keyword(noLoad, self.EXPR_CASCADED)
+                msg.sup = isSuper
+                casList.append(ParseExecStatement(msg))
             else:
                 raise ParseError("incomplete cascade")
         return ParseCascadeMessage(head, casList)
