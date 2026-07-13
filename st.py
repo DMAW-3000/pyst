@@ -151,6 +151,7 @@ class Object(object):
         global Obj_Table
         newObj = copy(self)
         newObj._obj_id = Obj_Table.new_obj()
+        newObj._flags = 0
         return newObj
         
     def is_readonly(self):
