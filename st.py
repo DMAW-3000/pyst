@@ -154,6 +154,19 @@ class Object(object):
         newObj._flags = 0
         return newObj
         
+    def become(self, other):
+        """
+        Copy values from other into self.
+        Return old value of self.
+        """
+        oldObj = copy(self)
+        self._py_cache = other._py_cache
+        self._obj_id = other._obj_id
+        self._klass = other._klass
+        self._flags = other._flags
+        self._refs = other._refs
+        return oldObj
+        
     def is_readonly(self):
         """
         Return True if Object is write

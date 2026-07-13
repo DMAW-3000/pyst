@@ -583,6 +583,18 @@ class Interp(object):
         ctx.push(ret)
         return True
         
+    def p_Object_become(self, ctx, recv, argList):
+        """
+        Primitive handler for Object become:
+        """
+        raise RuntimeError("become:")
+        send = argList[0]
+        if is_obj(send):
+            if not recv.is_readonly() and not send.is_readonly():
+                ctx.push(recv.become(send))
+                return True
+        return False
+        
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value

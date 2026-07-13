@@ -119,6 +119,7 @@ Init_Primitive = (
     "Object_shallowCopy",
     "Object_isReadOnly",
     "Object_hash",
+    "Object_become",
     "BlockClosure_value",
     "BlockClosure_cull",
     "BlockClosure_valueWithArguments",
