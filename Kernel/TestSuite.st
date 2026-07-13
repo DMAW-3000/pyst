@@ -121,6 +121,7 @@
 		| a b |
 		a := #(1 2 3 4 5).
 		b := a copy.
+		$N = $r. $X = $X.
 		b at: 1; at: 2; at: 5.
 		a at: 2 put: 10.
 		a at: 3 put: 11.

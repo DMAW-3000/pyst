@@ -357,6 +357,7 @@ class Compile(object):
         # create literals Array for method
         if len(self._cur_literal) > 0:
             methObj.literals = Array.from_seq(self._cur_literal)
+            methObj.literals.make_readonly()
             if self._verbose:
                 if self._max_depth:
                     print()
@@ -776,6 +777,7 @@ class Compile(object):
         blkObj.set_hdr(len(args), len(temps), self._cur_depth)
         blkObj.set_code(self._cur_bytes)
         blkObj.literals = Array.from_seq(self._cur_literal)
+        blkObj.literals.make_readonly()
         blkObj.method = self._cur_meth
         
         if self._verbose:
@@ -801,6 +803,7 @@ class Compile(object):
         """
         # create empty array
         arrObj = Array(len(alist))
+        arrObj.make_readonly()
         
         # create array items and store references in array
         for n,item in enumerate(alist):
@@ -836,6 +839,7 @@ class Compile(object):
         """
         # create empty array
         arrObj = ByteArray(len(alist))
+        arrObj.make_readonly()
         
         # store values in array
         for n,item in enumerate(alist):
