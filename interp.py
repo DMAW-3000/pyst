@@ -757,6 +757,18 @@ class Interp(object):
             return True
         return False
         
+    def p_Character_equal(self, ctx, recv, argList):
+        """
+        Primitive handler for Character =
+        """
+        send = argList[0]
+        ret = self._false
+        if is_obj(send) and (send.get_class() is self._sys.k_character):
+            if recv.codePoint == send.codePoint:
+                ret = self._true
+        ctx.push(ret)
+        return True
+        
     def p_SmallInteger_plus(self, ctx, recv, argList):
         """
         Primitive handler for SmallInteger +
