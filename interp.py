@@ -3,6 +3,7 @@ Bytecode interpreter
 """
 
 from st import *
+import gc
 
 
 class Interp(object):
@@ -587,11 +588,24 @@ class Interp(object):
         """
         Primitive handler for Object become:
         """
-        raise RuntimeError("become:")
+        # check arguments
         send = argList[0]
         if is_obj(send):
             if not recv.is_readonly() and not send.is_readonly():
-                ctx.push(recv.become(send))
+                # get references to original object stored in
+                # other objects
+                for obj in gc.get_referrers(recv):
+                    if isinstance(obj, list):
+                        # search through this object's references
+                        n = obj.count(recv)
+                        idx = 0
+                        while n:
+                            # replace references with new object
+                            idx = obj.index(recv, idx)
+                            obj[idx] = send
+                            idx += 1
+                            n -= 1
+                ctx.push(recv)
                 return True
         return False
         

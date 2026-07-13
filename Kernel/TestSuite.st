@@ -37,7 +37,7 @@
 		| a1 a2 |
 		a1 := #(1 2 3) copy.
 		a2 := #(4 5 6) copy.
-		"a2 become: a1."
+		a2 become: a1.
 		a2 at: 1.
 		a1 at: 1.
 		testInst1 isNil; notNil; isInteger; isNil.
