@@ -151,7 +151,7 @@ class Object(object):
         global Obj_Table
         newObj = copy(self)
         newObj._obj_id = Obj_Table.new_obj()
-        newObj._flags = 0
+        newObj.clear_readonly()
         return newObj
         
     def is_readonly(self):
@@ -166,6 +166,12 @@ class Object(object):
         Make the Object write protected
         """
         self._flags |= 0x20
+        
+    def clear_readonly(self):
+        """
+        Clear the object write protection
+        """
+        self._flags &= ~0x20
         
     def __getitem__(self, idx):
         """
