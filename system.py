@@ -91,6 +91,10 @@ class Smalltalk(object):
         self.o_true = None
         self.o_char = [None] * 256
         
+        # global environment
+        self.g_sym_table = None
+        self.g_st_dict = None
+        
         # interpeter and compiler
         self.g_compile = None
         self.g_interp = None
