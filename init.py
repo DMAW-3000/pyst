@@ -13,7 +13,7 @@ Configuration for creating a new environment
 # 7 = tuple of shared pool names
 
 Init_Class = (
-    ("Object", True, "object", None, False, (), ("Dependencies", "FinalizableObjects", "FinalSemaphore"), ("VMPrimitives",)),
+    ("Object", True, "object", None, False, (), ("Dependencies", "FinalizableObjects"), ("VMPrimitives",)),
     ("UndefinedObject", True, "undef_obj", "object", True, (), (), ()),
     ("Boolean", False, "boolean", "object", True, (), (), ()),
     ("False", False, "false", "boolean", True, ("truthValue",), (), ()),

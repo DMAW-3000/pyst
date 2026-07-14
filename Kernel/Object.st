@@ -38,7 +38,6 @@ All classes in the system are subclasses of me.'>
 
     Dependencies := nil.
     FinalizableObjects := nil.
-    FinalSemaphore := nil.
 
     Object class >> dependencies [
 	"Answer a dictionary that associates an object with its dependents."
@@ -54,13 +53,21 @@ All classes in the system are subclasses of me.'>
 	Dependencies := anObject
     ]
 	
+	Object class >> finalizableObjects [
+	"Answer a set of finalizable objects."
+
+	<category: 'initialization'>
+	FinalizableObjects isNil ifTrue: [FinalizableObjects := Set new].
+	^FinalizableObjects
+    ]
+	
 	Object class >> initialize [
 	"Initialize the Dependencies dictionary to be a WeakKeyIdentityDictionary."
 
 	<category: 'initialization'>
 	self == Object ifFalse: [^self].
-	self dependencies: WeakKeyIdentityDictionary new.
-	ObjectMemory addDependent: self
+	self dependencies: WeakKeyIdentityDictionary new
+	"ObjectMemory addDependent: self"
     ]
 
 	initialize [
@@ -558,16 +565,6 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'storing'>
 	Transcript showCr: self storeString
-    ]
-	
-	binaryRepresentationObject [
-	"This method must be implemented if PluggableProxies are used with
-	 the receiver's class.  The default implementation raises an exception."
-
-	<category: 'saving and loading'>
-	(ObjectDumper proxyClassFor: self) == PluggableProxy 
-	    ifTrue: [self subclassResponsibility]
-	    ifFalse: [self shouldNotImplement]
     ]
 
     postLoad [
