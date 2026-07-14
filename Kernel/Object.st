@@ -1058,13 +1058,6 @@ All classes in the system are subclasses of me.'>
 	"SystemExceptions." BadReturn signal
     ]
 
-    noRunnableProcess [
-	"Called back when all processes are suspended"
-
-	<category: 'VM callbacks'>
-	"SystemExceptions." NoRunnableProcess signal
-    ]
-
     userInterrupt [
 	"Called back when the user presses Ctrl-Break"
 
