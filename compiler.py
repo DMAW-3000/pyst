@@ -138,6 +138,8 @@ class Compile(object):
                 break
         
         # parse class methods
+        if self._verbose:
+            print()
         while True:
             if parse1 is None:
                 parse1 = self._lex.token()
