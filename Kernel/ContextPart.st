@@ -326,7 +326,7 @@ methods that can be used in inspection or debugging.'>
 	"This funny implementation thwarts the interpreter's optimizing effort"
 
 	<category: 'accessing'>
-	^ip yourself
+	^ip
     ]
 
     ip: newIP [
@@ -380,7 +380,7 @@ methods that can be used in inspection or debugging.'>
 	"This funny implementation thwarts the interpreter's optimizing effort"
 
 	<category: 'accessing'>
-	^sp yourself
+	^sp
     ]
 
     validSize [
@@ -459,7 +459,7 @@ methods that can be used in inspection or debugging.'>
 	"This funny implementation thwarts the interpreter's optimizing effort"
 
 	<category: 'accessing'>
-	^receiver yourself
+	^receiver
     ]
 
     selector [
