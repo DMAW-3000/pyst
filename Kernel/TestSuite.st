@@ -74,6 +74,7 @@
 		"test4"
 		| x y |
 		x := ReadStream on: 'this is a test string'.
+		21 timesRepeat: [x next].
 		x := y := false.
 		(x := y := true) isNil.
 		(x := false) ifFalse: [	x := true ]
