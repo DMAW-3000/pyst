@@ -988,6 +988,54 @@ class _Context(Object):
         self.ip = 0
         self.sp = 6
         
+    @property
+    def parent(self):
+        return self[0]
+        
+    @parent.setter
+    def parent(self, x):
+        self[0] = x
+  
+    @property
+    def native_ip(self):
+        return self[1]
+        
+    @native_ip.setter
+    def native_ip(self, x):
+        self[1] = x
+        
+    @property
+    def ip(self):
+        return self[2]
+        
+    @ip.setter
+    def ip(self, x):
+        self[2] = x
+  
+    @property
+    def sp(self):
+        return self[3]
+        
+    @sp.setter
+    def sp(self, x):
+        self[3] = x
+        
+    @property
+    def receiver(self):
+        return self[4]
+        
+    @receiver.setter
+    def receiver(self, x):
+        self[4] = x
+        
+    @property
+    def method(self):
+        return self[5]
+        
+    @method.setter
+    def method(self, x):
+        self[5] = x
+        
     def push(self, x):
         """
         Push a new item onto the context stack
@@ -1031,54 +1079,6 @@ class BlockContext(_Context):
     _Cover = None
         
     @property
-    def parent(self):
-        return self[0]
-        
-    @parent.setter
-    def parent(self, x):
-        self[0] = x
-  
-    @property
-    def native_ip(self):
-        return self[1]
-        
-    @native_ip.setter
-    def native_ip(self, x):
-        self[1] = x
-        
-    @property
-    def ip(self):
-        return self[2]
-        
-    @ip.setter
-    def ip(self, x):
-        self[2] = x
-  
-    @property
-    def sp(self):
-        return self[3]
-        
-    @sp.setter
-    def sp(self, x):
-        self[3] = x
-        
-    @property
-    def receiver(self):
-        return self[4]
-        
-    @receiver.setter
-    def receiver(self, x):
-        self[4] = x
-        
-    @property
-    def method(self):
-        return self[5]
-        
-    @method.setter
-    def method(self, x):
-        self[5] = x
-        
-    @property
     def outerContext(self):
         return self[6]
         
@@ -1109,54 +1109,6 @@ class MethodContext(_Context):
         """
         super().__init__()
         self.flags = 0
-        
-    @property
-    def parent(self):
-        return self[0]
-        
-    @parent.setter
-    def parent(self, x):
-        self[0] = x
-  
-    @property
-    def native_ip(self):
-        return self[1]
-        
-    @native_ip.setter
-    def native_ip(self, x):
-        self[1] = x
-        
-    @property
-    def ip(self):
-        return self[2]
-        
-    @ip.setter
-    def ip(self, x):
-        self[2] = x
-  
-    @property
-    def sp(self):
-        return self[3]
-        
-    @sp.setter
-    def sp(self, x):
-        self[3] = x
-        
-    @property
-    def receiver(self):
-        return self[4]
-        
-    @receiver.setter
-    def receiver(self, x):
-        self[4] = x
-        
-    @property
-    def method(self):
-        return self[5]
-        
-    @method.setter
-    def method(self, x):
-        self[5] = x
         
     @property
     def flags(self):
