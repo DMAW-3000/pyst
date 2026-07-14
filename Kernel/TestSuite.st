@@ -141,6 +141,11 @@
 	
 	test11 [
 		"test11"
+		| x y |
+		x := Array basicNew: 3.
+		y := Array basicNew: 2.
+		x at: 1 put: y.
+		y allOwners.
 		Exception new
 	]
 ]

@@ -125,6 +125,7 @@ Init_Primitive = (
     "Object_isReadOnly",
     "Object_hash",
     "Object_become",
+    "Object_allOwners",
     "BlockClosure_value",
     "BlockClosure_cull",
     "BlockClosure_valueWithArguments",

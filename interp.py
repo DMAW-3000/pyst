@@ -619,6 +619,25 @@ class Interp(object):
                 return True
         return False
         
+    def p_Object_allOwners(self, ctx, recv, argList):
+        """
+        Primtive handler for Object allOwners.
+        Return Array of other Objects that reference this one.
+        """
+        refList = []
+        if is_obj(recv):
+            # get references to this object stored in
+            # other objects
+            for obj1 in gc.get_referrers(recv):
+                for obj2 in gc.get_referrers(obj1):
+                    if isinstance(obj2, dict):
+                        obj3 = gc.get_referrers(obj2)
+                        for obj4 in obj3:
+                            if isinstance(obj4, Object):
+                                refList.append(obj4)
+        ctx.push(Array.from_seq(refList))
+        return True
+        
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value
