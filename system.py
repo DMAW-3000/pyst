@@ -333,7 +333,7 @@ class Smalltalk(object):
         disTbl[B_PUSH_OUTER_TEMP]           = ("PUSH_OUTER_VARIABLE", 4, 2)
         disTbl[B_PUSH_RECEIVER_VARIABLE]    = ("PUSH_RECV_VARIABLE", 2, 1)
         disTbl[B_PUSH_INTEGER]              = ("PUSH_INTEGER", 2, 1)
-        disTbl[B_PUSH_SPECIAL]              = ("PUSH_SPECIAL", 2, 1)
+        disTbl[B_PUSH_SPECIAL]              = ("PUSH_SPECIAL", 2, 0)
         disTbl[B_STORE_LIT_VARIABLE]        = ("STORE_LIT_VARIABLE", 2, 1)
         disTbl[B_STORE_TEMPORARY_VARIABLE]  = ("STORE_TEMP_VARIABLE", 2, 1)
         disTbl[B_STORE_RECEIVER_VARIABLE]   = ("STORE_RECV_VARIABLE", 2, 1)
