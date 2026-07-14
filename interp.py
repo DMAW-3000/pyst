@@ -613,6 +613,8 @@ class Interp(object):
                             obj[idx] = send
                             idx += 1
                             n -= 1
+                    else:
+                        raise RuntimeError("become not list")
                 ctx.push(recv)
                 return True
         return False
