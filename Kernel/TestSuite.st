@@ -29,7 +29,8 @@
 				test7;
 				test8;
 				test9;
-				test10
+				test10;
+				test11
 	]
 	
 	test1 [
@@ -136,5 +137,10 @@
 		testInst2 ifNil: [testInst2 := 'test instance variable'].
 		testInst2 size. self isNil.
 		(a := Array new: 6 withAll: 10328) at: 2
+	]
+	
+	test11 [
+		"test11"
+		Exception new
 	]
 ]

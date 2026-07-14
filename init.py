@@ -84,6 +84,7 @@ Init_Kernel_Mod = (
     "False.st",
     "True.st",
     "BlkClosure.st",
+    "ContextPart.st",
     "ExcHandling.st",
     "Behavior.st",
     "Magnitude.st",
