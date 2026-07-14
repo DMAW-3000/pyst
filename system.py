@@ -653,11 +653,10 @@ class Smalltalk(object):
         while n < len(byteCode):
             info = self.g_dis[byteCode[n]]
             if info is None:
-                prList = ["????"]
-            else:
-                prList = ["[%d]" % n, info[0]]
-                for k in range(info[2]):
-                    prList.append(byteCode[n + (k * 2) + 1])
+               info = ("????", 2, 0)
+            prList = ["[%d]" % n, info[0]]
+            for k in range(info[2]):
+                prList.append(byteCode[n + (k * 2) + 1])
             print(*prList)
             n += info[1]
             
