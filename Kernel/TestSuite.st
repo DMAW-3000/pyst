@@ -74,6 +74,8 @@
 	test4 [
 		"test4"
 		| x y |
+		x := WriteStream on: (Array new: 2).
+		x nextPutAll: 'This is a test write string'.
 		x := ReadStream on: 'this is a test string'.
 		21 timesRepeat: [x next].
 		x := y := false.
