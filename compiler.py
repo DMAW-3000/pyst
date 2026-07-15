@@ -575,12 +575,15 @@ class Compile(object):
             raise CompileError("unary recv:", recv)
             
         sym = self._sys.symbol_find_or_add(name)
-        idx = self.add_literal(sym)
-        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
-        if isSuper:
-            self.emit_bytes(-1, B_SEND_SUPER, 0)
+        if name == "value":
+            self.emit_bytes(-1, B_VALUE_SPECIAL, 0)
         else:
-            self.emit_bytes(-1, B_SEND, 0)
+            idx = self.add_literal(sym)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            if isSuper:
+                self.emit_bytes(-1, B_SEND_SUPER, 0)
+            else:
+                self.emit_bytes(-1, B_SEND, 0)
         
     def compile_expr_message(self, recv, name, send, isSuper):
         """

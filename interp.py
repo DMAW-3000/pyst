@@ -21,6 +21,9 @@ class Interp(object):
         self._false = system.o_false
         self._true = system.o_true
         
+        # get refs to special selector symbols
+        self._sel_value = weakref.ref(system.symbol_find_or_add("value"))
+        
         # the interpreter global state
         self.i_context = self._nil
         
@@ -52,6 +55,7 @@ class Interp(object):
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
         bTbl[B_SEND_SUPER]                  = self.b_send_super
+        bTbl[B_VALUE_SPECIAL]               = self.b_send_spec_value
         
     def _debug_default(self):
         """
@@ -448,6 +452,13 @@ class Interp(object):
         Execute the send message to super bytecode
         """
         self.send_message(arg, True, None)
+        return 2
+        
+    def b_send_spec_value(self, ctx, arg):
+        """
+        Execute the send message special value bytecode
+        """
+        self.send_message(arg, False, self._sel_value())
         return 2
         
     def b_meth_ret(self, ctx, arg):
