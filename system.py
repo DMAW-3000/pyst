@@ -160,6 +160,7 @@ class Smalltalk(object):
         inst.name_add_sym(stDict, "SytemExceptions", stDict)
         
         # finalize class build
+        # after this point, the class cache attributes are weakrefs
         inst.build_classes_3()
         
         # generate disassembly info
@@ -216,7 +217,7 @@ class Smalltalk(object):
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        testObj = inst.g_interp.send_message_extern(inst.k_test, "new", ())
+        testObj = inst.g_interp.send_message_extern(inst.k_test(), "new", ())
         result = inst.g_interp.send_message_extern(testObj, "runAll", ())
         print()
         print(result)
@@ -316,6 +317,7 @@ class Smalltalk(object):
             klassObj.category = self.o_nil
             klassObj.pragmaHandlers = self.o_nil
             klassObj.name = self.name_add_sym(self.e_st_dict, klassName, klassObj)
+            setattr(self, "k_" + cacheName, weakref.ref(klassObj))
     
     def build_disassembly(self):
         """

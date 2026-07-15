@@ -141,9 +141,9 @@ class Interp(object):
         # get class type for receiver
         # handle primitive types specially
         if is_int(recvObj):
-            klassObj = self._sys.k_small_int
+            klassObj = self._sys.k_small_int()
         elif is_flt(recvObj):
-            klassObj = self._sys.k_float_d
+            klassObj = self._sys.k_float_d()
         else:
             klassObj = recvObj.get_class()
             
@@ -257,7 +257,7 @@ class Interp(object):
         # look for compiled blocks
         # turn into BlockClosures
         lit = ctx.method.literals[arg]
-        if is_obj(lit) and (lit.get_class() is self._sys.k_comp_block):
+        if is_obj(lit) and (lit.get_class() is self._sys.k_comp_block()):
             blk = BlockClosure()
             blk.block = lit
             blk.outerContext = ctx
@@ -278,12 +278,12 @@ class Interp(object):
         # look in all class variables (including superclasses)
         recv = ctx.receiver
         if is_int(recv):
-            klassObj = self._sys.k_small_int
+            klassObj = self._sys.k_small_int()
         elif is_flt(recv):
-            klassObj = self._sys.k_float_d
+            klassObj = self._sys.k_float_d()
         else:
             klassObj = recv.get_class()
-        if klassObj.get_class() is self._sys.k_metaclass:
+        if klassObj.get_class() is self._sys.k_metaclass():
             # handle special case of access from inside class method
             klassObj = recv
         while not klassObj.is_nil():
@@ -400,12 +400,12 @@ class Interp(object):
         # look in all class variables (including superclasses)
         recv = ctx.receiver
         if is_int(recv):
-            klassObj = self._sys.k_small_int
+            klassObj = self._sys.k_small_int()
         elif is_flt(recv):
-            klassObj = self._sys.k_float_d
+            klassObj = self._sys.k_float_d()
         else:
             klassObj = recv.get_class()
-        if klassObj.get_class() is self._sys.k_metaclass:
+        if klassObj.get_class() is self._sys.k_metaclass():
             # handle special case of access from inside class method
             klassObj = recv
         while not klassObj.is_nil():
@@ -518,9 +518,9 @@ class Interp(object):
         Get a reference to an object's class.
         """
         if is_int(recv):
-            klass = self._sys.k_small_int
+            klass = self._sys.k_small_int()
         elif is_flt(recv):
-            klass = self._sys.k_float_d
+            klass = self._sys.k_float_d()
         else:
             klass = recv.get_class()
         ctx.push(klass)
@@ -708,7 +708,7 @@ class Interp(object):
         """
         # get argument array
         argList = argList[0]
-        if not is_obj(argList) or (argList.get_class() is not self._sys.k_array):
+        if not is_obj(argList) or (argList.get_class() is not self._sys.k_array()):
             return
         numArg = argList.size
             
@@ -743,7 +743,7 @@ class Interp(object):
         Create a new instance of a object based on class definition.
         For objects of fixed size.
         """
-        if is_obj(recv) and (recv.get_class().get_class() is self._sys.k_metaclass):
+        if is_obj(recv) and (recv.get_class().get_class() is self._sys.k_metaclass()):
             spec = recv.instanceSpec
             if spec & 0x10:
                 obj = Object(spec >> 12)
@@ -759,7 +759,7 @@ class Interp(object):
         For objects of veriable size.
         """
         sz = argList[0]
-        if is_obj(recv) and is_int(sz) and (recv.get_class().get_class() is self._sys.k_metaclass):
+        if is_obj(recv) and is_int(sz) and (recv.get_class().get_class() is self._sys.k_metaclass()):
             spec = recv.instanceSpec
             if not (spec & 0x10):
                 obj = Object((spec >> 12) + sz)
@@ -818,7 +818,7 @@ class Interp(object):
         """
         send = argList[0]
         ret = self._false
-        if is_obj(send) and (send.get_class() is self._sys.k_character):
+        if is_obj(send) and (send.get_class() is self._sys.k_character()):
             if recv.codePoint == send.codePoint:
                 ret = self._true
         ctx.push(ret)
