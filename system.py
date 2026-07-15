@@ -26,8 +26,8 @@ class Smalltalk(object):
         self.g_cover_map = {}
         
         # global dictionaries
-        self.g_st_dict = None
-        self.g_sym_table = None
+        self.e_st_dict = None
+        self.e_sym_table = None
         
         # cached class definitions
         self.k_object = None
@@ -92,8 +92,8 @@ class Smalltalk(object):
         self.o_char = [None] * 256
         
         # global environment
-        self.g_sym_table = None
-        self.g_st_dict = None
+        self.e_sym_table = None
+        self.e_st_dict = None
         
         # interpeter and compiler
         self.g_compile = None
@@ -142,16 +142,16 @@ class Smalltalk(object):
         set_obj_char(inst.o_char)
         
         # create global symbol table
-        inst.g_sym_table = Array(512)
+        inst.e_sym_table = Array(512)
         
         # create the global namespace dictionary ("Smalltalk")
-        inst.g_st_dict = stDict = Namespace.new_n(512)
+        inst.e_st_dict = stDict = Namespace.new_n(512)
         stDict._klass = inst.k_sys_dictionary
         sym = inst.name_add_sym(stDict, "Smalltalk", stDict)
         stDict.name = sym
         
         # add global objects
-        inst.name_add_sym(stDict, "SymbolTable", inst.g_sym_table)
+        inst.name_add_sym(stDict, "SymbolTable", inst.e_sym_table)
         inst.name_add_sym(stDict, "KernelInitialized", inst.o_false)
         inst.name_add_sym(stDict, "Version", String.from_str("0.1"))
         inst.name_add_sym(stDict, "Features", Array(1))
@@ -165,7 +165,7 @@ class Smalltalk(object):
         inst.build_disassembly()
             
         # initialize runtime objects
-        inst.name_add_sym(inst.g_st_dict, "Bigendian", inst.o_false)
+        inst.name_add_sym(inst.e_st_dict, "Bigendian", inst.o_false)
         
         # initialize interpreter
         inst.g_interp = Interp(inst)
@@ -188,12 +188,12 @@ class Smalltalk(object):
         
         if verbose:
             print("Smalltalk Dictionary:")
-            inst.dict_print(inst.g_st_dict, True)
+            inst.dict_print(inst.e_st_dict, True)
             
         # static class initialization
         for klassName in init.Init_Class_Init:
             klassSym = inst.symbol_find(klassName)
-            klassObj = inst.dict_find(inst.g_st_dict, klassSym).value.value
+            klassObj = inst.dict_find(inst.e_st_dict, klassSym).value.value
             print("Initializing class", klassSym)
             inst.g_interp.send_message_extern(klassObj, "initialize", ())
             
@@ -306,7 +306,7 @@ class Smalltalk(object):
             if not superObj.is_nil():
                 self.subclass_add(superObj, klassObj)
             metaObj.methodDictioary = self.o_nil
-            klassObj.environment = self.g_st_dict
+            klassObj.environment = self.e_st_dict
             klassObj.instanceVariables = self.create_inst_vars(superObj, instVars)
             klassObj.classVariables = self.create_class_vars(klassObj, classVars)
             klassObj.sharedPools = self.create_shared_pools(poolNames)
@@ -314,7 +314,7 @@ class Smalltalk(object):
             klassObj.comment = self.o_nil
             klassObj.category = self.o_nil
             klassObj.pragmaHandlers = self.o_nil
-            klassObj.name = self.name_add_sym(self.g_st_dict, klassName, klassObj)
+            klassObj.name = self.name_add_sym(self.e_st_dict, klassName, klassObj)
     
     def build_disassembly(self):
         """
@@ -349,8 +349,8 @@ class Smalltalk(object):
         interpreter.
         """
         primDict = BindingDictionary.new_n(512)
-        primDict.environment = self.g_st_dict
-        self.name_add_sym(self.g_st_dict, "VMPrimitives", primDict)
+        primDict.environment = self.e_st_dict
+        self.name_add_sym(self.e_st_dict, "VMPrimitives", primDict)
         for primId,primName in enumerate(init.Init_Primitive):
             primId += 1     # 0 is reserved
             if not self.g_interp.add_primitive(primName):
@@ -367,7 +367,7 @@ class Smalltalk(object):
         Returns a Symbol object if name is found in global
         symbol table, nil otherwise.
         """
-        symTable = self.g_sym_table 
+        symTable = self.e_sym_table 
         link = symTable[hsh_seq(map(ord, symName)) & (symTable.size - 1)]
         while not link.is_nil():
             if symName == link.symbol.to_str():
@@ -380,7 +380,7 @@ class Smalltalk(object):
         Returns a Symbol object, either already existing
         or new one created and added to global symbol table.
         """
-        symTable = self.g_sym_table
+        symTable = self.e_sym_table
         idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
         link = symTable[idx]
         while not link.is_nil():
@@ -395,7 +395,7 @@ class Smalltalk(object):
         """
         Print contents of global symbol table.
         """
-        symTable = self.g_sym_table 
+        symTable = self.e_sym_table 
         for n,link in enumerate(symTable):
             print("[%d]" % n, end = "")
             while not link.is_nil():
@@ -420,7 +420,7 @@ class Smalltalk(object):
         symObj = self.symbol_find(itemName)
         if symObj.is_nil():
             return symObj
-        assoc = self.dict_find(self.g_st_dict, symObj)
+        assoc = self.dict_find(self.e_st_dict, symObj)
         if assoc.is_nil():
             return assoc
         return assoc.value

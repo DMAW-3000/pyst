@@ -298,7 +298,7 @@ class Interp(object):
             klassObj = klassObj.superClass
             
         # look in globals
-        var = self._sys.dict_find(self._sys.g_st_dict, sym)
+        var = self._sys.dict_find(self._sys.e_st_dict, sym)
         if var.is_nil():
             raise NameError("variable %s not found" % sym)
         
@@ -420,7 +420,7 @@ class Interp(object):
             klassObj = klassObj.superClass
             
         # look in globals
-        var = self._sys.dict_find(self._sys.g_st_dict, sym)
+        var = self._sys.dict_find(self._sys.e_st_dict, sym)
         if var.is_nil():
             raise NameError("variable %s not found" % sym)
         
