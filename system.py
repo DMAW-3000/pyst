@@ -188,9 +188,27 @@ class Smalltalk(object):
             print("Compiling module ", mod)
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
+        # dump information
         if verbose:
             print("Smalltalk Dictionary:")
             inst.dict_print(inst.e_st_dict, True)
+            print()
+            
+            print("Symbol Table:")
+            inst.symbol_tbl_print()
+            print()
+            
+            print("Class Init Info:")
+            for klassInfo in init.Init_Class:
+                cacheName = klassInfo[2]
+                klassObj = getattr(inst, "k_" + cacheName)()
+                print("%s %s %s %s %s" % ( \
+                                 klassObj.name,
+                                 klassObj.instanceVariables, 
+                                 klassObj.subClasses,
+                                 klassObj.superClass,
+                                 klassObj.classVariables))
+            print()
             
         # static class initialization
         for klassName in init.Init_Class_Init:
@@ -198,20 +216,6 @@ class Smalltalk(object):
             klassObj = inst.dict_find(inst.e_st_dict, klassSym).value.value
             print("Initializing class", klassSym)
             inst.g_interp.send_message_extern(klassObj, "initialize", ())
-        
-        #if verbose:
-        #    print("Symbol Table")
-        #    inst.symbol_tbl_print()
-            
-        #for klassInfo in init.Init_Class:
-        #    cacheName = klassInfo[2]
-        #    klassObj = getattr(inst, "k_" + cacheName)
-        #    print("%s %s %s %s %s" % ( \
-        #                         klassObj.name,
-        #                         klassObj.instanceVariables, 
-        #                         klassObj.subClasses,
-        #                         klassObj.superClass,
-        #                         klassObj.classVariables))
         
     
     @classmethod
