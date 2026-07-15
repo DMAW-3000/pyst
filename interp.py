@@ -1038,12 +1038,12 @@ class Interp(object):
         if is_int(start) and is_int(stop) and is_int(replaceStart):
             if stop >= start:
                 n = stop - start + 1
-                while n:
-                    try:
+                try:
+                    while n:
                         recv[start + n - 2] = replaceArr[replaceStart + n - 2]
-                    except IndexError:
-                        return False
-                    n -= 1
+                        n -= 1
+                except IndexError:
+                    return False
                 ctx.push(recv)
                 return True
         return False
