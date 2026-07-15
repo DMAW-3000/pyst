@@ -33,7 +33,7 @@ def is_obj(x):
     Returns True if x is an object reference,
     False otherwise.
     """
-    return not isinstance(x, (int, float)) 
+    return isinstance(x, Object) 
 
 def set_obj_nil(x):
     """
