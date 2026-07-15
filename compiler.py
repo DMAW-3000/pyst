@@ -349,6 +349,7 @@ class Compile(object):
         else:
             # empty method definition
             methObj.set_code(self._Ret_Self_Bytes)
+            self._max_depth = 1
             
         # set method header values
         methObj.set_hdr(len(argNames), 
@@ -361,8 +362,7 @@ class Compile(object):
             methObj.literals = Array.from_seq(self._cur_literal)
             methObj.literals.make_readonly()
             if self._verbose:
-                if self._max_depth:
-                    print()
+                print()
                 print("Method Literals:", len(self._cur_literal))
                 self._sys.arr_print(methObj.literals)
             
@@ -382,7 +382,7 @@ class Compile(object):
         if self._verbose:
             print("Method Bytecodes:", len(byteCode))
             self._sys.dis_bytecode(byteCode)
-            print("Max Depth:", self._max_depth)
+            print("Depth:", self._max_depth)
             print()
             
         # setup lexer to continue parsing module text
@@ -454,23 +454,23 @@ class Compile(object):
             # unless it is not the last statement of a block
             if not isBlk:
                 if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
-                    self.emit_bytes(B_POP_STACK_TOP, 0)
+                    self.emit_bytes(-1, B_POP_STACK_TOP, 0)
             else:
                 if notLast:
                     if not isinstance(s, (ParseReturnStatement, ParseAssignStatement)):
-                        self.emit_bytes(B_POP_STACK_TOP, 0)
+                        self.emit_bytes(-1, B_POP_STACK_TOP, 0)
             
         # add ^self if no explicit return provided
         # and this is not a block context
         if not isBlk:
             if not isinstance(slist[-1], ParseReturnStatement):
-                self.emit_bytes(*self._Ret_Self_Bytes)
+                self.emit_bytes(0, *self._Ret_Self_Bytes)
                 
         # if it is a block context, add return if lasst
         # statement is not a method return
         else:
             if not isinstance(slist[-1], ParseReturnStatement):
-                self.emit_bytes(B_RETURN_CONTEXT_STACK_TOP, 0)
+                self.emit_bytes(-1, B_RETURN_CONTEXT_STACK_TOP, 0)
         
     def compile_statement(self, s, nested):
         """
@@ -493,7 +493,7 @@ class Compile(object):
         self.compile_exec_statement(s.data)
         
         # add return instruction
-        self.emit_bytes(B_RETURN_METHOD_STACK_TOP, 0)
+        self.emit_bytes(-1, B_RETURN_METHOD_STACK_TOP, 0)
         
     def compile_assign_statement(self, vlist, s, nested):
         """
@@ -513,12 +513,12 @@ class Compile(object):
                 
             # duplicate value for chained assign
             if var is not vlist[-1]:
-                self.emit_bytes(B_DUP_STACK_TOP, 0)
+                self.emit_bytes(1, B_DUP_STACK_TOP, 0)
         
             # if this is a nested assign, duplicate the value
             # since the store will consume a single copy
             if nested and (var is vlist[-1]):
-                self.emit_bytes(B_DUP_STACK_TOP, 0)
+                self.emit_bytes(1, B_DUP_STACK_TOP, 0)
         
             # assign value
             # look in locals first
@@ -526,20 +526,20 @@ class Compile(object):
             if idx is not None:
                 if scope == 0:
                     # current context
-                    self.emit_bytes(B_STORE_TEMPORARY_VARIABLE, idx)
+                    self.emit_bytes(-1, B_STORE_TEMPORARY_VARIABLE, idx)
                 else:
                     # parent context
-                    self.emit_bytes(B_STORE_OUTER_TEMP, idx, B_EXT_BYTE, scope - 1)
+                    self.emit_bytes(-1, B_STORE_OUTER_TEMP, idx, B_EXT_BYTE, scope - 1)
             else:
                 # look in instance variables
                 try:
                     idx = self._cur_inst_var.index(varName)
-                    self.emit_bytes(B_STORE_RECEIVER_VARIABLE, idx)
+                    self.emit_bytes(-1, B_STORE_RECEIVER_VARIABLE, idx)
                 except ValueError:
                     # variable is global
                     sym = self._sys.symbol_find_or_add(varName)
                     idx = self.add_literal(sym)
-                    self.emit_bytes(B_STORE_LIT_VARIABLE, idx)
+                    self.emit_bytes(-1, B_STORE_LIT_VARIABLE, idx)
         
     def compile_exec_statement(self, s):
         """
@@ -576,11 +576,11 @@ class Compile(object):
             
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
-        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
         if isSuper:
-            self.emit_bytes(B_SEND_SUPER, 0)
+            self.emit_bytes(-1, B_SEND_SUPER, 0)
         else:
-            self.emit_bytes(B_SEND, 0)
+            self.emit_bytes(-1, B_SEND, 0)
         
     def compile_expr_message(self, recv, name, send, isSuper):
         """
@@ -589,12 +589,12 @@ class Compile(object):
         self.compile_exec_statement(recv.data)
         sym = self._sys.symbol_find_or_add(name)
         idx = self.add_literal(sym)
-        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
         self.compile_exec_statement(send.data)
         if isSuper:
-            self.emit_bytes(B_SEND_SUPER, 1)
+            self.emit_bytes(-2, B_SEND_SUPER, 1)
         else:
-            self.emit_bytes(B_SEND, 1)
+            self.emit_bytes(-2, B_SEND, 1)
         
     def compile_arg_message(self, recv, args, isSuper):
         """
@@ -615,7 +615,7 @@ class Compile(object):
         selName = ":".join(argNames) + ":"
         sym = self._sys.symbol_find_or_add(selName)
         idx = self.add_literal(sym)
-        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
         
         # get and push argument values
         for a in argValues:
@@ -630,9 +630,9 @@ class Compile(object):
             
         # send message
         if isSuper:
-            self.emit_bytes(B_SEND_SUPER, numArgs)
+            self.emit_bytes(-1 - numArgs, B_SEND_SUPER, numArgs)
         else:
-            self.emit_bytes(B_SEND, numArgs)
+            self.emit_bytes(-1 - numArgs, B_SEND, numArgs)
         
     def compile_cas_message(self, recv, mlist, isSuper):
         """
@@ -646,10 +646,10 @@ class Compile(object):
         # remove reply each time except last
         for msg in mlist:
             if msg is not mlist[-1]:
-                self.emit_bytes(B_DUP_STACK_TOP, 0)
+                self.emit_bytes(1, B_DUP_STACK_TOP, 0)
             self.compile_exec_statement(msg.data)
             if msg is not mlist[-1]:
-                self.emit_bytes(B_POP_STACK_TOP, 0)
+                self.emit_bytes(-1, B_POP_STACK_TOP, 0)
         
     def compile_load_literal(self, x):
         """
@@ -666,20 +666,20 @@ class Compile(object):
         if isinstance(x, str):
             # keywords
             if x == "self":
-                self.emit_bytes(B_PUSH_SELF, 0)
+                self.emit_bytes(1, B_PUSH_SELF, 0)
             elif x == "nil":
                 idx = self.add_literal(self._nil)
-                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+                self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             elif x == "true":
                 idx = self.add_literal(self._true)
-                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+                self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             elif x == "false":
                 idx = self.add_literal(self._false)
-                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+                self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             elif x == "super":
-                self.emit_bytes(B_PUSH_SELF, 0)
+                self.emit_bytes(1, B_PUSH_SELF, 0)
             elif x == "thisContext":
-                self.emit_bytes(B_PUSH_SPECIAL, 0)
+                self.emit_bytes(1, B_PUSH_SPECIAL, 0)
             # variable name
             else:
                 self.compile_push_var(x)
@@ -690,26 +690,26 @@ class Compile(object):
                 raise CompileError("integer value %d too large" % x)
             # optimize with push direct if value is small enough
             if (x >= 0) and (x < 256):
-                self.emit_bytes(B_PUSH_INTEGER, x)
+                self.emit_bytes(1, B_PUSH_INTEGER, x)
             else:
                 idx = self.add_literal(x)
-                self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+                self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # float constant
         elif isinstance(x, float):
             idx = self.add_literal(x)
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # symbol constant
         elif isinstance(x, ParseLiteralSymbol):
             sym = self._sys.symbol_find_or_add(x.value)
             idx = self.add_literal(sym)
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # string constant
         elif isinstance(x, ParseLiteralString):
             idx = self.add_literal(String.from_str(x.value))
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # block closure
         elif isinstance(x, ParseLiteralBlock):
@@ -718,17 +718,17 @@ class Compile(object):
         # literal character
         elif isinstance(x, ParseLiteralChar):
             idx = self.add_literal(self._sys.o_char[ord(x.value)])
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # literal array
         elif isinstance(x, ParseLiteralArray):
             idx = self.add_literal(self.build_array(x.value))
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # literal bytearray
         elif isinstance(x, ParseLiteralBytearray):
             idx = self.add_literal(self.build_bytearray(x.value))
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # unknown type
         else:
@@ -743,21 +743,21 @@ class Compile(object):
         if idx is not None:
             if scope == 0:
                 # this context
-                self.emit_bytes(B_PUSH_TEMPORARY_VARIABLE, idx)
+                self.emit_bytes(1, B_PUSH_TEMPORARY_VARIABLE, idx)
             else:
                 # parent context
-                self.emit_bytes(B_PUSH_OUTER_TEMP, idx, B_EXT_BYTE, scope - 1)
+                self.emit_bytes(1, B_PUSH_OUTER_TEMP, idx, B_EXT_BYTE, scope - 1)
        
         # look in instance variables
         else:
             try:
                 idx = self._cur_inst_var.index(x)
-                self.emit_bytes(B_PUSH_RECEIVER_VARIABLE, idx)
+                self.emit_bytes(1, B_PUSH_RECEIVER_VARIABLE, idx)
             except ValueError:
                 # variable is global
                 sym = self._sys.symbol_find_or_add(x)
                 idx = self.add_literal(sym)
-                self.emit_bytes(B_PUSH_LIT_VARIABLE, idx)
+                self.emit_bytes(1, B_PUSH_LIT_VARIABLE, idx)
             
     def compile_blk_closure(self, s, args, temps):
         """
@@ -772,13 +772,13 @@ class Compile(object):
         # check for empty closure
         if s.data[0].data is None:
             idx = self.add_literal(self._nil)
-            self.emit_bytes(B_PUSH_LIT_CONSTANT, idx, B_RETURN_CONTEXT_STACK_TOP, 0)
+            self.emit_bytes(0, B_PUSH_LIT_CONSTANT, idx, B_RETURN_CONTEXT_STACK_TOP, 0)
         else:
             self.compile_statement_list(s.data, True)
         
         # create new block object and its literals array
         blkObj = CompiledBlock()
-        blkObj.set_hdr(len(args), len(temps), self._cur_depth)
+        blkObj.set_hdr(len(args), len(temps), self._max_depth)
         blkObj.set_code(self._cur_bytes)
         blkObj.literals = Array.from_seq(self._cur_literal)
         blkObj.literals.make_readonly()
@@ -788,7 +788,7 @@ class Compile(object):
             print("Block------")
             print("Args:", args)
             print("Temps:", temps)
-            print("Depth: ", self._cur_depth)
+            print("Depth: ", self._max_depth)
             print("Block Literals", blkObj.literals.size)
             self._sys.arr_print(blkObj.literals)
             print("Block Bytecodes:", len(blkObj.get_code()))
@@ -799,7 +799,7 @@ class Compile(object):
         
         # add new block to context literals
         idx = self.add_literal(blkObj)
-        self.emit_bytes(B_PUSH_LIT_CONSTANT, idx)
+        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
         
     def build_array(self, alist):
         """
@@ -860,13 +860,14 @@ class Compile(object):
         Enter a new context
         """
         self._ctx_stack.append((self._cur_bytes, 
-                                self._cur_literal, 
+                                self._cur_literal,
+                                self._cur_depth,
+                                self._max_depth,
                                 self._cur_local))
         self._cur_bytes = bytearray()
         self._cur_literal = []
         self._cur_local = []
-        self._cur_depth += 1
-        self._max_depth = max(self._max_depth, self._cur_depth)
+        self._cur_depth = self._max_depth = 0
         
     def context_pop(self):
         """
@@ -874,8 +875,9 @@ class Compile(object):
         """
         self._cur_bytes, \
         self._cur_literal, \
-        self._cur_local = self._ctx_stack.pop()
-        self._cur_depth -= 1
+        self._cur_depth, \
+        self._max_depth, \
+        self._cur_local  = self._ctx_stack.pop()
         
     def add_literal(self, x):
         """
@@ -889,10 +891,12 @@ class Compile(object):
             idx = len(self._cur_literal) - 1
         return idx
             
-    def emit_bytes(self, *bc):
+    def emit_bytes(self, stackInc, *bc):
         """
         Append the bytecodes to the current code block
         """
+        self._cur_depth += stackInc
+        self._max_depth = max(self._max_depth, self._cur_depth)
         self._cur_bytes.extend((bc))
         
     def find_local(self, name):
