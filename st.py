@@ -419,9 +419,9 @@ class Symbol(String):
         """
         Return Symbol contents as a Python str
         """
-        if self._py_cache is not None:
-            return self._py_cache
-        return super().to_str()
+        if self._py_cache is None:
+            self._py_cache = super().to_str()
+        return self._py_cache
             
     def __str__(self):
         return "#\'" + self.to_str() + '\''
