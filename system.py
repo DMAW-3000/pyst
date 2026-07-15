@@ -23,7 +23,7 @@ class Smalltalk(object):
         Create a blank Smalltalk environment
         """
         # manage the class covers
-        self.g_cover_map = {}
+        self.g_cover_map = weakref.WeakValueDictionary()
         
         # global dictionaries
         self.e_st_dict = None
@@ -198,7 +198,7 @@ class Smalltalk(object):
             klassObj = inst.dict_find(inst.e_st_dict, klassSym).value.value
             print("Initializing class", klassSym)
             inst.g_interp.send_message_extern(klassObj, "initialize", ())
-            
+        
         #if verbose:
         #    print("Symbol Table")
         #    inst.symbol_tbl_print()
