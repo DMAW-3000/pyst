@@ -90,7 +90,7 @@ class Interp(object):
             
         # send message and run until control
         # returns to this root context
-        self.send_message(len(argValues), False)
+        self.send_message(len(argValues), False, None)
         self.exec()
         
         # pop return value from stack
@@ -112,7 +112,7 @@ class Interp(object):
         self.i_context = ctxSave
         return ret
         
-    def send_message(self, numArgs, isSuper):
+    def send_message(self, numArgs, isSuper, selObj):
         """
         Send a message.  This assumes that the receiver,
         message selector, and argument values have been
@@ -135,7 +135,8 @@ class Interp(object):
             argList = ()
         
         # pop the message selector and receiver
-        selObj = pop()
+        if selObj is None:
+            selObj = pop()
         recvObj = pop()
     
         # get class type for receiver
@@ -439,14 +440,14 @@ class Interp(object):
         """
         Execute the generic send message bytecode
         """
-        self.send_message(arg, False)
+        self.send_message(arg, False, None)
         return 2
         
     def b_send_super(self, ctx, arg):
         """
         Execute the send message to super bytecode
         """
-        self.send_message(arg, True)
+        self.send_message(arg, True, None)
         return 2
         
     def b_meth_ret(self, ctx, arg):
