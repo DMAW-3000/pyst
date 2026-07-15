@@ -25,6 +25,12 @@ class Compile(object):
     # reserved keywords
     _Keyword_Names = set(("self", "nil", "true", "false", "super", "thisContext"))
     
+    # mapping for unary special messages
+    _Special_Unary = {
+        "value"     : B_VALUE_SPECIAL,
+        "size"      : B_SIZE_SPECIAL,
+    }
+    
     def __init__(self, system, verbose):
         """
         Create a blank compiler instance
@@ -575,8 +581,8 @@ class Compile(object):
             raise CompileError("unary recv:", recv)
             
         sym = self._sys.symbol_find_or_add(name)
-        if name == "value":
-            self.emit_bytes(-1, B_VALUE_SPECIAL, 0)
+        if name in self._Special_Unary:
+            self.emit_bytes(-1, self._Special_Unary[name], 0)
         else:
             idx = self.add_literal(sym)
             self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)

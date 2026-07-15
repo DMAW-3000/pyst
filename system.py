@@ -350,6 +350,7 @@ class Smalltalk(object):
         disTbl[B_STORE_RECEIVER_VARIABLE]   = ("STORE_RECV_VARIABLE", 2, 1)
         disTbl[B_STORE_OUTER_TEMP]          = ("STORE_OUTER_VARIABLE", 4, 2)
         disTbl[B_VALUE_SPECIAL]             = ("SEND_SPECIAL_VALUE", 2, 1)
+        disTbl[B_SIZE_SPECIAL]              = ("SEND_SPECIAL_SIZE", 2, 1)
     
     def build_primitives(self, verbose):
         """
