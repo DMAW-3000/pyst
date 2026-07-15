@@ -105,6 +105,9 @@ Init_Kernel_Mod = (
     "PosStream.st",
     "ReadStream.st",
     "WriteStream.st",
+    "CompildCode.st",
+    "CompiledBlk.st",
+    "CompildMeth.st",
     "TestSuite.st",
 )
 
