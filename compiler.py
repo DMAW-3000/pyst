@@ -29,6 +29,7 @@ class Compile(object):
     _Special_Unary = {
         "value"     : B_VALUE_SPECIAL,
         "size"      : B_SIZE_SPECIAL,
+        "isNil"     : B_IS_NIL_SPECIAL,
     }
     
     def __init__(self, system, verbose):
@@ -581,7 +582,7 @@ class Compile(object):
             raise CompileError("unary recv:", recv)
             
         sym = self._sys.symbol_find_or_add(name)
-        if name in self._Special_Unary:
+        if (name in self._Special_Unary) and not isSuper:
             self.emit_bytes(-1, self._Special_Unary[name], 0)
         else:
             idx = self.add_literal(sym)
