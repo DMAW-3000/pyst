@@ -74,9 +74,12 @@
 	test4 [
 		"test4"
 		| x y |
+		y := #(1 2 3 4 10).
+		x := Array new: y size.
+		x replaceFrom: 1 to: x size with: y startingAt: 1.
 		x := WriteStream on: (Array new: 2).
 		x nextPutAll: 'This is a test write string'.
-		x := ReadStream on: 'this is a test string'.
+		x := ReadStream on: 'This is a test read string'.
 		21 timesRepeat: [x next].
 		x := y := false.
 		(x := y := true) isNil.

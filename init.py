@@ -153,6 +153,7 @@ Init_Primitive = (
     "SmallInteger_bitOr",
     "SmallInteger_bitXor",
     "SmallInteger_bitShift",
+    "ArrayedCollection_replaceFromToWithStartingAt",
     "ByteArray_basicNewColon",
     "ByteArray_newColonInitialize",
 )

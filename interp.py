@@ -1027,6 +1027,27 @@ class Interp(object):
             return True
         return False
         
+    def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
+        """
+        Primitve handler for Array replaceFrom:To:With:StartingAt:
+        """
+        start = argList[0]
+        stop = argList[1]
+        replaceArr = argList[2]
+        replaceStart = argList[3]
+        if is_int(start) and is_int(stop) and is_int(replaceStart):
+            if stop >= start:
+                n = stop - start + 1
+                while n:
+                    try:
+                        recv[start + n - 2] = replaceArr[replaceStart + n - 2]
+                    except IndexError:
+                        return False
+                    n -= 1
+                ctx.push(recv)
+                return True
+        return False
+        
     def p_ByteArray_basicNewColon(self, ctx, recv, argList):
         """
         Primitiive handler for ByteArray basicNew:
