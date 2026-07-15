@@ -599,15 +599,6 @@ All classes in the system are subclasses of me.'>
 	
     ]
 
-    reconstructOriginalObject [
-	"Used if an instance of the receiver's class is returned as the
-	 #binaryRepresentationObject of another object.  The default implementation
-	 raises an exception."
-
-	<category: 'saving and loading'>
-	self subclassResponsibility
-    ]
-
     examine [
 	"Print all the instance variables of the receiver on the Transcript"
 
