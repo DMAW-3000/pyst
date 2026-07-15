@@ -3,6 +3,7 @@ Common definitions of Smalltalk fundamental types
 """
 
 import sys
+import weakref
 from copy import copy
 
 from obj import Obj_Table
