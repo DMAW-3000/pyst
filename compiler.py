@@ -37,6 +37,7 @@ class Compile(object):
     # mapping for keyword special messages
     _Special_Keyword = {
         "at:"       : B_AT_SPECIAL,
+        "at:put:"   : B_AT_PUT_SPECIAL,
     }
     
     def __init__(self, system, verbose):

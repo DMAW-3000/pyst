@@ -28,6 +28,7 @@ class Interp(object):
         self._sel_notnil    = weakref.ref(system.symbol_find_or_add("notNil"))
         self._sel_class     = weakref.ref(system.symbol_find_or_add("class"))
         self._sel_at        = weakref.ref(system.symbol_find_or_add("at:"))
+        self._sel_at_put    = weakref.ref(system.symbol_find_or_add("at:put:"))
         
         # the interpreter global state
         self.i_context = self._nil
@@ -66,6 +67,7 @@ class Interp(object):
         bTbl[B_NOT_NIL_SPECIAL]             = self.b_send_spec_notnil
         bTbl[B_CLASS_SPECIAL]               = self.b_send_spec_class
         bTbl[B_AT_SPECIAL]                  = self.b_send_spec_at
+        bTbl[B_AT_PUT_SPECIAL]              = self.b_send_spec_at_put
         
     def _debug_default(self):
         """
@@ -504,6 +506,13 @@ class Interp(object):
         Execute the send message special at: bytecode
         """
         self.send_message(arg, False, self._sel_at())
+        return 2
+        
+    def b_send_spec_at_put(self, ctx, arg):
+        """
+        Execute the send message special at:put: bytecode
+        """
+        self.send_message(arg, False, self._sel_at_put())
         return 2
         
     def b_meth_ret(self, ctx, arg):
