@@ -50,6 +50,7 @@ class Compile(object):
         "<="    : B_LESS_EQUAL_SPECIAL,
         ">="    : B_GREATER_EQUAL_SPECIAL,
         "="     : B_EQUAL_SPECIAL,
+        "~="    : B_NOT_EQUAL_SPECIAL,
     }
     
     def __init__(self, system, verbose):
