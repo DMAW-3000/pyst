@@ -970,7 +970,6 @@ class Compile(object):
         tuple (idx, scope), where scope indicates:
         0  = current context
         >0 = parent context
-        <0 = instance var index
         """   
         scope = 0
         
