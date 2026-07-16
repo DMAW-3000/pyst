@@ -361,6 +361,7 @@ class Smalltalk(object):
         disTbl[B_MINUS_SPECIAL]             = ("SEND_SPECIAL_MINUS", 2, 1)
         disTbl[B_LESS_THAN_SPECIAL]         = ("SEND_SPECIAL_LESS_THAN", 2, 1)
         disTbl[B_GREATER_THAN_SPECIAL]      = ("SEND_SPECIAL_GREATER_THAN", 2, 1)
+        disTbl[B_LESS_EQUAL_SPECIAL]        = ("SEND_SPECIAL_LESS_EQU", 2, 1)
     
     def build_primitives(self, verbose):
         """

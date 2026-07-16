@@ -47,6 +47,7 @@ class Compile(object):
         "-"     : B_MINUS_SPECIAL,
         "<"     : B_LESS_THAN_SPECIAL,
         ">"     : B_GREATER_THAN_SPECIAL,
+        "<="    : B_LESS_EQUAL_SPECIAL,
     }
     
     def __init__(self, system, verbose):
