@@ -25,6 +25,42 @@ class Compile(object):
     # reserved keywords
     _Keyword_Names = set(("self", "nil", "true", "false", "super", "thisContext"))
     
+    # mapping for unary special messages
+    _Special_Unary = {
+        "value"     : B_VALUE_SPECIAL,
+        "size"      : B_SIZE_SPECIAL,
+        "isNil"     : B_IS_NIL_SPECIAL,
+        "notNil"    : B_NOT_NIL_SPECIAL,
+        "class"     : B_CLASS_SPECIAL,
+    }
+    
+    # mapping for keyword special messages
+    _Special_Keyword = {
+        "at:"       : B_AT_SPECIAL,
+        "at:put:"   : B_AT_PUT_SPECIAL,
+        "value:"    : B_VALUE_COLON_SPECIAL,
+        "bitAnd:"   : B_BIT_AND_SPECIAL,
+        "bitOr:"    : B_BIT_OR_SPECIAL,
+        "bitXor:"   : B_BIT_XOR_SPECIAL,
+        "bitShift:" : B_BIT_SHIFT_SPECIAL,
+    }
+    
+    # mapping for binary special messages
+    _Special_Binary = {
+        "+"     : B_PLUS_SPECIAL,
+        "-"     : B_MINUS_SPECIAL,
+        "<"     : B_LESS_THAN_SPECIAL,
+        ">"     : B_GREATER_THAN_SPECIAL,
+        "<="    : B_LESS_EQUAL_SPECIAL,
+        ">="    : B_GREATER_EQUAL_SPECIAL,
+        "="     : B_EQUAL_SPECIAL,
+        "~="    : B_NOT_EQUAL_SPECIAL,
+        "*"     : B_TIMES_SPECIAL,
+        "//"    : B_INTEGER_DIVIDE_SPECIAL,
+        "\\\\"  : B_REMAINDER_SPECIAL,
+        "=="    : B_SAME_OBJECT_SPECIAL,
+    }
+    
     def __init__(self, system, verbose):
         """
         Create a blank compiler instance
@@ -567,34 +603,53 @@ class Compile(object):
         """
         Compile sending a unary message
         """
+        # get receiver
         if isinstance(recv, ParseUnaryMessage):
             self.compile_unary_message(recv.recv, recv.name)
         elif isinstance(recv, ParseExecStatement):
             self.compile_exec_statement(recv)
         else:
             raise CompileError("unary recv:", recv)
-            
+        
+        # push selector and send message       
         sym = self._sys.symbol_find_or_add(name)
-        idx = self.add_literal(sym)
-        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
-        if isSuper:
-            self.emit_bytes(-1, B_SEND_SUPER, 0)
+        if (name in self._Special_Unary) and not isSuper:
+            self.emit_bytes(0, self._Special_Unary[name], 0)
         else:
-            self.emit_bytes(-1, B_SEND, 0)
+            idx = self.add_literal(sym)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            if isSuper:
+                self.emit_bytes(-1, B_SEND_SUPER, 0)
+            else:
+                self.emit_bytes(-1, B_SEND, 0)
         
     def compile_expr_message(self, recv, name, send, isSuper):
         """
         Compile sending a binary expression message
         """
+        # get receiver
         self.compile_exec_statement(recv.data)
+        
+        # push selector
         sym = self._sys.symbol_find_or_add(name)
-        idx = self.add_literal(sym)
-        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
-        self.compile_exec_statement(send.data)
-        if isSuper:
-            self.emit_bytes(-2, B_SEND_SUPER, 1)
+        if (name in self._Special_Binary) and not isSuper:
+            isSpecial = True
         else:
-            self.emit_bytes(-2, B_SEND, 1)
+            idx = self.add_literal(sym)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            isSpecial = False
+        
+        # argument
+        self.compile_exec_statement(send.data)
+        
+        # send message
+        if isSpecial:
+            self.emit_bytes(-1, self._Special_Binary[name], 1)
+        else:
+            if isSuper:
+                self.emit_bytes(-2, B_SEND_SUPER, 1)
+            else:
+                self.emit_bytes(-2, B_SEND, 1)
         
     def compile_arg_message(self, recv, args, isSuper):
         """
@@ -614,8 +669,12 @@ class Compile(object):
         # push selector
         selName = ":".join(argNames) + ":"
         sym = self._sys.symbol_find_or_add(selName)
-        idx = self.add_literal(sym)
-        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+        if (selName in self._Special_Keyword) and not isSuper:
+            isSpecial = True
+        else:
+            idx = self.add_literal(sym)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            isSpecial = False
         
         # get and push argument values
         for a in argValues:
@@ -629,10 +688,13 @@ class Compile(object):
                 raise CompileError("bad message argument syntax "  + str(self._cur_meth))
             
         # send message
-        if isSuper:
-            self.emit_bytes(-1 - numArgs, B_SEND_SUPER, numArgs)
+        if isSpecial:
+            self.emit_bytes(-numArgs, self._Special_Keyword[selName], numArgs)
         else:
-            self.emit_bytes(-1 - numArgs, B_SEND, numArgs)
+            if isSuper:
+                self.emit_bytes(-1 - numArgs, B_SEND_SUPER, numArgs)
+            else:
+                self.emit_bytes(-1 - numArgs, B_SEND, numArgs)
         
     def compile_cas_message(self, recv, mlist, isSuper):
         """

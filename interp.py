@@ -21,6 +21,32 @@ class Interp(object):
         self._false = system.o_false
         self._true = system.o_true
         
+        # get refs to special selector symbols
+        self._sel_value         = self._make_sel("value")
+        self._sel_size          = self._make_sel("size")
+        self._sel_isnil         = self._make_sel("isNil")
+        self._sel_notnil        = self._make_sel("notNil")
+        self._sel_class         = self._make_sel("class")
+        self._sel_at            = self._make_sel("at:")
+        self._sel_at_put        = self._make_sel("at:put:")
+        self._sel_value_colon   = self._make_sel("value:")
+        self._sel_plus          = self._make_sel("+")
+        self._sel_minus         = self._make_sel("-")
+        self._sel_less_than     = self._make_sel("<")
+        self._sel_greater_than  = self._make_sel(">")
+        self._sel_less_equ      = self._make_sel("<=")
+        self._sel_greater_equ   = self._make_sel(">=")
+        self._sel_equal         = self._make_sel("=")
+        self._sel_not_equal     = self._make_sel("~=")
+        self._sel_times         = self._make_sel("*")
+        self._sel_int_divide    = self._make_sel("//")
+        self._sel_remainder     = self._make_sel("\\\\")
+        self._sel_identity      = self._make_sel("==")
+        self._sel_bit_and       = self._make_sel("bitAnd:")
+        self._sel_bit_or        = self._make_sel("bitOr:")
+        self._sel_bit_xor       = self._make_sel("bitXor:")
+        self._sel_bit_shift     = self._make_sel("bitShift:")
+        
         # the interpreter global state
         self.i_context = self._nil
         
@@ -52,6 +78,30 @@ class Interp(object):
         bTbl[B_RETURN_CONTEXT_STACK_TOP]    = self.b_blk_ret
         bTbl[B_SEND]                        = self.b_send
         bTbl[B_SEND_SUPER]                  = self.b_send_super
+        bTbl[B_VALUE_SPECIAL]               = self.b_send_spec_value
+        bTbl[B_SIZE_SPECIAL]                = self.b_send_spec_size
+        bTbl[B_IS_NIL_SPECIAL]              = self.b_send_spec_isnil
+        bTbl[B_NOT_NIL_SPECIAL]             = self.b_send_spec_notnil
+        bTbl[B_CLASS_SPECIAL]               = self.b_send_spec_class
+        bTbl[B_AT_SPECIAL]                  = self.b_send_spec_at
+        bTbl[B_AT_PUT_SPECIAL]              = self.b_send_spec_at_put
+        bTbl[B_VALUE_COLON_SPECIAL]         = self.b_send_spec_value_colon
+        bTbl[B_PLUS_SPECIAL]                = self.b_send_spec_plus
+        bTbl[B_MINUS_SPECIAL]               = self.b_send_spec_minus
+        bTbl[B_LESS_THAN_SPECIAL]           = self.b_send_spec_less_than
+        bTbl[B_GREATER_THAN_SPECIAL]        = self.b_send_spec_greater_than
+        bTbl[B_LESS_EQUAL_SPECIAL]          = self.b_send_spec_less_equ
+        bTbl[B_GREATER_EQUAL_SPECIAL]       = self.b_send_spec_greater_equ
+        bTbl[B_EQUAL_SPECIAL]               = self.b_send_spec_equal
+        bTbl[B_NOT_EQUAL_SPECIAL]           = self.b_send_spec_not_equal
+        bTbl[B_TIMES_SPECIAL]               = self.b_send_spec_times
+        bTbl[B_INTEGER_DIVIDE_SPECIAL]      = self.b_send_spec_int_divide
+        bTbl[B_REMAINDER_SPECIAL]           = self.b_send_spec_remainder
+        bTbl[B_SAME_OBJECT_SPECIAL]         = self.b_send_spec_identity
+        bTbl[B_BIT_AND_SPECIAL]             = self.b_send_spec_bit_and
+        bTbl[B_BIT_OR_SPECIAL]              = self.b_send_spec_bit_or
+        bTbl[B_BIT_XOR_SPECIAL]             = self.b_send_spec_bit_xor
+        bTbl[B_BIT_SHIFT_SPECIAL]           = self.b_send_spec_bit_shift
         
     def _debug_default(self):
         """
@@ -65,6 +115,12 @@ class Interp(object):
         """
         code = ctx.method.get_code()
         raise RuntimeError("unknown bytecode %d" % code[ctx.ip]) 
+        
+    def _make_sel(self, name):
+        """
+        Create a weak ref to a symbol
+        """
+        return weakref.ref(self._sys.symbol_find_or_add(name))
         
     def send_message_extern(self, recvObj, selName, argValues):
         """
@@ -90,7 +146,7 @@ class Interp(object):
             
         # send message and run until control
         # returns to this root context
-        self.send_message(len(argValues), False)
+        self.send_message(len(argValues), False, None)
         self.exec()
         
         # pop return value from stack
@@ -112,7 +168,7 @@ class Interp(object):
         self.i_context = ctxSave
         return ret
         
-    def send_message(self, numArgs, isSuper):
+    def send_message(self, numArgs, isSuper, selObj):
         """
         Send a message.  This assumes that the receiver,
         message selector, and argument values have been
@@ -135,7 +191,8 @@ class Interp(object):
             argList = ()
         
         # pop the message selector and receiver
-        selObj = pop()
+        if selObj is None:
+            selObj = pop()
         recvObj = pop()
     
         # get class type for receiver
@@ -439,14 +496,182 @@ class Interp(object):
         """
         Execute the generic send message bytecode
         """
-        self.send_message(arg, False)
+        self.send_message(arg, False, None)
         return 2
         
     def b_send_super(self, ctx, arg):
         """
         Execute the send message to super bytecode
         """
-        self.send_message(arg, True)
+        self.send_message(arg, True, None)
+        return 2
+        
+    def b_send_spec_value(self, ctx, arg):
+        """
+        Execute the send message special value bytecode
+        """
+        self.send_message(arg, False, self._sel_value())
+        return 2
+        
+    def b_send_spec_size(self, ctx, arg):
+        """
+        Execute the send message special size bytecode
+        """
+        self.send_message(arg, False, self._sel_size())
+        return 2
+        
+    def b_send_spec_isnil(self, ctx, arg):
+        """
+        Execute the send message special isNil bytecode
+        """
+        self.send_message(arg, False, self._sel_isnil())
+        return 2
+        
+    def b_send_spec_notnil(self, ctx, arg):
+        """
+        Execute the send message special notNil bytecode
+        """
+        self.send_message(arg, False, self._sel_notnil())
+        return 2
+        
+    def b_send_spec_class(self, ctx, arg):
+        """
+        Execute the send message special class bytecode
+        """
+        self.send_message(arg, False, self._sel_class())
+        return 2
+        
+    def b_send_spec_at(self, ctx, arg):
+        """
+        Execute the send message special at: bytecode
+        """
+        self.send_message(arg, False, self._sel_at())
+        return 2
+        
+    def b_send_spec_at_put(self, ctx, arg):
+        """
+        Execute the send message special at:put: bytecode
+        """
+        self.send_message(arg, False, self._sel_at_put())
+        return 2
+        
+    def b_send_spec_value_colon(self, ctx, arg):
+        """
+        Execute the send message special value: bytecode
+        """
+        self.send_message(arg, False, self._sel_value_colon())
+        return 2
+        
+    def b_send_spec_plus(self, ctx, arg):
+        """
+        Execute the send message special + bytecode
+        """
+        self.send_message(arg, False, self._sel_plus())
+        return 2
+        
+    def b_send_spec_minus(self, ctx, arg):
+        """
+        Execute the send message special - bytecode
+        """
+        self.send_message(arg, False, self._sel_minus())
+        return 2
+        
+    def b_send_spec_less_than(self, ctx, arg):
+        """
+        Execute the send message special < bytecode
+        """
+        self.send_message(arg, False, self._sel_less_than())
+        return 2
+        
+    def b_send_spec_greater_than(self, ctx, arg):
+        """
+        Execute the send message special > bytecode
+        """
+        self.send_message(arg, False, self._sel_greater_than())
+        return 2
+        
+    def b_send_spec_less_equ(self, ctx, arg):
+        """
+        Execute the send message special <= bytecode
+        """
+        self.send_message(arg, False, self._sel_less_equ())
+        return 2
+        
+    def b_send_spec_greater_equ(self, ctx, arg):
+        """
+        Execute the send message special >= bytecode
+        """
+        self.send_message(arg, False, self._sel_greater_equ())
+        return 2
+        
+    def b_send_spec_equal(self, ctx, arg):
+        """
+        Execute the send message special = bytecode
+        """
+        self.send_message(arg, False, self._sel_equal())
+        return 2
+        
+    def b_send_spec_not_equal(self, ctx, arg):
+        """
+        Execute the send message special ~= bytecode
+        """
+        self.send_message(arg, False, self._sel_not_equal())
+        return 2
+        
+    def b_send_spec_times(self, ctx, arg):
+        """
+        Execute the send message special * bytecode
+        """
+        self.send_message(arg, False, self._sel_times())
+        return 2
+        
+    def b_send_spec_int_divide(self, ctx, arg):
+        """
+        Execute the send message special // bytecode
+        """
+        self.send_message(arg, False, self._sel_int_divide())
+        return 2
+        
+    def b_send_spec_remainder(self, ctx, arg):
+        """
+        Execute the send message special \\ bytecode
+        """
+        self.send_message(arg, False, self._sel_remainder())
+        return 2
+        
+    def b_send_spec_identity(self, ctx, arg):
+        """
+        Execute the send message special == bytecode
+        """
+        self.send_message(arg, False, self._sel_identity())
+        return 2
+        
+    def b_send_spec_bit_and(self, ctx, arg):
+        """
+        Execute the send message special bitAnd: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_and())
+        return 2
+        
+    def b_send_spec_bit_or(self, ctx, arg):
+        """
+        Execute the send message special bitOr: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_or())
+        return 2
+        
+    def b_send_spec_bit_xor(self, ctx, arg):
+        """
+        Execute the send message special bitXor: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_xor())
+        return 2
+        
+    def b_send_spec_bit_shift(self, ctx, arg):
+        """
+        Execute the send message special bitShift: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_shift())
         return 2
         
     def b_meth_ret(self, ctx, arg):
