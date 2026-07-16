@@ -68,30 +68,32 @@ class Compile(object):
         global Lexer, Parser
         
         # cache system information
-        self._sys = system
-        self._verbose = verbose
-        self._nil = system.o_nil
-        self._true = system.o_true
-        self._false = system.o_false
+        self._sys       = system
+        self._verbose   = verbose
+        self._nil       = weakref.ref(system.o_nil)
+        self._true      = weakref.ref(system.o_true)
+        self._false     = weakref.ref(system.o_false)
+        
+        # get primitives dictionary
         bind = system.find_global("VMPrimitives")
         if bind.is_nil():
             raise NameError("missing global VMPrimitives")
-        self._prim_dict = bind.value
+        self._prim_dict = weakref.ref(bind.value)
         
         # the lexer and parser
-        self._lex = Lexer
+        self._lex   = Lexer
         self._parse = Parser(self._lex)
         
         # helpers
-        self._cur_klass = None
-        self._cur_inst_var = []
-        self._cur_meth = None
-        self._cur_local = None
-        self._cur_literal = None
-        self._cur_bytes = None
-        self._cur_depth = None
-        self._max_depth = None
-        self._ctx_stack = []
+        self._cur_klass     = None
+        self._cur_inst_var  = []
+        self._cur_meth      = None
+        self._cur_local     = None
+        self._cur_literal   = None
+        self._cur_bytes     = None
+        self._cur_depth     = None
+        self._max_depth     = None
+        self._ctx_stack     = []
         
     def parse_file(self, fileName):
         """
@@ -440,7 +442,7 @@ class Compile(object):
         elif attrName.value == "primitive":
             sym = self._sys.symbol_find(attrValue.value)
             if not sym.is_nil():
-                assoc = self._sys.dict_find(self._prim_dict, sym)
+                assoc = self._sys.dict_find(self._prim_dict(), sym)
                 if not assoc.is_nil():
                     primId = assoc.value
         return primId
@@ -730,13 +732,13 @@ class Compile(object):
             if x == "self":
                 self.emit_bytes(1, B_PUSH_SELF, 0)
             elif x == "nil":
-                idx = self.add_literal(self._nil)
+                idx = self.add_literal(self._nil())
                 self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             elif x == "true":
-                idx = self.add_literal(self._true)
+                idx = self.add_literal(self._true())
                 self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             elif x == "false":
-                idx = self.add_literal(self._false)
+                idx = self.add_literal(self._false())
                 self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             elif x == "super":
                 self.emit_bytes(1, B_PUSH_SELF, 0)
@@ -833,7 +835,7 @@ class Compile(object):
         # compile the block statements
         # check for empty closure
         if s.data[0].data is None:
-            idx = self.add_literal(self._nil)
+            idx = self.add_literal(self._nil())
             self.emit_bytes(0, B_PUSH_LIT_CONSTANT, idx, B_RETURN_CONTEXT_STACK_TOP, 0)
         else:
             self.compile_statement_list(s.data, True)
@@ -876,11 +878,11 @@ class Compile(object):
             x = item.value
             if isinstance(x, str):
                 if x == "nil":
-                    itemObj = self._nil
+                    itemObj = self._nil()
                 elif x == "true":
-                    itemObj = self._true
+                    itemObj = self._true()
                 elif x == "false":
-                    itemObj = self._false
+                    itemObj = self._false()
                 else:
                     raise CompileError("variable not allowed in array: %s", x)
             elif isinstance(x, int):

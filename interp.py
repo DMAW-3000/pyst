@@ -16,10 +16,10 @@ class Interp(object):
         Create a new interpeter
         """
         # cache values from system
-        self._sys = system
-        self._nil = system.o_nil
-        self._false = system.o_false
-        self._true = system.o_true
+        self._sys   = system
+        self._nil   = weakref.ref(system.o_nil)
+        self._false = weakref.ref(system.o_false)
+        self._true  = weakref.ref(system.o_true)
         
         # get refs to special selector symbols
         self._sel_value         = self._make_sel("value")
@@ -48,15 +48,15 @@ class Interp(object):
         self._sel_bit_shift     = self._make_sel("bitShift:")
         
         # the interpreter global state
-        self.i_context = self._nil
+        self.i_context = self._nil()
         
         # the primitive handler table
         # index 0 is reserved
         self.i_primitive = [None]
         
         # debugging support
-        self.i_debug_pre = self._debug_default
-        self.i_debug_post = self._debug_default
+        self.i_debug_pre    = self._debug_default
+        self.i_debug_post   = self._debug_default
         
         # the bytecode handler table
         self.b_table = bTbl = [self._op_undef] * 256
@@ -208,7 +208,7 @@ class Interp(object):
         # search from receiver's class through its
         # superclasses until Object's nil superclass
         # if send super, start one class up in hierarchy
-        methObj = self._nil
+        methObj = self._nil()
         if isSuper:
             klassObj = klassObj.superClass
         while not klassObj.is_nil():
@@ -731,9 +731,9 @@ class Interp(object):
         """
         send = argList[0]
         if is_obj(send) and recv.is_same(send):
-            ret = self._true
+            ret = self._true()
         else:
-            ret = self._false
+            ret = self._false()
         ctx.push(ret)
         return True
         
@@ -800,9 +800,9 @@ class Interp(object):
         Primitive handler for Object isReadOnly
         """
         if is_obj(recv) and not recv.is_readonly():
-            ret = self._false
+            ret = self._false()
         else:
-            ret = self._true
+            ret = self._true()
         ctx.push(ret)
         return True
         
@@ -1042,10 +1042,10 @@ class Interp(object):
         Primitive handler for Character =
         """
         send = argList[0]
-        ret = self._false
+        ret = self._false()
         if is_obj(send) and (send.get_class() is self._sys.k_character()):
             if recv.codePoint == send.codePoint:
-                ret = self._true
+                ret = self._true()
         ctx.push(ret)
         return True
         
@@ -1134,9 +1134,9 @@ class Interp(object):
         send = argList[0]
         if is_int(send):
             if recv < send:
-                ctx.push(self._true)
+                ctx.push(self._true())
             else:
-                ctx.push(self._false)
+                ctx.push(self._false())
             return True
         return False
         
@@ -1147,9 +1147,9 @@ class Interp(object):
         send = argList[0]
         if is_int(send):
             if recv > send:
-                ctx.push(self._true)
+                ctx.push(self._true())
             else:
-                ctx.push(self._false)
+                ctx.push(self._false())
             return True
         return False
         
@@ -1160,9 +1160,9 @@ class Interp(object):
         send = argList[0]
         if is_int(send):
             if recv <= send:
-                ctx.push(self._true)
+                ctx.push(self._true())
             else:
-                ctx.push(self._false)
+                ctx.push(self._false())
             return True
         return False
         
@@ -1173,9 +1173,9 @@ class Interp(object):
         send = argList[0]
         if is_int(send):
             if recv >= send:
-                ctx.push(self._true)
+                ctx.push(self._true())
             else:
-                ctx.push(self._false)
+                ctx.push(self._false())
             return True
         return False
         
@@ -1186,9 +1186,9 @@ class Interp(object):
         send = argList[0]
         if is_int(send):
             if recv == send:
-                ctx.push(self._true)
+                ctx.push(self._true())
             else:
-                ctx.push(self._false)
+                ctx.push(self._false())
             return True
         return False
         
@@ -1199,9 +1199,9 @@ class Interp(object):
         send = argList[0]
         if is_int(send):
             if recv != send:
-                ctx.push(self._true)
+                ctx.push(self._true())
             else:
-                ctx.push(self._false)
+                ctx.push(self._false())
             return True
         return False
         
