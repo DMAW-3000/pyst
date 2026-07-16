@@ -38,7 +38,11 @@ class Compile(object):
     _Special_Keyword = {
         "at:"       : B_AT_SPECIAL,
         "at:put:"   : B_AT_PUT_SPECIAL,
-        "value:"    : B_VALUE_COLON_SPECIAL
+        "value:"    : B_VALUE_COLON_SPECIAL,
+        "bitAnd:"   : B_BIT_AND_SPECIAL,
+        "bitOr:"    : B_BIT_OR_SPECIAL,
+        "bitXor:"   : B_BIT_XOR_SPECIAL,
+        "bitShift:" : B_BIT_SHIFT_SPECIAL,
     }
     
     # mapping for binary special messages

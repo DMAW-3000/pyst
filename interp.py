@@ -42,6 +42,10 @@ class Interp(object):
         self._sel_int_divide    = self._make_sel("//")
         self._sel_remainder     = self._make_sel("\\\\")
         self._sel_identity      = self._make_sel("==")
+        self._sel_bit_and       = self._make_sel("bitAnd:")
+        self._sel_bit_or        = self._make_sel("bitOr:")
+        self._sel_bit_xor       = self._make_sel("bitXor:")
+        self._sel_bit_shift     = self._make_sel("bitShift:")
         
         # the interpreter global state
         self.i_context = self._nil
@@ -94,6 +98,10 @@ class Interp(object):
         bTbl[B_INTEGER_DIVIDE_SPECIAL]      = self.b_send_spec_int_divide
         bTbl[B_REMAINDER_SPECIAL]           = self.b_send_spec_remainder
         bTbl[B_SAME_OBJECT_SPECIAL]         = self.b_send_spec_identity
+        bTbl[B_BIT_AND_SPECIAL]             = self.b_send_spec_bit_and
+        bTbl[B_BIT_OR_SPECIAL]              = self.b_send_spec_bit_or
+        bTbl[B_BIT_XOR_SPECIAL]             = self.b_send_spec_bit_xor
+        bTbl[B_BIT_SHIFT_SPECIAL]           = self.b_send_spec_bit_shift
         
     def _debug_default(self):
         """
@@ -636,6 +644,34 @@ class Interp(object):
         Execute the send message special == bytecode
         """
         self.send_message(arg, False, self._sel_identity())
+        return 2
+        
+    def b_send_spec_bit_and(self, ctx, arg):
+        """
+        Execute the send message special bitAnd: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_and())
+        return 2
+        
+    def b_send_spec_bit_or(self, ctx, arg):
+        """
+        Execute the send message special bitOr: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_or())
+        return 2
+        
+    def b_send_spec_bit_xor(self, ctx, arg):
+        """
+        Execute the send message special bitXor: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_xor())
+        return 2
+        
+    def b_send_spec_bit_shift(self, ctx, arg):
+        """
+        Execute the send message special bitShift: bytecode
+        """
+        self.send_message(arg, False, self._sel_bit_shift())
         return 2
         
     def b_meth_ret(self, ctx, arg):
