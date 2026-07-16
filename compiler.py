@@ -45,6 +45,7 @@ class Compile(object):
     _Special_Binary = {
         "+"     : B_PLUS_SPECIAL,
         "-"     : B_MINUS_SPECIAL,
+        "<"     : B_LESS_THAN_SPECIAL,
     }
     
     def __init__(self, system, verbose):
