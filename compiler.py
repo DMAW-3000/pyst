@@ -34,6 +34,11 @@ class Compile(object):
         "class"     : B_CLASS_SPECIAL,
     }
     
+    # mapping for keyword special messages
+    _Special_Keyword = {
+        "at:"       : B_AT_SPECIAL,
+    }
+    
     def __init__(self, system, verbose):
         """
         Create a blank compiler instance
@@ -626,8 +631,12 @@ class Compile(object):
         # push selector
         selName = ":".join(argNames) + ":"
         sym = self._sys.symbol_find_or_add(selName)
-        idx = self.add_literal(sym)
-        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+        if (selName in self._Special_Keyword) and not isSuper:
+            isSpecial = True
+        else:
+            idx = self.add_literal(sym)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            isSpecial = False
         
         # get and push argument values
         for a in argValues:
@@ -641,10 +650,13 @@ class Compile(object):
                 raise CompileError("bad message argument syntax "  + str(self._cur_meth))
             
         # send message
-        if isSuper:
-            self.emit_bytes(-1 - numArgs, B_SEND_SUPER, numArgs)
+        if isSpecial:
+            self.emit_bytes(-numArgs, self._Special_Keyword[selName], numArgs)
         else:
-            self.emit_bytes(-1 - numArgs, B_SEND, numArgs)
+            if isSuper:
+                self.emit_bytes(-1 - numArgs, B_SEND_SUPER, numArgs)
+            else:
+                self.emit_bytes(-1 - numArgs, B_SEND, numArgs)
         
     def compile_cas_message(self, recv, mlist, isSuper):
         """
