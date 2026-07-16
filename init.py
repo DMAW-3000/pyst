@@ -53,7 +53,7 @@ Init_Class = (
     ("Number", False, "number", "magnitude", True, (), (), ()),
     ("Integer", False, "integer", "number", True, (), (), ("PySymbols",)),
     ("SmallInteger", False, "small_int", "integer", True, (), (), ()),
-    ("Fraction", True, "fraction", "number", True, ("numerator", "denominator"), (), ()),
+    ("Fraction", True, "fraction", "number", True, ("numerator", "denominator"), ("Zero", "One"), ()),
     ("Float", False, "float", "number", True, (), (), ()),
     ("FloatD", False, "float_d", "float", True, (), (), ()),
     ("Character", True, "character", "magnitude", True, ("codePoint",), ("Table", "UpperTable", "LowerTable"), ()),
