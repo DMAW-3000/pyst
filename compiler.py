@@ -54,6 +54,7 @@ class Compile(object):
         "*"     : B_TIMES_SPECIAL,
         "//"    : B_INTEGER_DIVIDE_SPECIAL,
         "\\\\"  : B_REMAINDER_SPECIAL,
+        "=="    : B_SAME_OBJECT_SPECIAL,
     }
     
     def __init__(self, system, verbose):

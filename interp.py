@@ -41,6 +41,7 @@ class Interp(object):
         self._sel_times         = self._make_sel("*")
         self._sel_int_divide    = self._make_sel("//")
         self._sel_remainder     = self._make_sel("\\\\")
+        self._sel_identity      = self._make_sel("==")
         
         # the interpreter global state
         self.i_context = self._nil
@@ -92,6 +93,7 @@ class Interp(object):
         bTbl[B_TIMES_SPECIAL]               = self.b_send_spec_times
         bTbl[B_INTEGER_DIVIDE_SPECIAL]      = self.b_send_spec_int_divide
         bTbl[B_REMAINDER_SPECIAL]           = self.b_send_spec_remainder
+        bTbl[B_SAME_OBJECT_SPECIAL]         = self.b_send_spec_identity
         
     def _debug_default(self):
         """
@@ -627,6 +629,13 @@ class Interp(object):
         Execute the send message special \\ bytecode
         """
         self.send_message(arg, False, self._sel_remainder())
+        return 2
+        
+    def b_send_spec_identity(self, ctx, arg):
+        """
+        Execute the send message special == bytecode
+        """
+        self.send_message(arg, False, self._sel_identity())
         return 2
         
     def b_meth_ret(self, ctx, arg):
