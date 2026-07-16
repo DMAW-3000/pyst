@@ -38,6 +38,7 @@ class Compile(object):
     _Special_Keyword = {
         "at:"       : B_AT_SPECIAL,
         "at:put:"   : B_AT_PUT_SPECIAL,
+        "value:"    : B_VALUE_COLON_SPECIAL
     }
     
     def __init__(self, system, verbose):

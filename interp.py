@@ -22,13 +22,14 @@ class Interp(object):
         self._true = system.o_true
         
         # get refs to special selector symbols
-        self._sel_value     = weakref.ref(system.symbol_find_or_add("value"))
-        self._sel_size      = weakref.ref(system.symbol_find_or_add("size"))
-        self._sel_isnil     = weakref.ref(system.symbol_find_or_add("isNil"))
-        self._sel_notnil    = weakref.ref(system.symbol_find_or_add("notNil"))
-        self._sel_class     = weakref.ref(system.symbol_find_or_add("class"))
-        self._sel_at        = weakref.ref(system.symbol_find_or_add("at:"))
-        self._sel_at_put    = weakref.ref(system.symbol_find_or_add("at:put:"))
+        self._sel_value         = weakref.ref(system.symbol_find_or_add("value"))
+        self._sel_size          = weakref.ref(system.symbol_find_or_add("size"))
+        self._sel_isnil         = weakref.ref(system.symbol_find_or_add("isNil"))
+        self._sel_notnil        = weakref.ref(system.symbol_find_or_add("notNil"))
+        self._sel_class         = weakref.ref(system.symbol_find_or_add("class"))
+        self._sel_at            = weakref.ref(system.symbol_find_or_add("at:"))
+        self._sel_at_put        = weakref.ref(system.symbol_find_or_add("at:put:"))
+        self._sel_value_colon   = weakref.ref(system.symbol_find_or_add("value:"))
         
         # the interpreter global state
         self.i_context = self._nil
@@ -68,6 +69,7 @@ class Interp(object):
         bTbl[B_CLASS_SPECIAL]               = self.b_send_spec_class
         bTbl[B_AT_SPECIAL]                  = self.b_send_spec_at
         bTbl[B_AT_PUT_SPECIAL]              = self.b_send_spec_at_put
+        bTbl[B_VALUE_COLON_SPECIAL]         = self.b_send_spec_value_colon
         
     def _debug_default(self):
         """
@@ -513,6 +515,13 @@ class Interp(object):
         Execute the send message special at:put: bytecode
         """
         self.send_message(arg, False, self._sel_at_put())
+        return 2
+        
+    def b_send_spec_value_colon(self, ctx, arg):
+        """
+        Execute the send message special value: bytecode
+        """
+        self.send_message(arg, False, self._sel_value_colon())
         return 2
         
     def b_meth_ret(self, ctx, arg):

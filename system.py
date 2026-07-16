@@ -356,6 +356,7 @@ class Smalltalk(object):
         disTbl[B_CLASS_SPECIAL]             = ("SEND_SPECIAL_CLASS", 2, 1)
         disTbl[B_AT_SPECIAL]                = ("SEND_SPECIAL_AT", 2, 1)
         disTbl[B_AT_PUT_SPECIAL]            = ("SEND_SPECIAL_AT_PUT", 2, 1)
+        disTbl[B_VALUE_COLON_SPECIAL]       = ("SEND_SPECIAL_VALUE_COLON", 2, 1)
     
     def build_primitives(self, verbose):
         """
