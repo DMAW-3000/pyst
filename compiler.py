@@ -41,6 +41,11 @@ class Compile(object):
         "value:"    : B_VALUE_COLON_SPECIAL
     }
     
+    # mapping for binary special messages
+    _Special_Binary = {
+        "+"     : B_PLUS_SPECIAL,
+    }
+    
     def __init__(self, system, verbose):
         """
         Create a blank compiler instance
@@ -583,13 +588,15 @@ class Compile(object):
         """
         Compile sending a unary message
         """
+        # get receiver
         if isinstance(recv, ParseUnaryMessage):
             self.compile_unary_message(recv.recv, recv.name)
         elif isinstance(recv, ParseExecStatement):
             self.compile_exec_statement(recv)
         else:
             raise CompileError("unary recv:", recv)
-            
+        
+        # push selector and send message       
         sym = self._sys.symbol_find_or_add(name)
         if (name in self._Special_Unary) and not isSuper:
             self.emit_bytes(0, self._Special_Unary[name], 0)
@@ -605,15 +612,29 @@ class Compile(object):
         """
         Compile sending a binary expression message
         """
+        # get receiver
         self.compile_exec_statement(recv.data)
+        
+        # push selector
         sym = self._sys.symbol_find_or_add(name)
-        idx = self.add_literal(sym)
-        self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
-        self.compile_exec_statement(send.data)
-        if isSuper:
-            self.emit_bytes(-2, B_SEND_SUPER, 1)
+        if (name in self._Special_Binary) and not isSuper:
+            isSpecial = True
         else:
-            self.emit_bytes(-2, B_SEND, 1)
+            idx = self.add_literal(sym)
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            isSpecial = False
+        
+        # argument
+        self.compile_exec_statement(send.data)
+        
+        # send message
+        if isSpecial:
+            self.emit_bytes(-1, self._Special_Binary[name], 1)
+        else:
+            if isSuper:
+                self.emit_bytes(-2, B_SEND_SUPER, 1)
+            else:
+                self.emit_bytes(-2, B_SEND, 1)
         
     def compile_arg_message(self, recv, args, isSuper):
         """
