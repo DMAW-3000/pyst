@@ -44,6 +44,7 @@ class Compile(object):
     # mapping for binary special messages
     _Special_Binary = {
         "+"     : B_PLUS_SPECIAL,
+        "-"     : B_MINUS_SPECIAL,
     }
     
     def __init__(self, system, verbose):
