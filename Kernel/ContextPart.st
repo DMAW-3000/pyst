@@ -396,7 +396,7 @@ methods that can be used in inspection or debugging.'>
 	<category: 'accessing'>
 	self at: self size + 1 put: nil.
 	sp := sp + 1.
-	self at: self size put: anObject.
+	self at: self size put: anObject
     ]
 
     sp: newSP [
