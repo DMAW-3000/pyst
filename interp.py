@@ -22,15 +22,15 @@ class Interp(object):
         self._true = system.o_true
         
         # get refs to special selector symbols
-        self._sel_value         = weakref.ref(system.symbol_find_or_add("value"))
-        self._sel_size          = weakref.ref(system.symbol_find_or_add("size"))
-        self._sel_isnil         = weakref.ref(system.symbol_find_or_add("isNil"))
-        self._sel_notnil        = weakref.ref(system.symbol_find_or_add("notNil"))
-        self._sel_class         = weakref.ref(system.symbol_find_or_add("class"))
-        self._sel_at            = weakref.ref(system.symbol_find_or_add("at:"))
-        self._sel_at_put        = weakref.ref(system.symbol_find_or_add("at:put:"))
-        self._sel_value_colon   = weakref.ref(system.symbol_find_or_add("value:"))
-        self._sel_plus          = weakref.ref(system.symbol_find_or_add("+"))
+        self._sel_value         = self._make_sel("value")
+        self._sel_size          = self._make_sel("size")
+        self._sel_isnil         = self._make_sel("isNil")
+        self._sel_notnil        = self._make_sel("notNil")
+        self._sel_class         = self._make_sel("class")
+        self._sel_at            = self._make_sel("at:")
+        self._sel_at_put        = self._make_sel("at:put:")
+        self._sel_value_colon   = self._make_sel("value:")
+        self._sel_plus          = self._make_sel("+")
         
         # the interpreter global state
         self.i_context = self._nil
@@ -85,6 +85,12 @@ class Interp(object):
         """
         code = ctx.method.get_code()
         raise RuntimeError("unknown bytecode %d" % code[ctx.ip]) 
+        
+    def _make_sel(self, name):
+        """
+        Create a weak ref to a symbol
+        """
+        return weakref.ref(self._sys.symbol_find_or_add(name))
         
     def send_message_extern(self, recvObj, selName, argValues):
         """
