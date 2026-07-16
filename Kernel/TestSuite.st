@@ -105,6 +105,8 @@
 	test7 [
 		"test7"
 		| x y z |
+		x := 100 / 10.
+		y := 1 / 3.
 		z := SmallInteger largest.
 		y := z bitShift: -30.
 		x := ((16r10FF bitAnd: 16rB010) bitOr: 32) bitXor: 33.

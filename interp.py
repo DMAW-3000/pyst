@@ -3,6 +3,7 @@ Bytecode interpreter
 """
 
 from st import *
+import math
 import gc
 
 
@@ -1118,12 +1119,30 @@ class Interp(object):
     def p_SmallInteger_quo(self, ctx, recv, argList):
         """
         Primirive handler for SmallInteger quo:
+        Return an integer result rounded to zero.
         """
         send = argList[0]
         if is_int(send):
             if send == 0:
                 return False
             ctx.push(int(recv / send))
+            return True
+        return False
+        
+    def p_SmallInteger_divide(self, ctx, recv, argList):
+        """
+        Primirive handler for SmallInteger /
+        Return an integer or Fraction.
+        """
+        send = argList[0]
+        if is_int(send):
+            if send == 0:
+                return False
+            if math.isclose((recv / send) % 1, 0):
+                ret = int(recv / send)
+            else:
+                ret = Fraction(recv, send)
+            ctx.push(ret)
             return True
         return False
         

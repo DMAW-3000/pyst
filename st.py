@@ -1445,7 +1445,42 @@ class BlockClosure(Object):
         
     def __str__(self):
         return "BLOCK(" + str(self.block.method) + ")"
-
+        
+        
+class Fraction(Object):
+    """
+    Internal representation of Smalltalk Fraction
+    Instance variables:
+        numerator
+        denominator
+    """
+    
+    _Cover = None
+    
+    def __init__(self, num, denom):
+        """
+        Create a new Fraction
+        """
+        super().__init__(2)
+        self.numerator      = num
+        self.denominator    = denom
+        
+    @property
+    def numerator(self):
+        return self[0]
+        
+    @numerator.setter
+    def numerator(self, x):
+        self[0] = x
+        
+    @property
+    def denominator(self):
+        return self[1]
+        
+    @denominator.setter
+    def denominator(self, x):
+        self[1] = x
+        
 
 # the global bytecode values
 B_PLUS_SPECIAL              = 0
