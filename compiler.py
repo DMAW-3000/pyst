@@ -51,6 +51,9 @@ class Compile(object):
         ">="    : B_GREATER_EQUAL_SPECIAL,
         "="     : B_EQUAL_SPECIAL,
         "~="    : B_NOT_EQUAL_SPECIAL,
+        "*"     : B_TIMES_SPECIAL,
+        "//"    : B_INTEGER_DIVIDE_SPECIAL,
+        "\\\\"  : B_REMAINDER_SPECIAL,
     }
     
     def __init__(self, system, verbose):
