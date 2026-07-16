@@ -44,13 +44,6 @@ methods that can be used in inspection or debugging.'>
 	^4
     ]
 
-    ContextPart class >> checkPresenceOfJIT [
-	<category: 'private'>
-	thisContext isJIT 
-	    ifTrue: [Smalltalk addFeature: #JIT]
-	    ifFalse: [Smalltalk removeFeature: #JIT]
-    ]
-
     ContextPart class >> backtrace [
 	"Print a backtrace from the caller to the bottom of the stack on the
 	 Transcript"
@@ -292,16 +285,6 @@ methods that can be used in inspection or debugging.'>
 	self subclassResponsibility
     ]
 
-    isProcess [
-	"Answer whether the receiver represents a process context, i.e. a context
-	 created by BlockClosure>>#newProcess. Such a context can be recognized
-	 because it has no parent but its flags are different from those of the
-	 contexts created by the VM's prepareExecutionEnvironment function."
-
-	<category: 'accessing'>
-	^self parentContext isNil & self isEnvironment not
-    ]
-
     parentContext [
 	"Answer the context that called the receiver"
 
@@ -474,11 +457,6 @@ methods that can be used in inspection or debugging.'>
 
 	<category: 'accessing'>
 	self subclassResponsibility
-    ]
-
-    isJIT [
-	<category: 'private'>
-	^nativeIP ~~ 0
     ]
 
     deepCopy [
