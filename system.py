@@ -852,7 +852,7 @@ class Smalltalk(object):
         """
         print(str(obj.get_class()))
         print("ID:    ", obj.get_id())
-        print("Flags: ", obj._flags)
+        print("Flags: ", hex(obj._flags))
         print("Cache: ", obj._py_cache)
         print("Size:  ", obj.size)
         if obj.size > 0:
