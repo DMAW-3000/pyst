@@ -1256,10 +1256,10 @@ class Interp(object):
         """
         Primitve handler for Array replaceFrom:To:With:StartingAt:
         """
-        start = argList[0]
-        stop = argList[1]
-        replaceArr = argList[2]
-        replaceStart = argList[3]
+        start           = argList[0]
+        stop            = argList[1]
+        replaceArr      = argList[2]
+        replaceStart    = argList[3]
         if is_int(start) and is_int(stop) and is_int(replaceStart):
             if stop >= start:
                 n = stop - start + 1
