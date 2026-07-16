@@ -26,6 +26,7 @@ class Interp(object):
         self._sel_size      = weakref.ref(system.symbol_find_or_add("size"))
         self._sel_isnil     = weakref.ref(system.symbol_find_or_add("isNil"))
         self._sel_notnil    = weakref.ref(system.symbol_find_or_add("notNil"))
+        self._sel_class     = weakref.ref(system.symbol_find_or_add("class"))
         
         # the interpreter global state
         self.i_context = self._nil
@@ -62,6 +63,7 @@ class Interp(object):
         bTbl[B_SIZE_SPECIAL]                = self.b_send_spec_size
         bTbl[B_IS_NIL_SPECIAL]              = self.b_send_spec_isnil
         bTbl[B_NOT_NIL_SPECIAL]             = self.b_send_spec_notnil
+        bTbl[B_CLASS_SPECIAL]               = self.b_send_spec_class
         
     def _debug_default(self):
         """
@@ -486,6 +488,13 @@ class Interp(object):
         Execute the send message special notNil bytecode
         """
         self.send_message(arg, False, self._sel_notnil())
+        return 2
+        
+    def b_send_spec_class(self, ctx, arg):
+        """
+        Execute the send message special class bytecode
+        """
+        self.send_message(arg, False, self._sel_class())
         return 2
         
     def b_meth_ret(self, ctx, arg):

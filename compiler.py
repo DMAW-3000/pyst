@@ -31,6 +31,7 @@ class Compile(object):
         "size"      : B_SIZE_SPECIAL,
         "isNil"     : B_IS_NIL_SPECIAL,
         "notNil"    : B_NOT_NIL_SPECIAL,
+        "class"     : B_CLASS_SPECIAL,
     }
     
     def __init__(self, system, verbose):
