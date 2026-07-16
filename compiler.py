@@ -584,7 +584,7 @@ class Compile(object):
             
         sym = self._sys.symbol_find_or_add(name)
         if (name in self._Special_Unary) and not isSuper:
-            self.emit_bytes(-1, self._Special_Unary[name], 0)
+            self.emit_bytes(0, self._Special_Unary[name], 0)
         else:
             idx = self.add_literal(sym)
             self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
