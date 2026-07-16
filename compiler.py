@@ -30,6 +30,7 @@ class Compile(object):
         "value"     : B_VALUE_SPECIAL,
         "size"      : B_SIZE_SPECIAL,
         "isNil"     : B_IS_NIL_SPECIAL,
+        "notNil"    : B_NOT_NIL_SPECIAL,
     }
     
     def __init__(self, system, verbose):
