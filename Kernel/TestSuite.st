@@ -161,6 +161,9 @@
 	test12 [
 		"test12"
 		| a |
+		Float e + 10.23 - 3.4e-5 * 5.74e3 / 8.43e9.
+		FloatD fmax / 20.0e20 * 100000.0 * FloatD fminNormalized.
+		FloatD infinity; negativeInfinity; nan; emax; emin.
 		a := ByteArray with: 0 with: 4 with: 5.
 		a indexOf: 5 startingAt: 1.
 		a indexOf: 0 startingAt: 3

@@ -1278,6 +1278,97 @@ class Interp(object):
             return True
         return False
         
+    def p_FloatD_infinity(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD infinity
+        """
+        ctx.push(float("inf"))
+        return True
+        
+    def p_FloatD_negativeInfinity(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD negativeInfinity
+        """
+        ctx.push(float("-inf"))
+        return True
+        
+    def p_FloatD_nan(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD nan
+        """
+        ctx.push(float("nan"))
+        return True
+        
+    def p_FloatD_fmax(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD fmax
+        """
+        ctx.push(sys.float_info.max)
+        return True
+        
+    def p_FloatD_fminNormalized(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD fminNormalized
+        """
+        ctx.push(sys.float_info.epsilon)
+        return True
+        
+    def p_FloatD_emax(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD emax
+        """
+        ctx.push(sys.float_info.max_exp)
+        return True
+        
+    def p_FloatD_emin(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD emin
+        """
+        ctx.push(sys.float_info.min_exp)
+        return True 
+        
+    def p_FloatD_plus(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD +
+        """
+        send = argList[0]
+        if is_flt(send):
+            ctx.push(recv + send)
+            return True
+        return False
+        
+    def p_FloatD_minus(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD -
+        """
+        send = argList[0]
+        if is_flt(send):
+            ctx.push(recv - send)
+            return True
+        return False
+        
+    def p_FloatD_times(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD *
+        """
+        send = argList[0]
+        if is_flt(send):
+            ctx.push(recv * send)
+            return True
+        return False
+        
+    def p_FloatD_divide(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD /
+        """
+        send = argList[0]
+        if is_flt(send):
+            if send == 0.0:
+                return False
+            ctx.push(recv / send)
+            return True
+        return False
+        
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for Array replaceFrom:To:With:StartingAt:
