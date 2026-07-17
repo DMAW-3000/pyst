@@ -30,7 +30,8 @@
 				test8;
 				test9;
 				test10;
-				test11
+				test11;
+				test12
 	]
 	
 	test1 [
@@ -155,5 +156,13 @@
 		x at: 1 put: y.
 		y allOwners.
 		Exception new
+	]
+	
+	test12 [
+		"test12"
+		| a |
+		a := ByteArray with: 0 with: 4 with: 5.
+		a indexOf: 5 startingAt: 1.
+		a indexOf: 0 startingAt: 3
 	]
 ]

@@ -1299,6 +1299,21 @@ class Interp(object):
                 return True
         return False
         
+    def p_ArrayedCollection_indexOfStartingAt(self, ctx, recv, argList):
+        """
+        Primitve handler for Array indexOf:StartingAt:
+        """
+        item    = argList[0]
+        start   = argList[1]
+        if is_int(start):
+            try:
+                idx = recv._refs.index(item, start - 1) + 1
+            except ValueError:
+                idx = 0
+            ctx.push(idx)
+            return True
+        return False
+        
     def p_ByteArray_basicNewColon(self, ctx, recv, argList):
         """
         Primitiive handler for ByteArray basicNew:
