@@ -117,6 +117,7 @@ Init_Kernel_Mod = (
 # should be sent at startup
 Init_Class_Init = (
     "Character",
+    "Fraction",
 )
 
 # the list of primitive ops handled by the interpreter
