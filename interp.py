@@ -1325,7 +1325,21 @@ class Interp(object):
         Primitive handler for FloatD emin
         """
         ctx.push(sys.float_info.min_exp)
-        return True 
+        return True
+            
+    def p_FloatD_precision(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD precision
+        """
+        ctx.push(sys.float_info.mant_dig)
+        return True
+        
+    def p_FloatD_decimalDigits(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD decimalDigits
+        """
+        ctx.push(sys.float_info.dig)
+        return True
         
     def p_FloatD_plus(self, ctx, recv, argList):
         """
