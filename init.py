@@ -96,6 +96,7 @@ Init_Kernel_Mod = (
     "Number.st",
     "Integer.st",
     "SmallInt.st",
+    "Fraction.st",
     "Iterable.st",
     "Collection.st",
     "SeqCollect.st",
