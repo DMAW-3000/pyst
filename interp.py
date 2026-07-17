@@ -242,9 +242,9 @@ class Interp(object):
         
         # allocate a new context and link to old
         newCtx = MethodContext()
-        newCtx.parent = oldCtx
+        newCtx.parent   = oldCtx
         newCtx.receiver = recvObj
-        newCtx.method = methObj
+        newCtx.method   = methObj
         
         # push args onto new stack
         for arg in argList:
@@ -262,8 +262,8 @@ class Interp(object):
         Set callbacks to be invoked before and after
         every bytecode instruction.
         """
-        self.i_debug_pre = preHook
-        self.i_debug_post = postHook
+        self.i_debug_pre    = preHook
+        self.i_debug_post   = postHook
         
     def get_debug(self):
         """
