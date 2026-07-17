@@ -160,7 +160,11 @@
 	
 	test12 [
 		"test12"
-		| a |
+		| a x |
+		x := 12.4.
+		x < 3043.24 and: [432.423 > x].
+		x <= 12.4 and: [x >= 0.332].
+		0.0 = 0.0 and: [x ~= 0.0].
 		Float e + 10.23 - 3.4e-5 * 5.74e3 / 8.43e9.
 		FloatD fmax / 20.0e20 * 100000.0 * FloatD fminNormalized.
 		FloatD infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits.

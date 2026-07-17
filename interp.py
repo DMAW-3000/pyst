@@ -1383,6 +1383,84 @@ class Interp(object):
             return True
         return False
         
+    def p_FloatD_lt(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD <
+        """
+        send = argList[0]
+        if is_flt(send):
+            if recv < send:
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatD_gt(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD >
+        """
+        send = argList[0]
+        if is_flt(send):
+            if recv > send:
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatD_le(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD <=
+        """
+        send = argList[0]
+        if is_flt(send):
+            if recv <= send:
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatD_ge(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD >=
+        """
+        send = argList[0]
+        if is_flt(send):
+            if recv >= send:
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatD_eq(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD =
+        """
+        send = argList[0]
+        if is_flt(send):
+            if recv == send:
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatD_ne(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD ~=
+        """
+        send = argList[0]
+        if is_flt(send):
+            if recv != send:
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for Array replaceFrom:To:With:StartingAt:
