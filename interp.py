@@ -174,12 +174,10 @@ class Interp(object):
     def send_message(self, numArgs, isSuper, selObj):
         """
         Send a message.  This assumes that the receiver,
-        message selector, and argument values have been
+        message selector (possibly), and argument values have been
         pushed to the current stack.
         """
         # get old context
-        # adjust ip so the next bytecode is ready
-        # after return
         oldCtx = self.i_context
         pop = oldCtx.pop
         
