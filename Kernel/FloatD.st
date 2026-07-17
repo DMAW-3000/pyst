@@ -47,35 +47,35 @@ accuracy as Cs "double" numbers.'>
 	"Answer the number of bits in the mantissa. 1 + (2^-precision) = 1"
 
 	<category: 'characterization'>
-	^CDoubleBinaryDigits
+	<primitive: VMpr_FloatD_precision>
     ]
 
     FloatD class >> fminNormalized [
 	"Return the smallest normalized FloatD that is > 0"
 
 	<category: 'characterization'>
-	^CDoubleMin
+	<primitive: VMpr_FloatD_fminNormalized>
     ]
 
     FloatD class >> fmax [
 	"Return the largest normalized FloatD that is not infinite."
 
 	<category: 'characterization'>
-	^CDoubleMax
+	<primitive: VMpr_FloatD_fmax>
     ]
 
     FloatD class >> emax [
 	"Return the maximum allowable exponent for a FloatD that is finite."
 
 	<category: 'characterization'>
-	^CDoubleMaxExp
+	<primitive: VMpr_FloatD_emax>
     ]
 
     FloatD class >> emin [
 	"Return the maximum allowable exponent for a FloatD that is finite."
 
 	<category: 'characterization'>
-	^CDoubleMinExp
+	<primitive: VMpr_FloatD_emin>
     ]
 
     FloatD class >> decimalDigits [
@@ -87,21 +87,21 @@ accuracy as Cs "double" numbers.'>
 	 again, without change to the Q decimal digits."
 
 	<category: 'characterization'>
-	^CDoubleDigits
+	<primitive: VMpr_FloatD_decimalDigits>
     ]
 
     FloatD class >> infinity [
 	"Return a FloatD that represents positive infinity."
 
 	<category: 'characterization'>
-	^CDoublePInf
+	<primitive: VMpr_FloatD_infinity>
     ]
 
     FloatD class >> negativeInfinity [
 	"Return a FloatD that represents negative infinity."
 
 	<category: 'characterization'>
-	^CDoubleNInf
+	<primitive: VMpr_FloatD_negativeInfinity>
     ]
 
     FloatD class >> nan [
@@ -109,7 +109,7 @@ accuracy as Cs "double" numbers.'>
 	 (e.g. Inf - Inf, Inf / Inf)."
 
 	<category: 'characterization'>
-	^CDoubleNaN
+	<primitive: VMpr_FloatD_nan>
     ]
 
     zero [
