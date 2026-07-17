@@ -907,6 +907,32 @@ All classes in the system are subclasses of me.'>
 	^nil
     ]
 	
+	perform: selectorOrMessageOrMethod [
+	"Send the unary message named selectorOrMessageOrMethod (if a Symbol)
+	 to the receiver, or the message and arguments it identifies (if a Message
+	 or DirectedMessage), or finally execute the method within the receiver
+	 (if a CompiledMethod).  In the last case, the method need not reside on
+	 the hierarchy from the receiver's class to Object -- it need not reside
+	 at all in a MethodDictionary, in fact -- but doing bad things will
+	 compromise stability of the Smalltalk virtual machine (and don't blame
+	 anybody but yourself).
+	 
+	 This method should not be overridden"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_perform>
+	selectorOrMessageOrMethod isSymbol 
+	    ifTrue: 
+		[(self respondsTo: selectorOrMessageOrMethod) 
+		    ifTrue: [^"SystemExceptions." WrongArgumentCount signal]
+		    ifFalse: 
+			[self doesNotUnderstand: (Message selector: selectorOrMessageOrMethod
+				    arguments: #())]].
+	(selectorOrMessageOrMethod isKindOf: CompiledMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
+	^selectorOrMessageOrMethod sendTo: self
+    ]
+	
 	perform: selectorOrMethod withArguments: argumentsArray [
 	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
 	 passing the elements of argumentsArray as parameters, or execute the
@@ -932,6 +958,107 @@ All classes in the system are subclasses of me.'>
 	    ifFalse: 
 		[self doesNotUnderstand: (Message selector: selectorOrMethod
 			    arguments: argumentsArray)]
+    ]
+	
+	perform: selectorOrMethod with: arg1 [
+	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
+	 passing arg1 to it, or execute the method within the receiver
+	 (if a CompiledMethod).  In the latter case, the method need not reside on
+	 the hierarchy from the receiver's class to Object -- it need not reside
+	 at all in a MethodDictionary, in fact -- but doing bad things will
+	 compromise stability of the Smalltalk virtual machine (and don't blame
+	 anybody but yourself).
+	 
+	 This method should not be overridden"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_perform>
+	(selectorOrMethod isKindOf: CompiledMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
+	selectorOrMethod isSymbol 
+	    ifFalse: 
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+	(self respondsTo: selectorOrMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
+	    ifFalse: 
+		[self 
+		    doesNotUnderstand: (Message selector: selectorOrMethod 
+			                            arguments: (Array with: arg1))]
+    ]
+
+    perform: selectorOrMethod with: arg1 with: arg2 [
+	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
+	 passing arg1 and arg2 to it, or execute the method within the receiver
+	 (if a CompiledMethod).  In the latter case, the method need not reside on
+	 the hierarchy from the receiver's class to Object -- it need not reside
+	 at all in a MethodDictionary, in fact -- but doing bad things will
+	 compromise stability of the Smalltalk virtual machine (and don't blame
+	 anybody but yourself).
+	 
+	 This method should not be overridden"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_perform>
+	(selectorOrMethod isKindOf: CompiledMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
+	selectorOrMethod isSymbol 
+	    ifFalse: 
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+	(self respondsTo: selectorOrMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
+	    ifFalse: 
+		[self doesNotUnderstand: (Message selector: selectorOrMethod
+										  arguments: (Array with: arg1 with: arg2))]
+    ]
+
+    perform: selectorOrMethod with: arg1 with: arg2 with: arg3 [
+	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
+	 passing the other arguments to it, or execute the method within the
+	 receiver (if a CompiledMethod).  In the latter case, the method need not
+	 reside on the hierarchy from the receiver's class to Object -- it need
+	 not reside at all in a MethodDictionary, in fact -- but doing bad things
+	 will compromise stability of the Smalltalk virtual machine (and don't
+	 blame anybody but yourself).
+	 
+	 This method should not be overridden"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_perform>
+	(selectorOrMethod isKindOf: CompiledMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
+	selectorOrMethod isSymbol 
+	    ifFalse: 
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+	(self respondsTo: selectorOrMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
+	    ifFalse: 
+		[self doesNotUnderstand: (Message selector: selectorOrMethod
+										  arguments: (Array with: arg1 with: arg2 with: arg3))]
+    ]
+
+    perform: selectorOrMethod with: arg1 with: arg2 with: arg3 with: arg4 [
+	"Send the message named selectorOrMethod (if a Symbol) to the receiver,
+	 passing the other arguments to it, or execute the method within the
+	 receiver (if a CompiledMethod).  In the latter case, the method need not
+	 reside on the hierarchy from the receiver's class to Object -- it need
+	 not reside at all in a MethodDictionary, in fact -- but doing bad things
+	 will compromise stability of the Smalltalk virtual machine (and don't
+	 blame anybody but yourself).
+	 
+	 This method should not be overridden"
+
+	<category: 'built ins'>
+	<primitive: VMpr_Object_perform>
+	(selectorOrMethod isKindOf: CompiledMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal].
+	selectorOrMethod isSymbol 
+	    ifFalse: 
+		["SystemExceptions." WrongClass signalOn: selectorOrMethod mustBe: Symbol].
+	(self respondsTo: selectorOrMethod) 
+	    ifTrue: ["SystemExceptions." WrongArgumentCount signal]
+	    ifFalse: 
+		[self doesNotUnderstand: (Message selector: selectorOrMethod
+										  arguments: (Array with: arg1 with: arg2 with: arg3 with: arg4))]
     ]
 	
     == arg [
