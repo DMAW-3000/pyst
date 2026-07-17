@@ -40,6 +40,7 @@ class Interp(object):
         self._sel_equal         = self._make_sel("=")
         self._sel_not_equal     = self._make_sel("~=")
         self._sel_times         = self._make_sel("*")
+        self._sel_divide        = self._make_sel("/")
         self._sel_int_divide    = self._make_sel("//")
         self._sel_remainder     = self._make_sel("\\\\")
         self._sel_identity      = self._make_sel("==")
@@ -96,6 +97,7 @@ class Interp(object):
         bTbl[B_EQUAL_SPECIAL]               = self.b_send_spec_equal
         bTbl[B_NOT_EQUAL_SPECIAL]           = self.b_send_spec_not_equal
         bTbl[B_TIMES_SPECIAL]               = self.b_send_spec_times
+        bTbl[B_DIVIDE_SPECIAL]              = self.b_send_spec_divide
         bTbl[B_INTEGER_DIVIDE_SPECIAL]      = self.b_send_spec_int_divide
         bTbl[B_REMAINDER_SPECIAL]           = self.b_send_spec_remainder
         bTbl[B_SAME_OBJECT_SPECIAL]         = self.b_send_spec_identity
@@ -624,6 +626,13 @@ class Interp(object):
         Execute the send message special * bytecode
         """
         self.send_message(arg, False, self._sel_times())
+        return 2
+        
+    def b_send_spec_divide(self, ctx, arg):
+        """
+        Execute the send message special / bytecode
+        """
+        self.send_message(arg, False, self._sel_divide())
         return 2
         
     def b_send_spec_int_divide(self, ctx, arg):

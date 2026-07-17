@@ -367,6 +367,7 @@ class Smalltalk(object):
         disTbl[B_EQUAL_SPECIAL]             = ("SEND_SPECIAL_EQUAL", 2, 1)
         disTbl[B_NOT_EQUAL_SPECIAL]         = ("SEND_SPECIAL_NOT_EQUAL", 2, 1)
         disTbl[B_TIMES_SPECIAL]             = ("SEND_SPECIAL_TIMES", 2, 1)
+        disTbl[B_DIVIDE_SPECIAL]            = ("SEND_SPECIAL_DIVIDE", 2, 1)
         disTbl[B_INTEGER_DIVIDE_SPECIAL]    = ("SEND_SPECIAL_INT_DIVIDE", 2, 1)
         disTbl[B_REMAINDER_SPECIAL]         = ("SEND_SPECIAL_REMAINDER", 2, 1)
         disTbl[B_SAME_OBJECT_SPECIAL]       = ("SEND_SPECIAL_IDENTITY", 2, 1)

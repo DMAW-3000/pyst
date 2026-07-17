@@ -56,6 +56,7 @@ class Compile(object):
         "="     : B_EQUAL_SPECIAL,
         "~="    : B_NOT_EQUAL_SPECIAL,
         "*"     : B_TIMES_SPECIAL,
+        "/"     : B_DIVIDE_SPECIAL,
         "//"    : B_INTEGER_DIVIDE_SPECIAL,
         "\\\\"  : B_REMAINDER_SPECIAL,
         "=="    : B_SAME_OBJECT_SPECIAL,
