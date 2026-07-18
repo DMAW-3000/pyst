@@ -134,13 +134,12 @@ class Interp(object):
         """
         # create the root context
         # leave the parent nil
-        self.i_context = MethodContext()
-        psh = self.i_context.push
+        self.i_context = ctx = MethodContext()
         
         # push receiver and args onto current stack
-        psh(recvObj)
+        ctx.push(recvObj)
         for arg in argValues:
-            psh(arg)
+            ctx.push(arg)
             
         # send message and run until control
         # returns to this root context
@@ -148,7 +147,7 @@ class Interp(object):
         self.exec()
         
         # pop return value from stack
-        return self.i_context.pop()
+        return ctx.pop()
         
     def send_message_intern(self, recvObj, selObj, argValues):
         """
