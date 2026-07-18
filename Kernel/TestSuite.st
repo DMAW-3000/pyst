@@ -151,6 +151,7 @@
 	test11 [
 		"test11"
 		| x y |
+		#(3 5 2) perform: #at: withArguments: #(2).
 		nil perform: #isNil. Array perform: #new: with: 4.
 		x := Array basicNew: 3.
 		y := Array basicNew: 2.

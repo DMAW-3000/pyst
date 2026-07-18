@@ -137,6 +137,7 @@ Init_Primitive = (
     "Object_become",
     "Object_allOwners",
     "Object_perform",
+    "Object_performWithArguments",
     "BlockClosure_value",
     "BlockClosure_cull",
     "BlockClosure_valueWithArguments",

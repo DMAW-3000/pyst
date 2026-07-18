@@ -883,6 +883,23 @@ class Interp(object):
             return True
         return False
         
+    def p_Object_performWithArguments(self, ctx, recv, argList):
+        """
+        Primitive handler for Object perform:withArguments:
+        """
+        send    = argList[0]
+        argArr  = argList[1]
+        if is_obj(send) and is_obj(argArr) and (argArr.get_class() is self._sys.k_array()):
+            argList = [arg for arg in argArr]
+            klass = send.get_class()
+            if klass is self._sys.k_symbol():
+                ret = self.send_message_intern(recv, send, argList)
+            else:
+                return False
+            ctx.push(ret)
+            return True
+        return False
+        
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value
