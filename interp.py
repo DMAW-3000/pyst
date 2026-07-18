@@ -857,10 +857,9 @@ class Interp(object):
             for obj1 in gc.get_referrers(recv):
                 for obj2 in gc.get_referrers(obj1):
                     if isinstance(obj2, dict):
-                        obj3 = gc.get_referrers(obj2)
-                        for obj4 in obj3:
-                            if isinstance(obj4, Object):
-                                refList.append(obj4)
+                        for obj3 in gc.get_referrers(obj2):
+                            if isinstance(obj3, Object):
+                                refList.append(obj3)
         ctx.push(Array.from_seq(refList))
         return True
         
