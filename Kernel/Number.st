@@ -217,13 +217,6 @@ implicit type coercing code for binary operations.'>
 	    scale: n
     ]
 
-    asCNumber [
-	"Convert the receiver to a kind of number that is understood by
-	 the C call-out mechanism."
-	<category: 'coercion'>
-	self subclassResponsibility
-    ]
-
     asFloat [
 	"Convert the receiver to an arbitrary subclass of Float"
 
