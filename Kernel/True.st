@@ -37,11 +37,6 @@ Boolean subclass: True [
     <category: 'Language-Data types'>
     <comment: 'I represent truth and justice in the world.  My motto is "semper veritatis".'>
 
-    asCBooleanValue [
-	<category: 'C hacks'>
-	^1
-    ]
-
     ifTrue: trueBlock ifFalse: falseBlock [
 	"We are true -- evaluate trueBlock"
 

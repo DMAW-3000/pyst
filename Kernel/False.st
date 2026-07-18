@@ -38,11 +38,6 @@ Boolean subclass: False [
     <comment: 'I always tell lies. 
 I have a single instance in the system, which represents the value false.'>
 
-    asCBooleanValue [
-	<category: 'C hacks'>
-	^0
-    ]
-
     ifTrue: trueBlock ifFalse: falseBlock [
 	"We are false -- evaluate the falseBlock"
 

@@ -85,11 +85,6 @@ my subclasses True and False actually provide those operations.'>
 	self printOn: aStream	"representation is the same"
     ]
 
-    asCBooleanValue [
-	<category: 'C hacks'>
-	self subclassResponsibility
-    ]
-
     ifTrue: trueBlock ifFalse: falseBlock [
 	<category: 'basic'>
 	self subclassResponsibility
