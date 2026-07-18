@@ -59,34 +59,36 @@
 		a1 := #(1 2 3) copy.
 		a2 := #(4 5 6) copy.
 		a2 become: a1.
-		a2 at: 1.
-		a1 at: 1
+		((a2 at: 1) ~= 1) ifTrue: [self fail].
+		((a1 at: 1) ~= 1) ifTrue: [self fail].
 	]
 	
 	testClass [
 		"Test class behavior"
-		Collection isReadOnly.
-		(Array new: 1) isReadOnly.
+		(Collection isReadOnly) ifFalse: [self fail].
+		((Array new: 1) isReadOnly) ifTrue: [self fail].
 		TestSuite testClassVar: #(10 20 30).
-		TestSuite testClassVar at: 3.
-		^true isKindOf: false class
+		((TestSuite testClassVar at: 3) ~= 30) ifTrue: [self fail].
+		(true isKindOf: false class) ifTrue: [self fail]
 	]
 	
 	testCharacter [
 		"Test Character objects"
-		$A isDigit: 16. $E isVowel.
-		Character space isSeparator. $! isPunctuation.
-		$1 isDigit. $8 isLetter. $T isAlphaNumeric.
-		$A asLowercase isUppercase.
-		$b asUppercase isUppercase.
-		$N = $r. $X = $X
+		($A isDigit: 16) ifFalse: [self fail]. ($E isVowel) ifFalse: [self fail].
+		(Character space isSeparator) ifFalse: [self fail]. 
+		($! isPunctuation) ifFalse: [self fail].
+		($1 isDigit) ifFalse: [self fail]. ($8 isLetter) ifTrue: [self fail]. 
+		($T isAlphaNumeric) ifFalse: [self fail].
+		($A asLowercase isUppercase) ifTrue: [self fail].
+		($b asUppercase isUppercase) ifFalse: [self fail].
+		($N = $r) ifTrue: [self fail]. ($X = $X) ifFalse: [self fail]
 	]
 		
 	testBlock [
         "Test block closures"
-		[:x | true and: [x]] value: false.
-		[:x | true and: [x]] cull: false cull:false.
-		[:x :y :z | x + y - z ] valueWithArguments: #(5 22 7).
+		([:x | true and: [x]] value: false) ifTrue: [self fail].
+		([:x | true and: [x]] cull: false cull: false) ifTrue: [self fail].
+		(([:x :y :z | x + y - z ] valueWithArguments: #(5 22 7)) ~= 20) ifTrue: [self fail].
 		true ifTrue: [ | r s | r := false. s := true].
 		[:a | | x | x := a] value: #nil
     ]
@@ -118,7 +120,7 @@
 	testInteger [
 		"Test integer types"
 		| x y z |
-		x := 100 / 10.
+		((x := 100 / 10) ~= 10) ifTrue: [self fail].
 		y := 1 / 3.
 		z := SmallInteger largest.
 		y := z bitShift: -30.
@@ -128,22 +130,23 @@
 		y := 1229 \\ 14.
 		y := 1000 * 4 * 2.
 		x := 1 + 2 - 100 + 105.
-		x < 4000 and: [x > 2].
-		x >= 0 and: [x <= 8].
-		^x = 8 and: [x ~= 12359303].
+		(x < 4000 and: [x > 2]) ifFalse: [self fail].
+		(x >= 0 and: [x <= 8])  ifFalse: [self fail].
+		(x = 8 and: [x ~= 12359303]) ifFalse: [self fail].
 		1 / 4 * 2.
-		^24 gcd: 32
+		((24 gcd: 32) ~= 8) ifTrue: [self fail]
 	]
 	
 	testObject [
 		"Test advanced features of Objects"
 		| x y |
-		#(3 5 2) perform: #at: withArguments: #(2).
-		nil perform: #isNil. Array perform: #new: with: 4.
+		((#(3 5 2) perform: #at: withArguments: #(2)) ~= 5) ifTrue: [self fail].
+		(nil perform: #isNil) ifFalse: [self fail]. 
+		((Array perform: #new: with: 4) size ~= 4) ifTrue: [self fail].
 		x := Array basicNew: 3.
 		y := Array basicNew: 2.
 		x at: 1 put: y.
-		y allOwners
+		(y allOwners size ~= 2) ifTrue: [self fail]
 	]
 	
 	testFloat [
@@ -162,28 +165,29 @@
 		"Test iterable types"
 		| a |
 		a := #(9 20 122 9 9 4 2 0 2 9 10 20 30 1).
-		a anySatisfy: [:elem | elem = 20].
-		a allSatisfy: [:elem | elem < 10].
-		a count: 	  [:elem | elem = 9 ]
+		(a anySatisfy: [:elem | elem = 20]) ifFalse: [self fail].
+		(a allSatisfy: [:elem | elem < 10]) ifTrue:  [self fail].
+		((a count: 	    [:elem | elem = 9 ]) ~= 4) ifTrue: [self fail].
 	]
 		
 	testByteArray [
 		"Test byte array types"
 		| a |
 		a := ByteArray with: 0 with: 4 with: 5.
-		a indexOf: 5 startingAt: 1.
-		a indexOf: 0 startingAt: 3
+		((a indexOf: 5 startingAt: 1) ~= 3) ifTrue: [self fail].
+		((a indexOf: 0 startingAt: 3) ~= 0) ifTrue: [self fail].
 	]
 	
 	testStream [
 		"Test stream types"
-		| x |
-		#testSym size.
-		'test string' size.
+		| x s |
+		s := 'This is a test write string'.
 		x := WriteStream on: (Array new: 2).
-		x nextPutAll: 'This is a test write string'.
+		x nextPutAll: s.
+		(x contents size ~= s size) ifTrue: [self fail].
 		x := ReadStream on: 'This is a test read string'.
-		21 timesRepeat: [x next]
+		21 timesRepeat: [x next].
+		(x peek ~= $t) ifTrue: [self fail]
 	]
 	
 	testException [
