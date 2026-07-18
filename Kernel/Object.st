@@ -658,6 +658,22 @@ All classes in the system are subclasses of me.'>
 	index > self basicSize 
 	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index]
     ]
+	
+	checkIndexableBounds: index put: object [
+	"Private - Check the reason why a store to the given indexed
+	 instance variable failed"
+
+	<category: 'built ins'>
+	| shape size |
+	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
+	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signal].
+	index isInteger 
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
+	index < 1 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
+	index > self basicSize 
+	    ifTrue: [^"SystemExceptions." IndexOutOfRange signalOn: self withIndex: index].
+    ]
 
     at: anIndex [
 	"Answer the index-th indexed instance variable of the receiver"
