@@ -153,6 +153,7 @@
 		"Test floating point types"
 		| x |
 		x := 12.4.
+		x truncated.
 		((x + 30 * 2) closeTo: 84.8) ifFalse: [self fail].
 		((x * (1 / 3)) closeTo: 4.133333) ifFalse: [self fail].
 		(x > 1) ifFalse: [self fail].

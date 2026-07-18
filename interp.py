@@ -1493,6 +1493,13 @@ class Interp(object):
             return True
         return False
         
+    def p_FloatD_truncated(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD truncated
+        """
+        ctx.push(int(recv))
+        return True
+        
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for Array replaceFrom:To:With:StartingAt:
