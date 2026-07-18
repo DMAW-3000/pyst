@@ -212,18 +212,21 @@ class Smalltalk(object):
             print()
             
         # static class initialization
+        initSym = inst.symbol_find_or_add("initialize")
         for klassName in init.Init_Class_Init:
             klassSym = inst.symbol_find(klassName)
             klassObj = inst.dict_find(inst.e_st_dict, klassSym).value.value
             print("Initializing class", klassSym)
-            inst.g_interp.send_message_extern(klassObj, "initialize", ())
+            inst.g_interp.send_message_extern(klassObj, initSym, ())
         
     
     @classmethod
     def run(klass):
         inst = klass._SmalltalkInstance
-        testObj = inst.g_interp.send_message_extern(inst.k_test(), "new", ())
-        result = inst.g_interp.send_message_extern(testObj, "runAll", ())
+        newSym = inst.symbol_find_or_add("new")
+        runSym = inst.symbol_find_or_add("runAll")
+        testObj = inst.g_interp.send_message_extern(inst.k_test(), newSym, ())
+        result = inst.g_interp.send_message_extern(testObj, runSym, ())
         print()
         print(result)
         

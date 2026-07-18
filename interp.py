@@ -23,6 +23,7 @@ class Interp(object):
         self._true  = weakref.ref(system.o_true)
         
         # get refs to special selector symbols
+        self._sel_initialize    = self._make_sel("initialize")
         self._sel_value         = self._make_sel("value")
         self._sel_size          = self._make_sel("size")
         self._sel_isnil         = self._make_sel("isNil")
@@ -125,21 +126,16 @@ class Interp(object):
         """
         return weakref.ref(self._sys.symbol_find_or_add(name))
         
-    def send_message_extern(self, recvObj, selName, argValues):
+    def send_message_extern(self, recvObj, selObj, argValues):
         """
         Send a message from outside the interpreter.
-        The selector name is a python str and the arg
-        value sequence must match the selector arg order.
+        The selector object should be a valid Symbol and the
+        value sequence must match the message arg order.
         """
         # create the root context
         # leave the parent nil
         self.i_context = MethodContext()
         psh = self.i_context.push
-        
-        # find selector symbol
-        selObj = self._sys.symbol_find(selName)
-        if selObj.is_nil():
-            raise NameError("unknown selector %s" % selName)
         
         # push receiver, selector, and args onto current stack
         psh(recvObj)
@@ -155,7 +151,7 @@ class Interp(object):
         # pop return value from stack
         return self.i_context.pop()
         
-    def send_message_intern(self, recvObj, selName, argValues):
+    def send_message_intern(self, recvObj, selObj, argValues):
         """
         Send a message from inside the interpreter.
         The selector name is a python str and the arg
@@ -165,7 +161,7 @@ class Interp(object):
         ctxSave = self.i_context
         
         # send the message smd get reply value
-        ret = self.send_message_extern(recvObj, selName, argValues)
+        ret = self.send_message_extern(recvObj, selObj, argValues)
         
         # restore context and return value
         self.i_context = ctxSave
@@ -1013,7 +1009,7 @@ class Interp(object):
         
         if status:
             # send the new object initialize message
-            self.send_message_intern(ctx[-1], "initialize", ())
+            self.send_message_intern(ctx[-1], self._sel_initialize(), ())
         return status
         
     def p_Behavior_newColonInitialize(self, ctx, recv, argList):
@@ -1028,7 +1024,7 @@ class Interp(object):
         
         if status:
             # send the new object initialize message
-            self.send_message_intern(ctx[-1], "initialize", ())
+            self.send_message_intern(ctx[-1], self._sel_initialize(), ())
         return status
         
     def p_Character_create(self, ctx, recv, argList):
@@ -1518,7 +1514,7 @@ class Interp(object):
         
         if status:
             # send the new object initialize message
-            self.send_message_intern(ctx[-1], "initialize", ())
+            self.send_message_intern(ctx[-1], self._sel_initialize(), ())
         return status
         
         
