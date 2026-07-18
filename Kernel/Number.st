@@ -898,7 +898,7 @@ implicit type coercing code for binary operations.'>
 	<category: 'misc math'>
 	aNumber isInteger 
 	    ifTrue: [^self raisedToInteger: aNumber].
-	^aNumber generality > 1.0d generality
+	^aNumber generality > 1.0 generality
 	    ifTrue: [(aNumber coerce: self) raisedTo: aNumber]
 	    ifFalse: [self asFloatD raisedTo: aNumber asFloatD]
     ]
