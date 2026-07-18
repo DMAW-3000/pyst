@@ -773,7 +773,7 @@ class Interp(object):
         Primitve handler for Object at:put:
         """
         idx = argList[0]
-        if is_int(idx):
+        if is_int(idx) and not recv.is_readonly():
             spec = recv.get_class().instanceSpec
             if not (spec & 0x10):
                 val = argList[1]

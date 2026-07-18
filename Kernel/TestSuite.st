@@ -106,10 +106,14 @@
 		c := #(('abc' 'xyz') (1 2 9 7 3 19) 20).
 		a := #(1 2 3 4 5).
 		b := a copy.
-		b at: 1; at: 2; at: 5.
-		a at: 2 put: 10.
-		a at: 3 put: 11.
-		a at: 2; at: 3.
+		((b at: 1) ~= 1) ifTrue: [self fail].
+		((b at: 2) ~= 2) ifTrue: [self fail].
+		((b at: 3) ~= 3) ifTrue: [self fail].
+		b at: 3 put: 11.
+		b at: 2 put: 3.
+		((b at: 1) ~= 1) ifTrue: [self fail].
+		((b at: 2) ~= 3) ifTrue: [self fail].
+		((b at: 3) ~= 11) ifTrue: [self fail].
 		y := #(1 2 3 4 10).
 		x := Array new: y size.
 		x replaceFrom: 1 to: x size with: y startingAt: 1.
