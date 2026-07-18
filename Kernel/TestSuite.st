@@ -69,6 +69,9 @@
 	
 	testCharacter [
 		"Test Character objects"
+		$A isDigit: 16. $E isVowel.
+		Character space isSeparator. $! isPunctuation.
+		$1 isDigit. $8 isLetter. $T isAlphaNumeric.
 		$A asLowercase isUppercase.
 		$b asUppercase isUppercase.
 		$N = $r. $X = $X
