@@ -137,15 +137,14 @@ class Interp(object):
         self.i_context = MethodContext()
         psh = self.i_context.push
         
-        # push receiver, selector, and args onto current stack
+        # push receiver and args onto current stack
         psh(recvObj)
-        psh(selObj)
         for a in argValues:
             psh(a)
             
         # send message and run until control
         # returns to this root context
-        self.send_message(len(argValues), False, None)
+        self.send_message(len(argValues), False, selObj)
         self.exec()
         
         # pop return value from stack
