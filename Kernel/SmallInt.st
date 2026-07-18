@@ -362,14 +362,7 @@ represent signed 30 bit integers and are as efficient as possible.'>
 	    ifFalse: ["SystemExceptions." WrongClass signalOn: arg mustBe: Integer]
 	    ifTrue: [(LargeInteger fromInteger: self) bitShift: arg]
     ]
-
-    asCNumber [
-	"Convert the receiver to a kind of number that is understood by
-	 the C call-out mechanism."
-	<category: 'coercion'>
-	^self
-    ]
-
+	
     asFloatD [
 	"Convert the receiver to a FloatD, answer the result"
 
