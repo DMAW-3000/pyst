@@ -164,6 +164,7 @@ Init_Primitive = (
     "SmallInteger_bitOr",
     "SmallInteger_bitXor",
     "SmallInteger_bitShift",
+    "SmallInteger_asFloatD",
     "FloatD_infinity",
     "FloatD_negativeInfinity",
     "FloatD_nan",

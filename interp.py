@@ -1303,6 +1303,13 @@ class Interp(object):
             return True
         return False
         
+    def p_SmallInteger_asFloatD(self, ctx, recv, argList):
+        """
+        Primitive handler for SmallInteger asFloatD
+        """
+        ctx.push(float(recv))
+        return True
+        
     def p_FloatD_infinity(self, ctx, recv, argList):
         """
         Primitive handler for FloatD infinity
