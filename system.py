@@ -186,7 +186,7 @@ class Smalltalk(object):
         # compile the Kernel modules
         inst.g_compile = Compile(inst, verbose)
         for mod in init.Init_Kernel_Mod:
-            print("Compiling module ", mod)
+            print("Compiling module", mod)
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
         
         # dump information
