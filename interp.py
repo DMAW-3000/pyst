@@ -139,8 +139,8 @@ class Interp(object):
         
         # push receiver and args onto current stack
         psh(recvObj)
-        for a in argValues:
-            psh(a)
+        for arg in argValues:
+            psh(arg)
             
         # send message and run until control
         # returns to this root context
