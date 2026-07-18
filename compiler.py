@@ -240,8 +240,10 @@ class Compile(object):
             raise CompileError("attr missing >")
         if attrName.value == "comment":
             self._cur_klass.comment = String.from_str(attrValue.value)
+            self._cur_klass.comment.make_readonly()
         elif attrName.value == "category":
             self._cur_klass.category = String.from_str(attrValue.value)
+            self._cur_klass.category.make_readonly()
             
     def parse_inst_vars(self):
         """
@@ -440,6 +442,7 @@ class Compile(object):
             raise CompileError("missing > " + str(self._cur_meth))
         if attrName.value == "category":
             self._cur_meth.descriptor.category = String.from_str(attrValue.value)
+            self._cur_meth.descriptor.category.make_readonly()
         elif attrName.value == "primitive":
             sym = self._sys.symbol_find(attrValue.value)
             if not sym.is_nil():
@@ -773,7 +776,9 @@ class Compile(object):
             
         # string constant
         elif isinstance(x, ParseLiteralString):
-            idx = self.add_literal(String.from_str(x.value))
+            s = String.from_str(x.value)
+            s.make_readonly()
+            idx = self.add_literal(s)
             self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # block closure
