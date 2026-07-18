@@ -136,6 +136,7 @@ Init_Primitive = (
     "Object_hash",
     "Object_become",
     "Object_allOwners",
+    "Object_perform",
     "BlockClosure_value",
     "BlockClosure_cull",
     "BlockClosure_valueWithArguments",

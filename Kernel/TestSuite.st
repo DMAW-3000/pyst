@@ -151,6 +151,7 @@
 	test11 [
 		"test11"
 		| x y |
+		nil perform: #isNil. Array perform: #new: with: 4.
 		x := Array basicNew: 3.
 		y := Array basicNew: 2.
 		x at: 1 put: y.
