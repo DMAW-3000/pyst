@@ -25,13 +25,14 @@
 				testClass;
 				testCharacter;
 				testBlock;
-				testStream;
 				testSuper;
 				testArray;
 				testInteger;
 				testObject;
 				testFloat;
+				testIterable;
 				testByteArray;
+				testStream;
 				testException
 	]
 	
@@ -89,17 +90,6 @@
 		true ifTrue: [ | r s | r := false. s := true].
 		[:a | | x | x := a] value: #nil
     ]
-	
-	testStream [
-		"Test stream types"
-		| x |
-		#testSym size.
-		'test string' size.
-		x := WriteStream on: (Array new: 2).
-		x nextPutAll: 'This is a test write string'.
-		x := ReadStream on: 'This is a test read string'.
-		21 timesRepeat: [x next]
-	]
 	
 	testSuper [
 		"Test super messages"
@@ -168,12 +158,32 @@
 		FloatD infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits
 	]
 	
+	testIterable [
+		"Test iterable types"
+		| a |
+		a := #(9 20 122 9 9 4 2 0 2 9 10 20 30 1).
+		a anySatisfy: [:elem | elem = 20].
+		a allSatisfy: [:elem | elem < 10].
+		a count: 	  [:elem | elem = 9 ]
+	]
+		
 	testByteArray [
 		"Test byte array types"
 		| a |
 		a := ByteArray with: 0 with: 4 with: 5.
 		a indexOf: 5 startingAt: 1.
 		a indexOf: 0 startingAt: 3
+	]
+	
+	testStream [
+		"Test stream types"
+		| x |
+		#testSym size.
+		'test string' size.
+		x := WriteStream on: (Array new: 2).
+		x nextPutAll: 'This is a test write string'.
+		x := ReadStream on: 'This is a test read string'.
+		21 timesRepeat: [x next]
 	]
 	
 	testException [
