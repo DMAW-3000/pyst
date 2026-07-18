@@ -39,13 +39,17 @@
 		"Test basic object creation and initialization"
 		| obj |
 		obj := Object basicNew.
-		obj notNil; size.
+		obj notNil; size; isReadOnly.
 		obj := Object basicNew: 10.
-		obj notNil; size.
+		obj notNil; size; isReadOnly.
 		obj := Object new.
-		obj notNil; size.
+		obj notNil; size; isReadOnly.
 		obj := Object new: 10.
-		obj notNil; size
+		obj notNil; size; isReadOnly.
+		#[4 5 6] size; isReadOnly.
+		#(2 7 3) size; isReadOnly.
+		'test string' size; isReadOnly.
+		#testSymbol   size; isReadOnly.
 	]
 	
 	testCopy [
