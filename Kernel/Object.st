@@ -156,11 +156,6 @@ All classes in the system are subclasses of me.'>
 	^notNilBlock cull: self
     ]
 
-    isCObject [
-	<category: 'testing functionality'>
-	^false
-    ]
-
     isString [
 	<category: 'testing functionality'>
 	^false
