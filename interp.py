@@ -173,22 +173,21 @@ class Interp(object):
         """
         # get old context
         oldCtx = self.i_context
-        pop = oldCtx.pop
         
         # pop the message arguments from parent stack
         if numArgs:
             argList = [None] * numArgs
             n = numArgs
             while n:
-                argList[n - 1] = pop()
+                argList[n - 1] = oldCtx.pop()
                 n -= 1
         else:
             argList = ()
         
         # pop the message selector and receiver
         if selObj is None:
-            selObj = pop()
-        recvObj = pop()
+            selObj = oldCtx.pop()
+        recvObj = oldCtx.pop()
     
         # get class type for receiver
         # handle primitive types specially
