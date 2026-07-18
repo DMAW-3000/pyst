@@ -121,7 +121,7 @@
 		"Test integer types"
 		| x y z |
 		((x := 100 / 10) ~= 10) ifTrue: [self fail].
-		y := 1 / 3.
+		((y := 1 / 3) isMemberOf: Fraction) ifFalse: [self fail].
 		z := SmallInteger largest.
 		y := z bitShift: -30.
 		x := ((16r10FF bitAnd: 16rB010) bitOr: 32) bitXor: 33.
@@ -153,7 +153,9 @@
 		"Test floating point types"
 		| x |
 		x := 12.4.
-		x + 30 * 2.
+		((x + 30 * 2) closeTo: 84.8) ifFalse: [self fail].
+		((x * (1 / 3)) closeTo: 4.133333) ifFalse: [self fail].
+		(x > 1) ifFalse: [self fail].
 		(x < 3043.24 and: [432.423 > x]) ifFalse: [self fail].
 		(x <= 12.4 and: [x >= 0.332]) ifFalse: [self fail].
 		(0.0 = 0.0 and: [x ~= 0.0]) ifFalse: [self fail].
