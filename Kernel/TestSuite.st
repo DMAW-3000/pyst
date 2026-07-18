@@ -153,9 +153,10 @@
 		"Test floating point types"
 		| x |
 		x := 12.4.
-		x < 3043.24 and: [432.423 > x].
-		x <= 12.4 and: [x >= 0.332].
-		0.0 = 0.0 and: [x ~= 0.0].
+		x + 30 * 2.
+		(x < 3043.24 and: [432.423 > x]) ifFalse: [self fail].
+		(x <= 12.4 and: [x >= 0.332]) ifFalse: [self fail].
+		(0.0 = 0.0 and: [x ~= 0.0]) ifFalse: [self fail].
 		Float e + 10.23 - 3.4e-5 * 5.74e3 / 8.43e9.
 		FloatD fmax / 20.0e20 * 100000.0 * FloatD fminNormalized.
 		FloatD infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits
@@ -167,7 +168,7 @@
 		a := #(9 20 122 9 9 4 2 0 2 9 10 20 30 1).
 		(a anySatisfy: [:elem | elem = 20]) ifFalse: [self fail].
 		(a allSatisfy: [:elem | elem < 10]) ifTrue:  [self fail].
-		((a count: 	    [:elem | elem = 9 ]) ~= 4) ifTrue: [self fail].
+	   ((a count: 	   [:elem | elem = 9 ]) ~= 4) ifTrue: [self fail].
 	]
 		
 	testByteArray [
