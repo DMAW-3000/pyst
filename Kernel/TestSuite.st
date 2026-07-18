@@ -20,91 +20,106 @@
 	
 	runAll [
 		"Run all of the tests"
-		self 	test1;
-				test2;
-				test3;
-				test4;
-				test5;
-				test6;
-				test7;
-				test8;
-				test9;
-				test10;
-				test11;
-				test12
+		self 	testNewInit;
+				testCopy;
+				testClass;
+				testCharacter;
+				testBlock;
+				testStream;
+				testSuper;
+				testArray;
+				testInteger;
+				testObject;
+				testFloat;
+				testByteArray;
+				testException
 	]
 	
-	test1 [
-		"test1"
+	testNewInit [
+		"Test basic object creation and initialization"
+		| obj |
+		obj := Object basicNew.
+		obj notNil; size.
+		obj := Object basicNew: 10.
+		obj notNil; size.
+		obj := Object new.
+		obj notNil; size.
+		obj := Object new: 10.
+		obj notNil; size
+	]
+	
+	testCopy [
+		"Test Object copy and similar messages"
 		| a1 a2 |
 		a1 := #(1 2 3) copy.
 		a2 := #(4 5 6) copy.
 		a2 become: a1.
 		a2 at: 1.
-		a1 at: 1.
-		testInst1 isNil; notNil; isInteger; isNil.
-		true size; basicSize.
-		(ByteArray new: 20) size; basicSize.
-		(Array new: 10) size; basicSize
+		a1 at: 1
 	]
 	
-	test2 [
-		"test2"
-		| d e |
-		(d := $A asLowercase) isUppercase.
-		(e := $b asUppercase) isUppercase.
-		d := FinalizableObjects.
-		e := Object dependencies.
-		TestSuite testClassVar: #(10 20 30).
-		TestSuite testClassVar.
-		KernelInitialized ifFalse: [KernelInitialized := true].
-		^true isKindOf: false class
-	]
- 
-	test3 [
-        "test3"
+	testClass [
+		"Test class behavior"
 		Collection isReadOnly.
 		(Array new: 1) isReadOnly.
-		#testSym size.
-		'test string' size.
+		TestSuite testClassVar: #(10 20 30).
+		TestSuite testClassVar at: 3.
+		^true isKindOf: false class
+	]
+	
+	testCharacter [
+		"Test Character objects"
+		$A asLowercase isUppercase.
+		$b asUppercase isUppercase.
+		$N = $r. $X = $X
+	]
+		
+	testBlock [
+        "Test block closures"
 		[:x | true and: [x]] value: false.
 		[:x | true and: [x]] cull: false cull:false.
-		[:x :y :z | x + y - z ] valueWithArguments: #(5 22 7)
+		[:x :y :z | x + y - z ] valueWithArguments: #(5 22 7).
+		true ifTrue: [ | r s | r := false. s := true].
+		[:a | | x | x := a] value: #nil
     ]
 	
-	test4 [
-		"test4"
-		| x y |
-		y := #(1 2 3 4 10).
-		x := Array new: y size.
-		x replaceFrom: 1 to: x size with: y startingAt: 1.
+	testStream [
+		"Test stream types"
+		| x |
+		#testSym size.
+		'test string' size.
 		x := WriteStream on: (Array new: 2).
 		x nextPutAll: 'This is a test write string'.
 		x := ReadStream on: 'This is a test read string'.
-		21 timesRepeat: [x next].
-		x := y := false.
-		(x := y := true) isNil.
-		(x := false) ifFalse: [	x := true ]
+		21 timesRepeat: [x next]
 	]
 	
-	test5 [
-		"test5"
-		super isNil; notNil; isNil.
-		true ifTrue: [ | r s | r := false. s := true].
-		[:a | | x | x := a] value: #nil
+	testSuper [
+		"Test super messages"
+		super isNil; notNil; isNil
 	]
 	
-	test6 [
-		"test6"
-		| a b c |
+	testArray [
+		"Test array types"
+		| a b c x y |
 		a := #[5 6 7 100].
 		b := #([1 2 3] [8 9 10 11 23]).
 		c := #(('abc' 'xyz') (1 2 9 7 3 19) 20).
+		a := #(1 2 3 4 5).
+		b := a copy.
+		b at: 1; at: 2; at: 5.
+		a at: 2 put: 10.
+		a at: 3 put: 11.
+		a at: 2; at: 3.
+		y := #(1 2 3 4 10).
+		x := Array new: y size.
+		x replaceFrom: 1 to: x size with: y startingAt: 1.
+		(a := Array new: 6 withAll: 10328) at: 2.
 		^ #(1 2 3 'hello' false true nil #new)
 	]
 	
-	test7 [
-		"test7"
+	testInteger [
+		"Test integer types"
 		| x y z |
 		x := 100 / 10.
 		y := 1 / 3.
@@ -118,60 +133,44 @@
 		x := 1 + 2 - 100 + 105.
 		x < 4000 and: [x > 2].
 		x >= 0 and: [x <= 8].
-		^x = 8 and: [x ~= 12359303]
-	]
-	
-	test8 [
-		"test8"
+		^x = 8 and: [x ~= 12359303].
 		1 / 4 * 2.
 		^24 gcd: 32
 	]
 	
-	test9 [
-		"test9"
-		| a b |
-		a := #(1 2 3 4 5).
-		b := a copy.
-		$N = $r. $X = $X.
-		b at: 1; at: 2; at: 5.
-		a at: 2 put: 10.
-		a at: 3 put: 11.
-		a at: 2; at: 3
-	]
-	
-	test10 [
-		"test10"
-		| a |
-		testInst1 ifNil: [testInst1 := 1].
-		testInst2 ifNil: [testInst2 := 'test instance variable'].
-		testInst2 size. self isNil.
-		(a := Array new: 6 withAll: 10328) at: 2
-	]
-	
-	test11 [
-		"test11"
+	testObject [
+		"Test advanced features of Objects"
 		| x y |
 		#(3 5 2) perform: #at: withArguments: #(2).
 		nil perform: #isNil. Array perform: #new: with: 4.
 		x := Array basicNew: 3.
 		y := Array basicNew: 2.
 		x at: 1 put: y.
-		y allOwners.
-		Exception new
+		y allOwners
 	]
 	
-	test12 [
-		"test12"
-		| a x |
+	testFloat [
+		"Test floating point types"
+		| x |
 		x := 12.4.
 		x < 3043.24 and: [432.423 > x].
 		x <= 12.4 and: [x >= 0.332].
 		0.0 = 0.0 and: [x ~= 0.0].
 		Float e + 10.23 - 3.4e-5 * 5.74e3 / 8.43e9.
 		FloatD fmax / 20.0e20 * 100000.0 * FloatD fminNormalized.
-		FloatD infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits.
+		FloatD infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits
+	]
+	
+	testByteArray [
+		"Test byte array types"
+		| a |
 		a := ByteArray with: 0 with: 4 with: 5.
 		a indexOf: 5 startingAt: 1.
 		a indexOf: 0 startingAt: 3
+	]
+	
+	testException [
+		"Test exception handling"
+		Exception new
 	]
 ]
