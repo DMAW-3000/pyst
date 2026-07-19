@@ -1342,7 +1342,7 @@ class Interp(object):
         """
         Primitive handler for FloatD fminNormalized
         """
-        ctx.push(sys.float_info.epsilon)
+        ctx.push(sys.float_info.min)
         return True
         
     def p_FloatD_emax(self, ctx, recv, argList):
@@ -1512,6 +1512,13 @@ class Interp(object):
         Primitive handler for FloatD fractionPart
         """
         ctx.push(recv % 1.0)
+        return True
+        
+    def p_FloatD_timesTwoPower(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD timesTwoPower:
+        """
+        ctx.push(recv * math.pow(2, argList[0]))
         return True
         
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):

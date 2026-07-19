@@ -187,6 +187,7 @@ Init_Primitive = (
     "FloatD_truncated",
     "FloatD_exponent",
     "FloatD_fractionPart",
+    "FloatD_timesTwoPower",
     "ArrayedCollection_replaceFromToWithStartingAt",
     "ArrayedCollection_indexOfStartingAt",
     "ByteArray_basicNewColon",
