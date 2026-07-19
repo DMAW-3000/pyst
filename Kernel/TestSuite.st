@@ -191,6 +191,8 @@
 	testByteArray [
 		"Test byte array types"
 		| a x |
+		a := #[1 2 3].
+		"(a = a copy) ifFalse: self failBlk."
 		(#[116 101 115 116] asString ~= 'test') ifTrue: self failBlk.
 		a := ByteArray with: 0 with: 4 with: 5.
 		((a indexOf: 5 startingAt: 1) ~= 3) ifTrue: self failBlk.
