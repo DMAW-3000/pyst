@@ -87,7 +87,8 @@ or assumed to be the system default.'>
 	 you load the Iconv package."
 
 	<category: 'converting'>
-	self notYetImplemented
+	"self notYetImplemented"
+	^0
     ]
 
     asByteArray [
