@@ -1569,6 +1569,7 @@ class Interp(object):
     def p_ByteArray_replaceFromToWithStringStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for ByteArray replaceFrom:To:WithString:StartingAt:
+        The withString: value must be a character array.
         """
         start           = argList[0]
         stop            = argList[1]
@@ -1605,6 +1606,7 @@ class Interp(object):
     def p_String_replaceFromToWithByteArrayStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for String replaceFrom:To:WithByteArray:StartingAt:
+        The withByteArray: value must be a byte array.
         """
         start           = argList[0]
         stop            = argList[1]
