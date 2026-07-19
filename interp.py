@@ -1604,6 +1604,19 @@ class Interp(object):
             return True
         return False
         
+    def p_ByteArray_equal(self, ctx, recv, argList):
+        """
+        Primitve handler for ByteArray =
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_bytearray()):
+            if recv._refs == send._refs:
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
     def p_String_replaceFromToWithByteArrayStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for String replaceFrom:To:WithByteArray:StartingAt:

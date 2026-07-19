@@ -195,5 +195,6 @@ Init_Primitive = (
     "ByteArray_newColonInitialize",
     "ByteArray_replaceFromToWithStringStartingAt",
     "ByteArray_indexOfStartingAt",
+    "ByteArray_equal",
     "String_replaceFromToWithByteArrayStartingAt",
 )

@@ -137,7 +137,7 @@ a Strings elements are characters.'>
 	"Answer whether the receiver's items match those in aCollection"
 
 	<category: 'basic'>
-	<primitive: VMpr_ArrayedCollection_equal>
+	<primitive: VMpr_ByteArray_equal>
 	^false
     ]
 
