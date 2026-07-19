@@ -1636,9 +1636,8 @@ class Interp(object):
         """
         Primitve handler for ByteArray shallowCopy
         """
-        bArr = copy(recv._refs)
         newObj = recv.clone()
-        newObj._refs = bArr
+        newObj._refs = copy(recv._refs)
         ctx.push(newObj)
         return True
         
