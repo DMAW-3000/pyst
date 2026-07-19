@@ -1577,9 +1577,9 @@ class Interp(object):
         Primitve handler for CharacterArray valueAt:put:
         """
         idx = argList[0]
-        if is_int(idx) and not recv.is_readonly():
+        val = argList[1]
+        if is_int(idx) and is_int(val) and not recv.is_readonly():
             spec = recv.get_class().instanceSpec
-            val = argList[1]
             try:
                 recv[(spec >> 12) + idx - 1] = self._sys.o_char[val]
             except IndexError:
