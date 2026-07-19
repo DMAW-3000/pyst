@@ -1500,6 +1500,20 @@ class Interp(object):
         ctx.push(int(recv))
         return True
         
+    def p_FloatD_exponent(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD exponent
+        """
+        ctx.push(math.frexp(recv)[1])
+        return True
+        
+    def p_FloatD_fractionPart(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD fractionPart
+        """
+        ctx.push(recv % 1.0)
+        return True
+        
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for Array replaceFrom:To:With:StartingAt:

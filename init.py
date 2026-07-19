@@ -185,6 +185,8 @@ Init_Primitive = (
     "FloatD_eq",
     "FloatD_ne",
     "FloatD_truncated",
+    "FloatD_exponent",
+    "FloatD_fractionPart",
     "ArrayedCollection_replaceFromToWithStartingAt",
     "ArrayedCollection_indexOfStartingAt",
     "ByteArray_basicNewColon",
