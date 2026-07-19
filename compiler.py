@@ -361,7 +361,7 @@ class Compile(object):
                 stmtText = "#" + tok.value
             else:
                 stmtText = str(tok.value)
-            if tok.type == "LBRACK":
+            if (tok.type == "LBRACK") or (tok.type == "LBYTEARRAY"):
                 brackCount = 2
             else:
                 brackCount = 1
