@@ -1542,21 +1542,6 @@ class Interp(object):
                 return True
         return False
         
-    def p_ArrayedCollection_indexOfStartingAt(self, ctx, recv, argList):
-        """
-        Primitve handler for Array indexOf:StartingAt:
-        """
-        item    = argList[0]
-        start   = argList[1]
-        if is_int(start):
-            try:
-                idx = recv._refs.index(item, start - 1) + 1
-            except ValueError:
-                idx = 0
-            ctx.push(idx)
-            return True
-        return False
-        
     def p_ByteArray_basicNewColon(self, ctx, recv, argList):
         """
         Primitiive handler for ByteArray basicNew:
@@ -1602,7 +1587,43 @@ class Interp(object):
                 return True
         return False
         
+    def p_ByteArray_indexOfStartingAt(self, ctx, recv, argList):
+        """
+        Primitve handler for ByteArray indexOf:StartingAt:
+        """
+        item    = argList[0]
+        start   = argList[1]
+        if is_int(start):
+            try:
+                idx = recv._refs.index(item, start - 1) + 1
+            except ValueError:
+                idx = 0
+            ctx.push(idx)
+            return True
+        return False
         
+    def p_String_replaceFromToWithByteArrayStartingAt(self, ctx, recv, argList):
+        """
+        Primitve handler for String replaceFrom:To:WithByteArray:StartingAt:
+        """
+        start           = argList[0]
+        stop            = argList[1]
+        replaceArr      = argList[2]
+        replaceStart    = argList[3]
+        if is_int(start) and is_int(stop) and is_int(replaceStart):
+            if stop >= start:
+                n = stop - start + 1
+                try:
+                    while n:
+                        recv[start + n - 2] = self._sys.o_char[replaceArr[replaceStart + n - 2]]
+                        n -= 1
+                except IndexError:
+                    return False
+                ctx.push(recv)
+                return True
+        return False
+        
+      
         
         
         

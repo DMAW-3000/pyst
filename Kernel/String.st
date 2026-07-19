@@ -256,7 +256,7 @@ or assumed to be the system default.'>
 	 location of byteArray"
 
 	<category: 'built ins'>
-	<primitive: VMpr_ArrayedCollection_replaceFromToWithStartingAt>
+	<primitive: VMpr_String_replaceFromToWithByteArrayStartingAt>
 	^super 
 	    replaceFrom: start
 	    to: stop

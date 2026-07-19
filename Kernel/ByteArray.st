@@ -154,7 +154,7 @@ a Strings elements are characters.'>
 	 Invoke exceptionBlock and answer its result if no item is found"
 
 	<category: 'basic'>
-	<primitive: VMpr_ArrayedCollection_indexOfStartingAt>
+	<primitive: VMpr_ByteArray_indexOfStartingAt>
 	"If anIndex is just past the end of the collection, don't raise
 	 an error (this is the most generic solution that avoids that
 	 #indexOf: fails when the collection is empty."
@@ -168,7 +168,7 @@ a Strings elements are characters.'>
 	 Invoke exceptionBlock and answer its result if no item is found"
 
 	<category: 'basic'>
-	<primitive: VMpr_ArrayedCollection_indexOfStartingAt>
+	<primitive: VMpr_ByteArray_indexOfStartingAt>
 	"If anIndex is just past the end of the collection, don't raise
 	 an error (this is the most generic solution that avoids that
 	 #indexOf: fails when the collection is empty."
