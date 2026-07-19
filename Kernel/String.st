@@ -211,7 +211,7 @@ or assumed to be the system default.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_String_similarityTo>
-	^SystemExceptions.WrongClass signalOn: aString mustBe: String
+	^"SystemExceptions." WrongClass signalOn: aString mustBe: String
     ]
 
     size [
