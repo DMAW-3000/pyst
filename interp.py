@@ -1542,6 +1542,21 @@ class Interp(object):
                 return True
         return False
         
+    def p_ArrayedCollection_equal(self, ctx, recv, argList):
+        """
+        Primitve handler for Array =
+        """
+        send = argList[0]
+        if is_obj(send) and (recv.size == send.size):
+            ret = self._true()
+            for n,r in enumerate(recv):
+                if not r.is_same(send[n]):
+                    ret = self._false()
+                    break
+            ctx.push(ret)
+            return True
+        return False
+        
     def p_ByteArray_basicNewColon(self, ctx, recv, argList):
         """
         Primitiive handler for ByteArray basicNew:
@@ -1616,6 +1631,16 @@ class Interp(object):
                 ctx.push(self._false())
             return True
         return False
+        
+    def p_ByteArray_shallowCopy(self, ctx, recv, argList):
+        """
+        Primitve handler for ByteArray shallowCopy
+        """
+        bArr = copy(recv._refs)
+        newObj = recv.clone()
+        newObj._refs = bArr
+        ctx.push(newObj)
+        return True
         
     def p_String_replaceFromToWithByteArrayStartingAt(self, ctx, recv, argList):
         """

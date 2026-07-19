@@ -148,6 +148,14 @@ a Strings elements are characters.'>
 	<primitive: VMpr_String_hash>
 	^0
     ]
+	
+	shallowCopy [
+	"Returns a shallow copy of the receiver (the instance variables are
+	 not copied)"
+	<primitive: VMpr_ByteArray_shallowCopy>
+	<category: 'built ins'>
+	self primitiveFailed
+	]
 
     indexOf: anElement startingAt: anIndex ifAbsent: exceptionBlock [
 	"Answer the first index > anIndex which contains anElement.

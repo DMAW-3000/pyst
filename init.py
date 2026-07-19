@@ -191,10 +191,12 @@ Init_Primitive = (
     "FloatD_fractionPart",
     "FloatD_timesTwoPower",
     "ArrayedCollection_replaceFromToWithStartingAt",
+    "ArrayedCollection_equal",
     "ByteArray_basicNewColon",
     "ByteArray_newColonInitialize",
     "ByteArray_replaceFromToWithStringStartingAt",
     "ByteArray_indexOfStartingAt",
     "ByteArray_equal",
+    "ByteArray_shallowCopy",
     "String_replaceFromToWithByteArrayStartingAt",
 )
