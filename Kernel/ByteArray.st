@@ -184,7 +184,7 @@ a Strings elements are characters.'>
 	 location of aString"
 
 	<category: 'built ins'>
-	<primitive: VMpr_ArrayedCollection_replaceFromToWithStartingAt>
+	<primitive: VMpr_ByteArray_replaceFromToWithStringStartingAt>
 	^super 
 	    replaceFrom: start
 	    to: stop

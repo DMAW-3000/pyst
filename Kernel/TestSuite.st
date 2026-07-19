@@ -33,6 +33,7 @@
 				testIterable;
 				testByteArray;
 				testCharArray;
+				testString;
 				testStream;
 				testException
 	]
@@ -192,9 +193,15 @@
 	
 	testCharArray [
 		"Test character array types"
-		'This is a long example string' contractTo: 12.
-		'hello' asUppercase
+		('hello1' asUppercase ~= 'HELLO1') ifTrue: [self fail].
+		('HELLO2' asLowercase ~= 'hello2') ifTrue: [self fail].
+		'This is a long example string' contractTo: 12
 	]		
+	
+	testString [
+		"Test string types"
+		'test' asByteArray
+	]
 	
 	testStream [
 		"Test stream types"
