@@ -159,7 +159,8 @@
 		"Test floating point types"
 		| x |
 		x := 12.4.
-		x exponent; fractionPart.
+		(x exponent ~= 4) ifTrue: [self fail].
+		(x fractionPart closeTo: 0.4) ifFalse: [self fail].
 		(x truncated = 12) ifFalse: [self fail].
 		((x + 30 * 2) closeTo: 84.8) ifFalse: [self fail].
 		((x * (1 / 3)) closeTo: 4.133333) ifFalse: [self fail].
