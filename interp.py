@@ -1575,7 +1575,8 @@ class Interp(object):
         stop            = argList[1]
         replaceArr      = argList[2]
         replaceStart    = argList[3]
-        if is_int(start) and is_int(stop) and is_int(replaceStart):
+        if is_int(start) and is_int(stop) and is_int(replaceStart) and \
+           is_obj(replaceArr) and (replaceArr.get_class() is self._sys.k_string()):
             if stop >= start:
                 n = stop - start + 1
                 try:
