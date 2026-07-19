@@ -1593,7 +1593,7 @@ class Interp(object):
         """
         item    = argList[0]
         start   = argList[1]
-        if is_int(start):
+        if is_int(start) and is_int(item):
             try:
                 idx = recv._refs.index(item, start - 1) + 1
             except ValueError:
