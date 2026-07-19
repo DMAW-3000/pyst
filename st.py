@@ -152,6 +152,7 @@ class Object(object):
         global Obj_Table
         newObj = copy(self)
         newObj._obj_id = Obj_Table.new_obj()
+        newObj._refs = copy(self._refs)
         newObj.clear_readonly()
         return newObj
         

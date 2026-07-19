@@ -1663,15 +1663,6 @@ class Interp(object):
             return True
         return False
         
-    def p_ByteArray_shallowCopy(self, ctx, recv, argList):
-        """
-        Primitve handler for ByteArray shallowCopy
-        """
-        newObj = recv.clone()
-        newObj._refs = copy(recv._refs)
-        ctx.push(newObj)
-        return True
-        
     def p_String_replaceFromToWithByteArrayStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for String replaceFrom:To:WithByteArray:StartingAt:

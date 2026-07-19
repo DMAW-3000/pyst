@@ -118,6 +118,7 @@
 		((b at: 3) ~= 3) ifTrue: self failBlk.
 		b at: 3 put: 11.
 		b at: 2 put: 3.
+		((a at: 2) ~= 2) ifTrue: self failBlk.
 		((b at: 1) ~= 1) ifTrue: self failBlk.
 		((b at: 2) ~= 3) ifTrue: self failBlk.
 		((b at: 3) ~= 11) ifTrue: self failBlk.
