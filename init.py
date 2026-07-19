@@ -105,6 +105,7 @@ Init_Kernel_Mod = (
     "ArrayColl.st",
     "Array.st",
     "ByteArray.st",
+    "CharArray.st",
     "Stream.st",
     "PosStream.st",
     "ReadStream.st",

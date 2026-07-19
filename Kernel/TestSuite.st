@@ -32,6 +32,7 @@
 				testFloat;
 				testIterable;
 				testByteArray;
+				testCharArray;
 				testStream;
 				testException
 	]
@@ -177,7 +178,7 @@
 		a := #(9 20 122 9 9 4 2 0 2 9 10 20 30 1).
 		(a anySatisfy: [:elem | elem = 20]) ifFalse: [self fail].
 		(a allSatisfy: [:elem | elem < 10]) ifTrue:  [self fail].
-	   ((a count: 	   [:elem | elem = 9 ]) ~= 4) ifTrue: [self fail].
+	   ((a count: 	   [:elem | elem = 9 ]) ~= 4) ifTrue: [self fail]
 	]
 		
 	testByteArray [
@@ -185,8 +186,14 @@
 		| a |
 		a := ByteArray with: 0 with: 4 with: 5.
 		((a indexOf: 5 startingAt: 1) ~= 3) ifTrue: [self fail].
-		((a indexOf: 0 startingAt: 3) ~= 0) ifTrue: [self fail].
+		((a indexOf: 0 startingAt: 3) ~= 0) ifTrue: [self fail]
 	]
+	
+	testCharArray [
+		"Test character array types"
+		'This is a long example string' contractTo: 12.
+		'hello' asUppercase
+	]		
 	
 	testStream [
 		"Test stream types"
