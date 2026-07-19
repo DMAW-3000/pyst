@@ -62,9 +62,10 @@
 	
 	testCopy [
 		"Test Object copy and similar messages"
-		| a1 a2 |
-		a1 := #(1 2 3) copy.
-		a2 := #(4 5 6) copy.
+		| a1 a2 a3 a4 |
+		a1 := (a3 := #(1 2 3)) copy.
+		a2 := (a4 := #(4 5 6)) copy.
+		(a1 == a3 or: [a2 == a4]) ifTrue: self failBlk.
 		a2 become: a1.
 		((a2 at: 1) ~= 1) ifTrue: self failBlk.
 		((a1 at: 1) ~= 1) ifTrue: self failBlk.
@@ -118,7 +119,9 @@
 		((b at: 3) ~= 3) ifTrue: self failBlk.
 		b at: 3 put: 11.
 		b at: 2 put: 3.
+		((a at: 1) ~= 1) ifTrue: self failBlk.
 		((a at: 2) ~= 2) ifTrue: self failBlk.
+		((a at: 3) ~= 3) ifTrue: self failBlk.
 		((b at: 1) ~= 1) ifTrue: self failBlk.
 		((b at: 2) ~= 3) ifTrue: self failBlk.
 		((b at: 3) ~= 11) ifTrue: self failBlk.
@@ -195,6 +198,8 @@
 		a := #[1 2 3].
 		(a = (b := a copy)) ifFalse: self failBlk.
 		b at: 2 put: 10.
+		((a at: 2) ~= 2) ifTrue: self failBlk.
+		((b at: 2) ~= 10) ifTrue: self failBlk.
 		(a = b) ifTrue: self failBlk.
 		(#[116 101 115 116] asString ~= 'test') ifTrue: self failBlk.
 		a := ByteArray with: 0 with: 4 with: 5.
