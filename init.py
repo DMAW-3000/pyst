@@ -192,6 +192,8 @@ Init_Primitive = (
     "FloatD_timesTwoPower",
     "ArrayedCollection_replaceFromToWithStartingAt",
     "ArrayedCollection_equal",
+    "CharacterArray_valueAt",
+    "CharacterArray_valueAtPut",
     "ByteArray_basicNewColon",
     "ByteArray_newColonInitialize",
     "ByteArray_replaceFromToWithStringStartingAt",

@@ -1557,6 +1557,37 @@ class Interp(object):
             return True
         return False
         
+    def p_CharacterArray_valueAt(self, ctx, recv, argList):
+        """
+        Primitve handler for CharacterArray valueAt:
+        """
+        idx = argList[0]
+        if is_int(idx):
+            spec = recv.get_class().instanceSpec
+            try:
+                ret = recv[(spec >> 12) + idx - 1].codePoint
+            except IndexError:
+                return False
+            ctx.push(ret)
+            return True
+        return False
+        
+    def p_CharacterArray_valueAtPut(self, ctx, recv, argList):
+        """
+        Primitve handler for CharacterArray valueAt:put:
+        """
+        idx = argList[0]
+        if is_int(idx) and not recv.is_readonly():
+            spec = recv.get_class().instanceSpec
+            val = argList[1]
+            try:
+                recv[(spec >> 12) + idx - 1] = self._sys.o_char[val]
+            except IndexError:
+                return False
+            ctx.push(val)
+            return True
+        return False
+        
     def p_ByteArray_basicNewColon(self, ctx, recv, argList):
         """
         Primitiive handler for ByteArray basicNew:

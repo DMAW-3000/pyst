@@ -205,7 +205,12 @@
 	]
 	
 	testCharArray [
+		| s |
 		"Test character array types"
+		s := 'Another' copy.
+		((s valueAt: 5) ~= 104) ifTrue: self failBlk.
+		s valueAt: 1 put: $a value.
+		(s = 'another') ifFalse: self failBlk.
 		('hello1' asUppercase ~= 'HELLO1') ifTrue: self failBlk.
 		('HELLO2' asLowercase ~= 'hello2') ifTrue: self failBlk.
 		'This is a long example string' contractTo: 12
