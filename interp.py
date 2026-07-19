@@ -1597,7 +1597,7 @@ class Interp(object):
             try:
                 idx = recv._refs.index(item, start - 1) + 1
             except ValueError:
-                idx = 0
+                return False
             ctx.push(idx)
             return True
         return False

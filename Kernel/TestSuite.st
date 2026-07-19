@@ -185,11 +185,14 @@
 		
 	testByteArray [
 		"Test byte array types"
-		| a |
+		| a x |
 		(#[116 101 115 116] asString ~= 'test') ifTrue: [self fail].
 		a := ByteArray with: 0 with: 4 with: 5.
 		((a indexOf: 5 startingAt: 1) ~= 3) ifTrue: [self fail].
-		((a indexOf: 0 startingAt: 3) ~= 0) ifTrue: [self fail]
+		((a indexOf: 0 startingAt: 3) ~= 0) ifTrue: [self fail].
+		x := false.
+		a indexOf: 10 startingAt: 1 ifAbsent: [x := true].
+		(x ~~ true) ifTrue: [self fail]
 	]
 	
 	testCharArray [
