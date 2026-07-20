@@ -53,14 +53,6 @@ instance, which is the object "nil".'>
 	^self
     ]
 
-    isNull [
-	"Answer whether the receiver represents a NULL C pointer. Always
-	 answer true."
-
-	<category: 'testing'>
-	^true
-    ]
-
     isNil [
 	"Answer whether the receiver is the undefined object nil. Always
 	 answer true."
