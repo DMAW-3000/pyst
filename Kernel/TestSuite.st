@@ -213,6 +213,7 @@
 	testCharArray [
 		| s |
 		"Test character array types"
+		('  mystr ' trimSeparators ~= 'mystr') ifTrue: self failBlk.
 		('24' asInteger ~= 24) ifTrue: self failBlk.
 		('##cde*' match: 'abcdefg') ifFalse: self failBlk.
 		s := 'Another' copy.
@@ -239,7 +240,9 @@
 		(x contents size ~= s size) ifTrue: self failBlk.
 		x := ReadStream on: 'This is a test read string'.
 		21 timesRepeat: [x next].
-		(x peek ~= $t) ifTrue: self failBlk
+		(x peek ~= $t) ifTrue: self failBlk.
+		x next: 2.
+		(x peek ~= $i) ifTrue: self failBlk.
 	]
 	
 	testException [
