@@ -207,7 +207,7 @@
 		((a indexOf: 0 startingAt: 3) ~= 0) ifTrue: self failBlk.
 		x := false.
 		a indexOf: 10 startingAt: 1 ifAbsent: [x := true].
-		(x ~~ true) ifTrue: [self fail]
+		(x ~~ true) ifTrue: self failBlk
 	]
 	
 	testCharArray [
@@ -225,7 +225,7 @@
 	
 	testString [
 		"Test string types"
-		'test' asByteArray
+		('test' asByteArray ~= #[116 101 115 116]) ifTrue: self failBlk
 	]
 	
 	testStream [
