@@ -257,7 +257,7 @@ do arbitrary processing on the files.'>
 	"Initialize the receiver's class variables"
 
 	<category: 'initialization'>
-	ObjectMemory addDependent: self.
+	"ObjectMemory addDependent: self."
 	AllOpenFiles := WeakIdentitySet new.
     ]
 
