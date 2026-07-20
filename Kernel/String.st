@@ -320,5 +320,19 @@ or assumed to be the system default.'>
 	self checkIndexableBounds: anIndex put: value
     ]
 	
+	/ aName [
+	"Answer a File object as appropriate for a file named
+	 'aName' in the directory represented by the receiver."
+
+	<category: 'filesystem'>
+	^(File path: self) at: aName
+    ]
+
+    asFile [
+	"Answer a File object for the file whose name is in the receiver."
+
+	<category: 'filesystem'>
+	^(File path: self)
+    ]
 ]
 
