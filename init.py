@@ -126,6 +126,7 @@ Init_Kernel_Mod = (
 Init_Class_Init = (
     "Character",
     "Fraction",
+    "FileStream",
 )
 
 # the list of primitive ops handled by the interpreter
