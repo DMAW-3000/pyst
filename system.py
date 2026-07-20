@@ -67,6 +67,8 @@ class Smalltalk(object):
         self.k_pos_stream = None
         self.k_read_stream = None
         self.k_write_stream = None
+        self.k_file_desc = None
+        self.k_file_stream = None
         self.k_number = None
         self.k_integer = None
         self.k_small_int = None
@@ -88,22 +90,22 @@ class Smalltalk(object):
         self.k_test = None
         
         # fundamental objects
-        self.o_nil = None
-        self.o_false = None
-        self.o_true = None
-        self.o_char = [None] * 256
+        self.o_nil      = None
+        self.o_false    = None
+        self.o_true     = None
+        self.o_char     = [None] * 256
         
         # global environment
-        self.e_sym_table = None
-        self.e_st_dict = None
+        self.e_sym_table    = None
+        self.e_st_dict      = None
         
         # interpeter and compiler
-        self.g_compile = None
-        self.g_interp = None
+        self.g_compile      = None
+        self.g_interp       = None
         
         # debug support
-        self.d_save = None
-        self.d_breakpoint = None
+        self.d_save         = None
+        self.d_breakpoint   = None
         
         # bytecode disassembly table
         # each entry is (name, num_arg)

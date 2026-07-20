@@ -50,6 +50,8 @@ Init_Class = (
     ("PositionableStream", False, "pos_stream", "stream", True, ("collection", "ptr", "endPtr", "access"), (), ()),
     ("ReadStream", False, "read_stream", "pos_stream", True, (), (), ()),
     ("WriteStream", False, "write_stream", "pos_stream", True, (), (), ()),
+    ("FileDescriptor", False, "file_desc", "stream", True, ("access", "fd", "file", "isPipe", "atEnd", "peek"), ("AllOpenFiles",), ()),
+    ("FileStream", False, "file_stream", "file_desc", True, ("collection", "ptr", "endPtr", "writePtr", "writeEnd"), ("Verbose", "Record", "Includes"), ()),
     ("Number", False, "number", "magnitude", True, (), (), ()),
     ("Integer", False, "integer", "number", True, (), (), ("PySymbols",)),
     ("SmallInteger", False, "small_int", "integer", True, (), (), ()),
