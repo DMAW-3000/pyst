@@ -236,28 +236,6 @@ accessing and manipulation methods for strings.'>
 	^self readStream lines contents
     ]
 
-    substrings [
-	"Answer an OrderedCollection of substrings of the receiver. A new substring
-	 start at the start of the receiver, or after every sequence of white space
-	 characters.  This message is preserved for backwards compatibility;
-	 the ANSI standard mandates `subStrings', with an uppercase s."
-
-	<category: 'string processing'>
-	| oc last |
-	last := 1.
-	oc := OrderedCollection new.
-	1 to: self size
-	    do: 
-		[:i | 
-		(self at: i) isSeparator 
-		    ifTrue: 
-			[last = i ifFalse: [oc addLast: (self copyFrom: last to: i - 1)].
-			last := i + 1]].
-	last <= self size 
-	    ifTrue: [oc addLast: (self copyFrom: last to: self size)].
-	^oc
-    ]
-
     subStrings [
 	"Answer an OrderedCollection of substrings of the receiver. A new substring
 	 start at the start of the receiver, or after every sequence of white space
