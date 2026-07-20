@@ -232,6 +232,7 @@
 		"Test string types"
 		| s |
 		s := 'andmorewords'.
+		('abc' , 'xyz' ~= 'abcxyz') ifTrue: self failBlk
 		(s = 'andmorewords') ifFalse: self failBlk.
 		((s indexOf: $d startingAt: 1) ~= 3) ifTrue: self failBlk.
 		((s indexOf: $o startingAt: 6) ~= 9) ifTrue: self failBlk.
