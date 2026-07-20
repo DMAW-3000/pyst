@@ -1547,12 +1547,15 @@ class Interp(object):
         Primitve handler for Array =
         """
         send = argList[0]
-        if is_obj(send) and (recv.size == send.size):
-            ret = self._true()
-            for n,r in enumerate(recv):
-                if not r.is_same(send[n]):
-                    ret = self._false()
-                    break
+        if is_obj(send):
+            if recv.size == send.size:
+                ret = self._true()
+                for n,r in enumerate(recv):
+                    if not r.is_same(send[n]):
+                        ret = self._false()
+                        break
+            else:
+                ret = self._false()
             ctx.push(ret)
             return True
         return False
