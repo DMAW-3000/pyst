@@ -1508,7 +1508,7 @@ class FileStream(Object):
         """
         super().__init__(11) 
         self.fd = fileDesc
-        self.file = String.from_seq(fileName)
+        self.file = String.from_str(fileName)
         self.access = accFlags
         self.ptr = 1
         self.endPtr = 0

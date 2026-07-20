@@ -151,8 +151,7 @@ class Smalltalk(object):
         # create the global namespace dictionary ("Smalltalk")
         inst.e_st_dict = stDict = Namespace.new_n(512)
         stDict._klass = inst.k_sys_dictionary
-        sym = inst.name_add_sym(stDict, "Smalltalk", stDict)
-        stDict.name = sym
+        stDict.name = inst.name_add_sym(stDict, "Smalltalk", stDict)
         
         # add global objects
         inst.name_add_sym(stDict, "SymbolTable", inst.e_sym_table)
@@ -190,9 +189,23 @@ class Smalltalk(object):
         for mod in init.Init_Kernel_Mod:
             print("Compiling module", mod)
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
+            
+        # static class initialization
+        initSym = inst.symbol_find_or_add("initialize")
+        for klassName in init.Init_Class_Init:
+            klassSym = inst.symbol_find(klassName)
+            klassObj = inst.dict_find(inst.e_st_dict, klassSym).value.value
+            print("Initializing class", klassSym)
+            inst.g_interp.send_message_extern(klassObj, initSym, ())
+            
+        # standard I/O streams
+        inst.name_add_sym(inst.e_st_dict, "stdin",  FileStream(sys.stdin.fileno(),  "stdin",  1))
+        inst.name_add_sym(inst.e_st_dict, "stdout", FileStream(sys.stdout.fileno(), "stdout", 2))
+        inst.name_add_sym(inst.e_st_dict, "stderr", FileStream(sys.stderr.fileno(), "stderr", 2))
         
         # dump information
         if verbose:
+            print()
             print("Smalltalk Dictionary:")
             inst.dict_print(inst.e_st_dict, True)
             print()
@@ -212,14 +225,6 @@ class Smalltalk(object):
                                  klassObj.superClass,
                                  klassObj.classVariables))
             print()
-            
-        # static class initialization
-        initSym = inst.symbol_find_or_add("initialize")
-        for klassName in init.Init_Class_Init:
-            klassSym = inst.symbol_find(klassName)
-            klassObj = inst.dict_find(inst.e_st_dict, klassSym).value.value
-            print("Initializing class", klassSym)
-            inst.g_interp.send_message_extern(klassObj, initSym, ())
         
     
     @classmethod
