@@ -213,6 +213,7 @@
 	testCharArray [
 		| s |
 		"Test character array types"
+		('##cde*' match: 'abcdefg') ifFalse: self failBlk.
 		s := 'Another' copy.
 		((s valueAt: 5) ~= 104) ifTrue: self failBlk.
 		s valueAt: 1 put: $a value.
