@@ -1482,6 +1482,121 @@ class Fraction(Object):
     def denominator(self, x):
         self[1] = x
         
+ 
+class FileStream(Object):
+    """
+    Internal representation of Smalltalk FileStream
+    Instance variables:
+        access 
+        fd 
+        file 
+        isPipe 
+        atEnd 
+        peek
+        collection
+        ptr
+        endPtr
+        writePtr
+        writeEnd
+    """
+    
+    _Cover = None
+    
+    def __init__(self, fileDesc):
+        """
+        Create a new Fraction
+        """
+        super().__init__(11) 
+        self.fd = fileDesc
+        
+    @property
+    def access(self):
+        return self[0]
+        
+    @access.setter
+    def access(self, x):
+        self[0] = x
+        
+    @property
+    def fd(self):
+        return self[1]
+        
+    @fd.setter
+    def fd(self, x):
+        self[1] = x
+        
+    @property
+    def file(self):
+        return self[2]
+        
+    @file.setter
+    def file(self, x):
+        self[2] = x
+        
+    @property
+    def isPipe(self):
+        return self[3]
+        
+    @isPipe.setter
+    def isPipe(self, x):
+        self[3] = x
+        
+    @property
+    def atEnd(self):
+        return self[4]
+        
+    @atEnd.setter
+    def atEnd(self, x):
+        self[4] = x
+        
+    @property
+    def peek(self):
+        return self[5]
+        
+    @peek.setter
+    def peek(self, x):
+        self[5] = x
+        
+    @property
+    def collection(self):
+        return self[6]
+        
+    @collection.setter
+    def collection(self, x):
+        self[6] = x
+        
+    @property
+    def ptr(self):
+        return self[7]
+        
+    @ptr.setter
+    def ptr(self, x):
+        self[7] = x
+        
+    @property
+    def endPtr(self):
+        return self[8]
+        
+    @endPtr.setter
+    def endPtr(self, x):
+        self[8] = x
+        
+    @property
+    def writePtr(self):
+        return self[9]
+        
+    @writePtr.setter
+    def writePtr(self, x):
+        self[9] = x
+        
+    @property
+    def writeEnd(self):
+        return self[10]
+        
+    @writeEnd.setter
+    def writeEnd(self, x):
+        self[10] = x
+        
 
 # the global bytecode values
 B_PLUS_SPECIAL              = 0
