@@ -1542,6 +1542,28 @@ class Interp(object):
                 return True
         return False
         
+    def p_ArrayedCollection_indexOfStartingAt(self, ctx, recv, argList):
+        """
+        Primitve handler for Array replaceFrom:To:With:StartingAt:
+        """
+        item    = argList[0]
+        start   = argList[1]
+        if is_int(start):
+            stop = recv.size
+            if stop >= start:
+                try:
+                    while start <= stop:
+                        if recv[start - 1].is_same(item):
+                            break
+                        start += 1
+                except IndexError:
+                    return False
+                if start > stop:
+                    return False
+                ctx.push(start)
+                return True
+        return False
+        
     def p_ArrayedCollection_equal(self, ctx, recv, argList):
         """
         Primitve handler for Array =

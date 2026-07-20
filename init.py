@@ -196,6 +196,7 @@ Init_Primitive = (
     "FloatD_fractionPart",
     "FloatD_timesTwoPower",
     "ArrayedCollection_replaceFromToWithStartingAt",
+    "ArrayedCollection_indexOfStartingAt",
     "ArrayedCollection_equal",
     "CharacterArray_valueAt",
     "CharacterArray_valueAtPut",
