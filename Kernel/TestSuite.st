@@ -35,6 +35,7 @@
 				testCharArray;
 				testString;
 				testStream;
+				testFileStream;
 				testException
 	]
 	
@@ -244,6 +245,13 @@
 		(x peek ~= $t) ifTrue: self failBlk.
 		x next: 2.
 		(x peek ~= $i) ifTrue: self failBlk.
+	]
+	
+	testFileStream [
+		"Test file streams"
+		(FileStream stdout == stdout) ifFalse: self failBlk.
+		(FileStream stdin  == stdin)  ifFalse: self failBlk.
+		(FileStream stderr == stderr) ifFalse: self failBlk
 	]
 	
 	testException [
