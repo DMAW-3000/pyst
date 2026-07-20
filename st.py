@@ -387,7 +387,8 @@ class String(Array):
         """
         s = ""
         for c in self:
-            s += chr(c.codePoint)
+            if not c.is_nil():
+                s += chr(c.codePoint)
         return s
         
     def __str__(self):
