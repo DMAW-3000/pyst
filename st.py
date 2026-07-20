@@ -1502,12 +1502,17 @@ class FileStream(Object):
     
     _Cover = None
     
-    def __init__(self, fileDesc):
+    def __init__(self, fileDesc, fileName, accFlags):
         """
-        Create a new Fraction
+        Create a new FileStream
         """
         super().__init__(11) 
         self.fd = fileDesc
+        self.file = String.from_seq(fileName)
+        self.access = accFlags
+        self.ptr = 1
+        self.endPtr = 0
+        self.collection = String(1024)
         
     @property
     def access(self):
