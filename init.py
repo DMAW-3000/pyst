@@ -114,6 +114,7 @@ Init_Kernel_Mod = (
     "ReadStream.st",
     "WriteStream.st",
     "FileDescr.st",
+    "FileStream.st",
     "CompildCode.st",
     "CompiledBlk.st",
     "CompildMeth.st",
