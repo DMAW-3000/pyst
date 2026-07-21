@@ -149,6 +149,7 @@
 	testInteger [
 		"Test integer types"
 		| x y z |
+		(1240 printString ~= '1240') ifTrue: self failBlk.
 		(5 scramble ~= 3423425485) ifTrue: self failBlk.
 		((2 raisedTo: 3) ~= 8) ifTrue: self failBlk.
 		((x := 100 / 10) ~= 10) ifTrue: self failBlk.
@@ -159,7 +160,7 @@
 		x := 139302 quo: -234.
 		z := 1229 // 14.
 		y := 1229 \\ 14.
-		y := 1000 * 4 * 2.
+		((y := 1000 * 4 * 2) ~= 8000) ifTrue: self failBlk.
 		x := 1 + 2 - 100 + 105.
 		(x < 4000 and: [x > 2]) ifFalse: self failBlk.
 		(x >= 0 and: [x <= 8])  ifFalse: self failBlk.
