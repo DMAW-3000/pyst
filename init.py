@@ -104,6 +104,7 @@ Init_Kernel_Mod = (
     "Iterable.st",
     "Collection.st",
     "SeqCollect.st",
+    "HashedColl.st",
     "ArrayColl.st",
     "Array.st",
     "ByteArray.st",
