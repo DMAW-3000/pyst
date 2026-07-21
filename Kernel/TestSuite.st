@@ -30,7 +30,7 @@
 				testArray;
 				testInteger;
 				testObject;
-				testFloat;
+				testFloatD;
 				testIterable;
 				testByteArray;
 				testCharArray;
@@ -181,9 +181,10 @@
 		(y allOwners size ~= 2) ifTrue: self failBlk
 	]
 	
-	testFloat [
-		"Test floating point types"
+	testFloatD [
+		"Test double precision floating point types"
 		| x |
+		(FloatD signByte ~= 1) ifTrue: self failBlk.
 		x := 12.4d.
 		(x asBytes size ~= 8) ifTrue: self failBlk.
 		(x exponent ~= 4) ifTrue: self failBlk.
