@@ -3,6 +3,7 @@ Common definitions of Smalltalk fundamental types
 """
 
 import sys
+import os
 import weakref
 from copy import copy
 

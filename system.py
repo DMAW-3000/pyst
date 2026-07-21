@@ -2,7 +2,6 @@
 The entire Smalltalk environment
 """
 
-import os
 import pickle
 
 from st import *
