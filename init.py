@@ -207,4 +207,5 @@ Init_Primitive = (
     "ByteArray_indexOfStartingAt",
     "ByteArray_equal",
     "String_replaceFromToWithByteArrayStartingAt",
+    "String_hash",
 )

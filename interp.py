@@ -1711,7 +1711,16 @@ class Interp(object):
                 return True
         return False
         
-      
+    def p_String_hash(self, ctx, recv, argList):
+        """
+        Primitve handler for String hash
+        """
+        stop = recv.size
+        arr = ByteArray(stop)
+        self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, stop, recv, 1))
+        arr = ctx.pop()
+        ctx.push(hsh_seq(arr))
+        return True
         
         
         

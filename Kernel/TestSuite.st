@@ -232,6 +232,7 @@
 		"Test string types"
 		| s |
 		s := 'andmorewords'.
+		(s hash ~= 3235528494) ifTrue: self failBlk.
 		('abc' , 'xyz' ~= 'abcxyz') ifTrue: self failBlk
 		(s = 'andmorewords') ifFalse: self failBlk.
 		((s indexOf: $d startingAt: 1) ~= 3) ifTrue: self failBlk.
