@@ -258,7 +258,7 @@
 	
 	testSet [
 		"Test set types"
-		| s t |
+		| s t b |
 		s := Set new.
 		s add: 'abc'.
 		(s size ~= 1) ifTrue: self failBlk.
@@ -271,7 +271,12 @@
 		(t >= t) ifFalse: self failBlk.
 		(t + s ~= t) ifTrue: self failBlk.
 		(t & s ~= s) ifTrue: self failBlk.
-		((t - s) size ~= 1) ifTrue: self failBlk
+		((t - s) size ~= 1) ifTrue: self failBlk.
+		t remove: 'def'.
+		(t includes: 'def') ifTrue: self failBlk.
+		b := false.
+		t remove: 'def' ifAbsent: [ b := true ].
+		b ifFalse: self failBlk
 	]
 	
 	testDictionary [
