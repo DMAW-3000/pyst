@@ -22,6 +22,7 @@
 		"Run all of the tests"
 		self 	testNewInit;
 				testCopy;
+				testMessage;
 				testClass;
 				testCharacter;
 				testBlock;
@@ -71,6 +72,14 @@
 		a2 become: a1.
 		((a2 at: 1) ~= 1) ifTrue: self failBlk.
 		((a1 at: 1) ~= 1) ifTrue: self failBlk.
+	]
+	
+	testMessage [
+		"Test Message objects"
+		| m |
+		m := Message selector: #at argument: 1.
+		(m selector ~= #at) ifTrue: self failBlk.
+		(m argument ~= 1)   ifTrue: self failBlk
 	]
 	
 	testClass [

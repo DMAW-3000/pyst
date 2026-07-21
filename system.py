@@ -36,6 +36,7 @@ class Smalltalk(object):
         self.k_true = None
         self.k_false = None
         self.k_exception = None
+        self.k_message = None
         self.k_behavior = None
         self.k_class_desc = None
         self.k_class = None
