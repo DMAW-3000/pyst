@@ -44,8 +44,8 @@ def t_BASENUMBER(t):
     return t
 
 def t_FLTNUMBER(t):
-    r'-?\d+\.\d+(e-?\d+)*'
-    t.value = float(t.value)
+    r'-?\d+\.\d+(e-?\d+)*d?'
+    t.value = float(t.value.rstrip('d'))
     return t
 
 def t_DECNUMBER(t):

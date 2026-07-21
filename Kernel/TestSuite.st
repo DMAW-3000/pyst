@@ -184,7 +184,7 @@
 	testFloat [
 		"Test floating point types"
 		| x |
-		x := 12.4.
+		x := 12.4d.
 		(x asBytes size ~= 8) ifTrue: self failBlk.
 		(x exponent ~= 4) ifTrue: self failBlk.
 		(x fractionPart closeTo: 0.4) ifFalse: self failBlk.
