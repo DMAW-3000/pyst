@@ -6,6 +6,7 @@ import sys
 import os
 import weakref
 from copy import copy
+from struct import pack, unpack
 
 from obj import Obj_Table
 
