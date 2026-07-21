@@ -34,6 +34,7 @@
 				testByteArray;
 				testCharArray;
 				testString;
+				testDictionary;
 				testStream;
 				testFileStream;
 				testException
@@ -240,6 +241,35 @@
 		((s indexOf: $o startingAt: 6) ~= 9) ifTrue: self failBlk.
 		((s indexOf: $x startingAt: 2) ~= 0) ifTrue: self failBlk.
 		('test' asByteArray ~= #[116 101 115 116]) ifTrue: self failBlk
+	]
+	
+	testDictionary [
+		"Test dictionary types"
+		| d b |
+		d := Dictionary new.
+		d add: 1000 -> 1.
+		(d size ~= 1) ifTrue: self failBlk.
+		d addAll: #[2 3 4].
+		(d size ~= 4) ifTrue: self failBlk.
+		((d at: 1) ~= 2) ifTrue: self failBlk.
+		((d at: 2) ~= 3) ifTrue: self failBlk.
+		((d at: 3) ~= 4) ifTrue: self failBlk.
+		((d at: 1000) ~= 1) ifTrue: self failBlk.
+		b := false.
+		d at: 4 ifAbsent: [ b := true ].
+		b ifFalse: self failBlk.
+		(d values size ~= 4) ifTrue: self failBlk.
+		(d includesKey: 2) ifFalse: self failBlk.
+		(d includesKey: 5) ifTrue: self failBlk.
+		(d includes: 2) ifFalse: self failBlk.
+		(d includes: 10) ifTrue: self failBlk.
+		((d occurrencesOf: 1) ~= 1) ifTrue: self failBlk.
+		d removeKey: 3.
+		(d size ~= 3) ifTrue: self failBlk.
+		b := false.
+		d removeKey: 11 ifAbsent: [ b := true ].
+		b ifFalse: self failBlk.
+		(d includesKey: 3) ifTrue: self failBlk
 	]
 	
 	testStream [
