@@ -252,6 +252,7 @@
 		((s indexOf: $d startingAt: 1) ~= 3) ifTrue: self failBlk.
 		((s indexOf: $o startingAt: 6) ~= 9) ifTrue: self failBlk.
 		((s indexOf: $x startingAt: 2) ~= 0) ifTrue: self failBlk.
+		((s indexOf: $a startingAt: 0) ~= 0) ifTrue: self failBlk.
 		('test' asByteArray ~= #[116 101 115 116]) ifTrue: self failBlk
 	]
 	

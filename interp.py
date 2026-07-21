@@ -1557,14 +1557,11 @@ class Interp(object):
         start   = argList[1]
         if is_int(start):
             stop = recv.size
-            if stop >= start:
-                try:
-                    while start <= stop:
-                        if recv[start - 1].is_same(item):
-                            break
-                        start += 1
-                except IndexError:
-                    return False
+            if (start > 0) and (stop >= start):
+                while start <= stop:
+                    if recv[start - 1].is_same(item):
+                        break
+                    start += 1
                 if start > stop:
                     return False
                 ctx.push(start)
