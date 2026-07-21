@@ -42,6 +42,25 @@ accuracy as Cs "double" numbers.'>
 	<category: 'converting'>
 	^aNumber asFloatD
     ]
+	
+	FloatD class >> signByte [
+	"Answer the byte of the receiver that contains the sign bit"
+
+	<category: 'byte-order dependencies'>
+	| n k |
+	n := -2.0 asBytes.
+	1 to: n size do: [:i | (n at: i) >= 128 ifTrue: [k := i]].
+	^k
+    ]
+
+    FloatD class >> fromBytes: aByteArray [
+	"Answer a float with the bytes in aByteArray, which are in
+	 big-endian format."
+
+	<category: 'byte-order dependencies'>
+	<primitive: VMpr_FloatD_fromBytes>
+	self primitiveFailed
+    ]
 
     FloatD class >> precision [
 	"Answer the number of bits in the mantissa. 1 + (2^-precision) = 1"
@@ -105,12 +124,19 @@ accuracy as Cs "double" numbers.'>
     ]
 
     FloatD class >> nan [
-	"Return a FloatD that represents a mathematically indeterminate value
+	"Return a ByteArray that represents a mathematically indeterminate value
 	 (e.g. Inf - Inf, Inf / Inf)."
 
 	<category: 'characterization'>
 	<primitive: VMpr_FloatD_nan>
     ]
+	
+	asBytes [
+	"Answer a ByteArray with the raw bytes in big-endian format."
+	
+	<category: 'byte-order dependencies'>
+	<primitive: VMpr_FloatD_asBytes>
+	]
 
     zero [
 	"Coerce 0 to the receiver's class"
@@ -298,6 +324,38 @@ accuracy as Cs "double" numbers.'>
 	<category: 'built ins'>
 	<primitive: VMpr_FloatD_timesTwoPower>
 	
+    ]
+	
+	at: anIndex [
+	"Answer the index-th indexed instance variable of the receiver.
+	 This method always fails."
+
+	<category: 'builtins'>
+	"SystemExceptions." NotIndexable signalOn: self
+    ]
+
+    basicAt: anIndex [
+	"Answer the index-th indexed instance variable of the receiver.
+	 This method always fails."
+
+	<category: 'builtins'>
+	"SystemExceptions." NotIndexable signalOn: self
+    ]
+
+    at: anIndex put: value [
+	"Store value in the index-th indexed instance variable of the receiver
+	 This method always fails."
+
+	<category: 'builtins'>
+	"SystemExceptions." NotIndexable signalOn: self
+    ]
+
+    basicAt: anIndex put: value [
+	"Store value in the index-th indexed instance variable of the receiver
+	 This method always fails."
+
+	<category: 'builtins'>
+	"SystemExceptions." NotIndexable signalOn: self
     ]
 ]
 
