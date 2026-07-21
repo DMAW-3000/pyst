@@ -77,9 +77,10 @@
 	testMessage [
 		"Test Message objects"
 		| m |
-		m := Message selector: #at argument: 1.
-		(m selector ~= #at) ifTrue: self failBlk.
-		(m argument ~= 1)   ifTrue: self failBlk
+		m := Message selector: #at: argument: 1.
+		(m selector ~= #at:) ifTrue: self failBlk.
+		(m argument ~= 1)    ifTrue: self failBlk.
+		(#(5 6 7) perform: m) ~= 5) ifTrue: self failBlk
 	]
 	
 	testClass [
