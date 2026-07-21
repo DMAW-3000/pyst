@@ -92,6 +92,8 @@ Init_Kernel_Mod = (
     "BlkContext.st",
     "MthContext.st",
     "ExcHandling.st",
+    "LookupKey.st",
+    "Association.st",
     "Behavior.st",
     "Magnitude.st",
     "Character.st",
