@@ -137,6 +137,7 @@
 	testInteger [
 		"Test integer types"
 		| x y z |
+		(5 scramble ~= 3423425485) ifTrue: self failBlk.
 		((2 raisedTo: 3) ~= 8) ifTrue: self failBlk.
 		((x := 100 / 10) ~= 10) ifTrue: self failBlk.
 		((y := 1 / 3) isMemberOf: Fraction) ifFalse: self failBlk.

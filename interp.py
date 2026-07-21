@@ -1310,6 +1310,13 @@ class Interp(object):
         ctx.push(float(recv))
         return True
         
+    def p_SmallInteger_scramble(self, ctx, recv, argList):
+        """
+        Primirive handler for SmallInteger scramble
+        """
+        ctx.push(hsh_scram(recv))
+        return True
+        
     def p_FloatD_infinity(self, ctx, recv, argList):
         """
         Primitive handler for FloatD infinity
