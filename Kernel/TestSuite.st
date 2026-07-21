@@ -185,6 +185,7 @@
 		"Test floating point types"
 		| x |
 		x := 12.4.
+		(x asBytes size ~= 8) ifTrue: self failBlk.
 		(x exponent ~= 4) ifTrue: self failBlk.
 		(x fractionPart closeTo: 0.4) ifFalse: self failBlk.
 		(x truncated = 12) ifFalse: self failBlk.

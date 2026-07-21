@@ -190,6 +190,7 @@ Init_Primitive = (
     "FloatD_emin",
     "FloatD_precision",
     "FloatD_decimalDigits",
+    "FloatD_asBytes",
     "FloatD_plus",
     "FloatD_minus",
     "FloatD_times",

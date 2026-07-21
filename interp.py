@@ -1380,6 +1380,13 @@ class Interp(object):
         ctx.push(sys.float_info.dig)
         return True
         
+    def p_FloatD_asBytes(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD asBytes
+        """
+        ctx.push(ByteArray.from_seq(pack(">d", recv)))
+        return True
+        
     def p_FloatD_plus(self, ctx, recv, argList):
         """
         Primitive handler for FloatD +
