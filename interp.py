@@ -1723,9 +1723,9 @@ class Interp(object):
         Primitve handler for String hash
         """
         stop = recv.size
-        arr = ByteArray(stop)
+        arr = bytearray(stop)
         self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, stop, recv, 1))
-        arr = ctx.pop()
+        ctx.pop()
         ctx.push(hsh_seq(arr))
         return True
         
