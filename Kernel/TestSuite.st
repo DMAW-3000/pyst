@@ -35,6 +35,7 @@
 				testByteArray;
 				testCharArray;
 				testString;
+				testSet;
 				testDictionary;
 				testStream;
 				testFileStream;
@@ -251,6 +252,24 @@
 		((s indexOf: $o startingAt: 6) ~= 9) ifTrue: self failBlk.
 		((s indexOf: $x startingAt: 2) ~= 0) ifTrue: self failBlk.
 		('test' asByteArray ~= #[116 101 115 116]) ifTrue: self failBlk
+	]
+	
+	testSet [
+		"Test set types"
+		| s t |
+		s := Set new.
+		s add: 'abc'.
+		(s size ~= 1) ifTrue: self failBlk.
+		t := s copy.
+		t add: 'def'.
+		(t size ~= 2) ifTrue: self failBlk.
+		(t includes: 'def') ifFalse: self failBlk.
+		(s includes: 'def') ifTrue:  self failBlk.
+		(t > s)  ifFalse: self failBlk.
+		(t >= t) ifFalse: self failBlk.
+		(t + s ~= t) ifTrue: self failBlk.
+		(t & s ~= s) ifTrue: self failBlk.
+		((t - s) size ~= 1) ifTrue: self failBlk
 	]
 	
 	testDictionary [

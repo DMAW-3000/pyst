@@ -50,6 +50,7 @@ class Smalltalk(object):
         self.k_link = None
         self.k_sym_link = None
         self.k_hash_collection = None
+        self.k_set = None
         self.k_dictionary = None
         self.k_bind_dictionary = None
         self.k_abs_namespace = None
