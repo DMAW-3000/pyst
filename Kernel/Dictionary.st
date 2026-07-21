@@ -134,7 +134,7 @@ certain special cases.'>
 
 	<category: 'accessing'>
 	^self at: key
-	    ifAbsent: [SystemExceptions.NotFound signalOn: key what: 'key']
+	    ifAbsent: ["SystemExceptions." NotFound signalOn: key what: 'key']
     ]
 
     at: key ifAbsent: aBlock [
