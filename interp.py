@@ -1600,7 +1600,6 @@ class Interp(object):
         ctx.push(FloatE.from_flt(rem))
         return True
         
-        
     def p_FloatE_exponent(self, ctx, recv, argList):
         """
         Primitive handler for FloatE exponent
@@ -1617,17 +1616,16 @@ class Interp(object):
         stop            = argList[1]
         replaceArr      = argList[2]
         replaceStart    = argList[3]
-        if is_int(start) and is_int(stop) and is_int(replaceStart):
-            if stop >= start:
-                n = stop - start + 1
-                try:
-                    while n:
-                        recv[start + n - 2] = replaceArr[replaceStart + n - 2]
-                        n -= 1
-                except IndexError:
-                    return False
-                ctx.push(recv)
-                return True
+        if is_int(start) and is_int(stop) and is_int(replaceStart) and (stop >= start):
+            n = stop - start + 1
+            try:
+                while n:
+                    recv[start + n - 2] = replaceArr[replaceStart + n - 2]
+                    n -= 1
+            except IndexError:
+                return False
+            ctx.push(recv)
+            return True
         return False
         
     def p_ArrayedCollection_indexOfStartingAt(self, ctx, recv, argList):
