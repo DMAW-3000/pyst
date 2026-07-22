@@ -371,6 +371,13 @@ if the hardware supports it.'>
 	<category: 'transcendental operations'>
 	^self
     ]
+	
+	asBytes [
+	"Answer a ByteArray with the raw bytes in big-endian format."
+	
+	<category: 'byte-order dependencies'>
+	self subclassResponsibility
+	]
 
     min: aNumber [
 	"Answer the minimum between the receiver and aNumber.  Redefine
