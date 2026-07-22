@@ -1170,8 +1170,9 @@ class Interp(object):
         if is_int(send):
             if send == 0:
                 return False
-            if math.isclose((recv / send) % 1, 0):
-                ret = int(recv / send)
+            quo = recv / send
+            if math.isclose(math.modf(quo)[0], 0.0):
+                ret = int(quo)
             else:
                 ret = Fraction(recv, send)
             ctx.push(ret)
