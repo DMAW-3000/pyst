@@ -1317,6 +1317,15 @@ class Interp(object):
         ctx.push(hsh_scram(recv))
         return True
         
+    def p_Float_primHash(self, ctx, recv, argList):
+        """
+        Primitive handler for Float hash
+        """
+        if is_flt(recv):
+            recv = pack(">d", recv)
+        ctx.push(hsh_seq(recv))
+        return True
+        
     def p_FloatD_fromBytes(self, ctx, recv, argList):
         """
         Primitive handler for FloatD fromBytes

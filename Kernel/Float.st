@@ -552,7 +552,7 @@ if the hardware supports it.'>
 	"Private - Answer an hash value for the receiver"
 
 	<category: 'built ins'>
-	<primitive: VMpr_String_hash>
+	<primitive: VMpr_Float_primHash>
 	^0
     ]
 

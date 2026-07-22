@@ -30,6 +30,7 @@
 				testArray;
 				testInteger;
 				testObject;
+				testFloat;
 				testFloatD;
 				testIterable;
 				testByteArray;
@@ -166,6 +167,7 @@
 		"Test integer types"
 		| x y z |
 		(1240 printString ~= '1240') ifTrue: self failBlk.
+		5 hash ~= 5 ifTrue: self failBlk.
 		5 scramble ~= 3423425485 ifTrue: self failBlk.
 		(2 raisedTo: 3) ~= 8 ifTrue: self failBlk.
 		(x := 100 / 10) ~= 10 ifTrue: self failBlk.
@@ -195,6 +197,14 @@
 		y := Array basicNew: 2.
 		x at: 1 put: y.
 		(y allOwners size ~= 2) ifTrue: self failBlk
+	]
+	
+	testFloat [
+		"Test generic floating point types"
+		| x |
+		x := -233.23.
+		x hash.
+		1.0 hash ~= 1 ifTrue: self failBlk
 	]
 	
 	testFloatD [
