@@ -51,17 +51,33 @@
 		"Test basic object creation and initialization"
 		| obj |
 		obj := Object basicNew.
-		obj notNil; size; isReadOnly.
+		obj notNil ifFalse: self failBlk.
+		obj size ~= 0 ifTrue: self failBlk.
+		obj isReadOnly ifTrue: self failBlk.
 		obj := Object basicNew: 10.
-		obj notNil; size; isReadOnly.
+		obj notNil ifFalse: self failBlk.
+		obj size ~= 10 ifTrue: self failBlk.
+		obj isReadOnly ifTrue: self failBlk.
 		obj := Object new.
-		obj notNil; size; isReadOnly.
+		obj notNil ifFalse: self failBlk.
+		obj size ~= 0 ifTrue: self failBlk.
+		obj isReadOnly ifTrue: self failBlk.
 		obj := Object new: 10.
-		obj notNil; size; isReadOnly.
-		#[4 5 6] size; isReadOnly.
-		#(2 7 3) size; isReadOnly.
-		'test string' size; isReadOnly.
-		#testSymbol   size; isReadOnly.
+		obj notNil ifFalse: self failBlk.
+		obj size ~= 10 ifTrue: self failBlk.
+		obj isReadOnly ifTrue: self failBlk.
+		obj := #[4 5 6].
+		obj size ~= 3 ifTrue: self failBlk.
+		obj isReadOnly ifFalse: self failBlk.
+		obj := #(2 7 3).
+		obj size ~= 3 ifTrue: self failBlk.
+		obj isReadOnly ifFalse: self failBlk.
+		obj := 'test string'.
+		obj size ~= 11 ifTrue: self failBlk.
+		obj isReadOnly ifFalse: self failBlk.
+		obj := #testSymbol.
+		obj size ~= 10 ifTrue: self failBlk.
+		obj isReadOnly ifFalse: self failBlk
 	]
 	
 	testCopy [
