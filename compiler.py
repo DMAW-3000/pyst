@@ -763,7 +763,7 @@ class Compile(object):
                 idx = self.add_literal(x)
                 self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
-        # float constant
+        # double precision float constant
         elif isinstance(x, float):
             idx = self.add_literal(x)
             self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
@@ -798,6 +798,11 @@ class Compile(object):
         # literal bytearray
         elif isinstance(x, ParseLiteralBytearray):
             idx = self.add_literal(self.build_bytearray(x.value))
+            self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            
+        # single precision float constant
+        elif isinstance(x, ParseLiteralFloatE):
+            idx = self.add_literal(FloatE.from_flt(x.value))
             self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
         # unknown type

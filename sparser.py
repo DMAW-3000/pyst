@@ -133,6 +133,12 @@ class ParseLiteralBytearray(ParseLiteral):
     Represent a literal bytearray 
     """
     pass
+    
+class ParseLiteralFloatE(ParseLiteral):
+    """
+    Represent a single precision float
+    """
+    pass
  
 class ParseError(Exception):
     """
@@ -284,7 +290,6 @@ class Parser(object):
                 (tok == "DECNUMBER") or \
                 (tok == "BASENUMBER") or \
                 (tok == "FLTNUMBER") or \
-                (tok == "SINGNUMBER") or \
                 (tok == "QUADNUMBER"):
             node = ParseLiteral(self.val(0))
             self.lex()
@@ -313,6 +318,9 @@ class Parser(object):
                 self.lex()
                 node = self.parse_expr(self.EXPR_ANY)
                 self.lex_skip_manditory("RPARENS")
+        elif tok == "SINGNUMBER":
+            node = ParseLiteral(ParseLiteralFloatE(self.val(0)))
+            self.lex()
         return node
         
     def parse_message(self, recv, kind):

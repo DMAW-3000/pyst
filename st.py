@@ -1488,6 +1488,30 @@ class Fraction(Object):
     def denominator(self, x):
         self[1] = x
         
+        
+class FloatE(ByteArray):
+    """
+    Internal representation of Smalltalk FloatE
+    """
+    
+    _Cover = None
+
+    @classmethod
+    def from_flt(klass, x):
+        """
+        Create a FloatE from a python float
+        """
+        return klass.from_seq(pack(">f", x))
+        
+    def to_flt(self):
+        """
+        Return FloatE value as a python float
+        """
+        return unpack(">f", self._refs)[0]
+        
+    def __str__(self):
+        return "FLOATE(" + str(self.to_flt()) + ")"
+    
  
 class FileStream(Object):
     """

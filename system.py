@@ -76,6 +76,7 @@ class Smalltalk(object):
         self.k_fraction = None
         self.k_float = None
         self.k_float_d = None
+        self.k_float_e = None
         self.k_character = None
         self.k_context_part = None
         self.k_blk_context = None
