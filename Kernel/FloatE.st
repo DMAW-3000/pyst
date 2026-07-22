@@ -80,14 +80,14 @@ accuracy as Cs "float" numbers.'>
 	"Return the smallest normalized FloatE that is > 0"
 
 	<category: 'characterization'>
-	^CFloatMin
+	^1.18e-38f
     ]
 
     FloatE class >> fmax [
 	"Return the largest normalized FloatE that is not infinite."
 
 	<category: 'characterization'>
-	^CFloatMax
+	^3.402823e38f
     ]
 
     FloatE class >> emax [

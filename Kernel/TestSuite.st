@@ -245,6 +245,7 @@
 		"Test single precision floating point types"
 		| x |
 		x := 3.53e-2f.
+		FloatE fmax; fminNormalized.
 		x fractionPart.
 		x exponent ~= 122 ifTrue: self failBlk.
 		x asBytes size ~= 4 ifTrue: self failBlk.
