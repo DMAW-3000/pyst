@@ -1558,6 +1558,17 @@ class Interp(object):
         ctx.push(recv * math.pow(2, argList[0]))
         return True
         
+    def p_FloatE_fromBytes(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE fromBytes
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_bytearray()) and \
+           (send.size == 4):
+            ctx.push(FloatE.from_seq(send))
+            return True
+        return False
+        
     def p_FloatE_infinity(self, ctx, recv, argList):
         """
         Primitive handler for FloatE infinity

@@ -244,6 +244,7 @@
 	testFloatE [
 		"Test single precision floating point types"
 		| x |
+		FloatE fromBytes: (ByteArray new: 4).
 		FloatE infinity; negativeInfinity; nan.
 		x := 3.53e-2f.
 		x asBytes size ~= 4 ifTrue: self failBlk.

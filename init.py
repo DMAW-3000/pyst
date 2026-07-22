@@ -209,6 +209,7 @@ Init_Primitive = (
     "FloatD_exponent",
     "FloatD_fractionPart",
     "FloatD_timesTwoPower",
+    "FloatE_fromBytes",
     "FloatE_infinity",
     "FloatE_negativeInfinity",
     "FloatE_nan",
