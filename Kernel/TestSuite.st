@@ -213,7 +213,7 @@
 		| x |
 		(FloatD fromBytes: (ByteArray new: 8)) ~= 0.0 ifTrue: self failBlk.
 		FloatD signByte ~= 1 ifTrue: self failBlk.
-		x := 12.4d.
+		x := 12.4e0d.
 		x asBytes size ~= 8 ifTrue: self failBlk.
 		x exponent ~= 4 ifTrue: self failBlk.
 		(x fractionPart closeTo: 0.4) ifFalse: self failBlk.
@@ -232,7 +232,7 @@
 	testFloatE [
 		"Test single precision floating point types"
 		| x |
-		x := 3.53e
+		x := 3.53e-2f
 	]
 	
 	testIterable [

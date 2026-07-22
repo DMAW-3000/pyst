@@ -45,12 +45,12 @@ def t_BASENUMBER(t):
     return t
     
 def t_SINGNUMBER(t):
-    r'-?\d+\.\d+(e-?\d+)*e'
-    t.value = float(t.value.rstrip('e'))
+    r'-?\d+\.\d+(e-?\d+)?f'
+    t.value = float(t.value.rstrip('f'))
     return t
 
 def t_FLTNUMBER(t):
-    r'-?\d+\.\d+(e-?\d+)*d?'
+    r'-?\d+\.\d+(e-?\d+)?d?'
     t.value = float(t.value.rstrip('d'))
     return t
 
