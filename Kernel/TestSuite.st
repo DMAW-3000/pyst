@@ -32,6 +32,7 @@
 				testObject;
 				testFloat;
 				testFloatD;
+				testFloatE;
 				testIterable;
 				testByteArray;
 				testCharArray;
@@ -226,6 +227,12 @@
 		Float e + 10.23 - 3.4e-5 * 5.74e3 / 8.43e9.
 		FloatD fmax / 20.0e20 * 100000.0 * FloatD fminNormalized.
 		FloatD infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits
+	]
+	
+	testFloatE [
+		"Test single precision floating point types"
+		| x |
+		x := 3.53e
 	]
 	
 	testIterable [

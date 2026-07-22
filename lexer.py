@@ -10,6 +10,7 @@ states = ( ('dstring', 'exclusive'),
 tokens = [
     'CHARACTER',
     'BASENUMBER',
+    'SINGNUMBER',
     'FLTNUMBER',
     'DECNUMBER',
     'DSTRING',
@@ -41,6 +42,11 @@ def t_BASENUMBER(t):
     tstr = t.value.split('r')
     base = int(tstr[0])
     t.value = int(tstr[1], base)
+    return t
+    
+def t_SINGNUMBER(t):
+    r'-?\d+\.\d+(e-?\d+)*e'
+    t.value = float(t.value.rstrip('e'))
     return t
 
 def t_FLTNUMBER(t):
