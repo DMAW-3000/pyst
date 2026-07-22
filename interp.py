@@ -1525,7 +1525,10 @@ class Interp(object):
         """
         Primitive handler for FloatD fractionPart
         """
-        ctx.push(recv % 1.0)
+        rem = recv % 1.0
+        if math.isclose(rem, 0.0):
+            rem = 0.0
+        ctx.push(rem)
         return True
         
     def p_FloatD_timesTwoPower(self, ctx, recv, argList):
