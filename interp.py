@@ -801,10 +801,8 @@ class Interp(object):
         Primitive handler for Object shallowCopy
         """
         if is_obj(recv):
-            ret = recv.clone()
-        else:
-            ret = recv
-        ctx.push(ret)
+            recv = recv.clone()
+        ctx.push(recv)
         return True
         
     def p_Object_isReadOnly(self, ctx, recv, argList):
@@ -879,14 +877,8 @@ class Interp(object):
         Primitive handler for Object perform:
         """
         send = argList[0]
-        if is_obj(send):
-            argList = argList[1:]
-            klass = send.get_class()
-            if klass is self._sys.k_symbol():
-                ret = self.send_message_intern(recv, send, argList)
-            else:
-                return False
-            ctx.push(ret)
+        if is_obj(send) and (send.get_class() is self._sys.k_symbol()):
+            ctx.push(self.send_message_intern(recv, send, argList[1:]))
             return True
         return False
         
@@ -896,15 +888,12 @@ class Interp(object):
         """
         send    = argList[0]
         argArr  = argList[1]
-        if is_obj(send) and is_obj(argArr) and (argArr.get_class() is self._sys.k_array()):
-            argList = [arg for arg in argArr]
-            klass = send.get_class()
-            if klass is self._sys.k_symbol():
-                ret = self.send_message_intern(recv, send, argList)
-            else:
-                return False
-            ctx.push(ret)
-            return True
+        if is_obj(send) and is_obj(argArr) and \
+           (argArr.get_class() is self._sys.k_array()) and \
+           (send.get_class() is self._sys.k_symbol()):
+                argList = [arg for arg in argArr]
+                ctx.push(self.send_message_intern(recv, send, argList))
+                return True
         return False
         
     def p_BlockClosure_value(self, ctx, recv, argList):
@@ -920,10 +909,10 @@ class Interp(object):
             return False
 
         # allocate a new context and link to old
-        newCtx = BlockContext()
-        newCtx.parent = ctx
-        newCtx.receiver = recv.receiver
-        newCtx.method = blkObj
+        newCtx              = BlockContext()
+        newCtx.parent       = ctx
+        newCtx.receiver     = recv.receiver
+        newCtx.method       = blkObj
         newCtx.outerContext = recv.outerContext
         
         # copy arguments to new stack
