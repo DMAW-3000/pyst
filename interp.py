@@ -1171,8 +1171,9 @@ class Interp(object):
             if send == 0:
                 return False
             quo = recv / send
-            if math.isclose(math.modf(quo)[0], 0.0):
-                ret = int(round(quo))
+            rnd = round(quo)
+            if math.isclose(rnd, quo):
+                ret = int(rnd)
             else:
                 ret = Fraction(recv, send)
             ctx.push(ret)
