@@ -91,7 +91,7 @@ accuracy as Cs "double" numbers.'>
     ]
 
     FloatD class >> emin [
-	"Return the maximum allowable exponent for a FloatD that is finite."
+	"Return the minimum allowable exponent for a FloatD that is finite."
 
 	<category: 'characterization'>
 	<primitive: VMpr_FloatD_emin>
