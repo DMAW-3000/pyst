@@ -1317,6 +1317,17 @@ class Interp(object):
         ctx.push(hsh_scram(recv))
         return True
         
+    def p_FloatD_fromBytes(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD fromBytes
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_bytearray()) and \
+           (send.size == 8):
+            ctx.push(unpack(">d", send._refs)[0])
+            return True
+        return False
+        
     def p_FloatD_infinity(self, ctx, recv, argList):
         """
         Primitive handler for FloatD infinity

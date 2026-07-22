@@ -181,6 +181,7 @@ Init_Primitive = (
     "SmallInteger_bitShift",
     "SmallInteger_asFloatD",
     "SmallInteger_scramble",
+    "FloatD_fromBytes",
     "FloatD_infinity",
     "FloatD_negativeInfinity",
     "FloatD_nan",
