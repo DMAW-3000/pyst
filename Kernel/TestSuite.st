@@ -33,6 +33,7 @@
 				testFloat;
 				testFloatD;
 				testFloatE;
+				testFloatQ;
 				testIterable;
 				testByteArray;
 				testCharArray;
@@ -233,6 +234,12 @@
 		"Test single precision floating point types"
 		| x |
 		x := 3.53e-2f
+	]
+	
+	testFloatQ [
+		"Test quad precision floating point types"
+		| x |
+		x := 3.5347301894e20q
 	]
 	
 	testIterable [

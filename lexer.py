@@ -11,6 +11,7 @@ tokens = [
     'CHARACTER',
     'BASENUMBER',
     'SINGNUMBER',
+    'QUADNUMBER',
     'FLTNUMBER',
     'DECNUMBER',
     'DSTRING',
@@ -47,6 +48,11 @@ def t_BASENUMBER(t):
 def t_SINGNUMBER(t):
     r'-?\d+\.\d+(e-?\d+)?f'
     t.value = float(t.value.rstrip('f'))
+    return t
+    
+def t_QUADNUMBER(t):
+    r'-?\d+\.\d+(e-?\d+)?q'
+    t.value = float(t.value.rstrip('q'))
     return t
 
 def t_FLTNUMBER(t):

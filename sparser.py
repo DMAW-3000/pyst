@@ -284,7 +284,8 @@ class Parser(object):
                 (tok == "DECNUMBER") or \
                 (tok == "BASENUMBER") or \
                 (tok == "FLTNUMBER") or \
-                (tok == "SINGNUMBER"):
+                (tok == "SINGNUMBER") or \
+                (tok == "QUADNUMBER"):
             node = ParseLiteral(self.val(0))
             self.lex()
         elif tok == "SYMBOL":
