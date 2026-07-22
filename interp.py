@@ -1558,6 +1558,27 @@ class Interp(object):
         ctx.push(recv * math.pow(2, argList[0]))
         return True
         
+    def p_FloatE_infinity(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE infinity
+        """
+        ctx.push(FloatE.from_flt(float("inf")))
+        return True
+        
+    def p_FloatE_negativeInfinity(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE negativeInfinity
+        """
+        ctx.push(FloatE.from_flt(float("-inf")))
+        return True
+        
+    def p_FloatE_nan(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE nan
+        """
+        ctx.push(FloatE.from_flt(float("nan")))
+        return True
+        
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
         """
         Primitve handler for Array replaceFrom:To:With:StartingAt:

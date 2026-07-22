@@ -57,8 +57,9 @@ accuracy as Cs "float" numbers.'>
         "Answer a float with the bytes in aByteArray, which are in
          big-endian format."
 
-        <category: 'byte-order dependencies'>
-
+    <category: 'byte-order dependencies'>
+	<primitive: VMpr_FloatE_fromBytes>
+	self primitiveFailed
     ]
 
     FloatE class >> e [
@@ -133,14 +134,14 @@ accuracy as Cs "float" numbers.'>
 	"Return a FloatE that represents positive infinity."
 
 	<category: 'characterization'>
-	^CFloatPInf
+	<primitive: VMpr_FloatE_infinity>
     ]
 
     FloatE class >> negativeInfinity [
 	"Return a FloatE that represents negative infinity."
 
 	<category: 'characterization'>
-	^CFloatNInf
+	<primitive: VMpr_FloatE_negativeInfinity>
     ]
 
     FloatE class >> nan [
@@ -148,7 +149,7 @@ accuracy as Cs "float" numbers.'>
 	 (e.g. Inf - Inf, Inf / Inf)."
 
 	<category: 'characterization'>
-	^CFloatNaN
+	<primitive: VMpr_FloatE_nan>
     ]
 
     FloatE class >> pi [
@@ -157,6 +158,13 @@ accuracy as Cs "float" numbers.'>
 	<category: 'characterization'>
 	^3.14159265359f
     ]
+	
+	asBytes [
+	"Answer a ByteArray with the raw bytes in big-endian format."
+	
+	<category: 'byte-order dependencies'>
+	^(ByteArray new: 4) replaceFrom: 1 to: 4 with: self startingAt: 1
+	]
 
     zero [
 	"Coerce 0 to the receiver's class"
@@ -211,7 +219,7 @@ accuracy as Cs "float" numbers.'>
 	"Private - Return the letter to be printed just before the exponent"
 
 	<category: 'private'>
-	^$e
+	^$f
     ]
 
     + arg [

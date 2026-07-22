@@ -244,7 +244,10 @@
 	testFloatE [
 		"Test single precision floating point types"
 		| x |
-		x := 3.53e-2f
+		FloatE infinity; negativeInfinity; nan.
+		x := 3.53e-2f.
+		x asBytes size ~= 4 ifTrue: self failBlk.
+		FloatE signByte ~= 1 ifTrue: self failBlk
 	]
 	
 	testFloatQ [
