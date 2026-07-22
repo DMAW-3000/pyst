@@ -185,6 +185,8 @@
 		(x < 4000 and: [x > 2]) ifFalse: self failBlk.
 		(x >= 0 and: [x <= 8])  ifFalse: self failBlk.
 		(x = 8 and: [x ~= 12359303]) ifFalse: self failBlk.
+		x isLiteralObject ifFalse: self failBlk.
+		x isExact ifFalse: self failBlk.
 		1 / 4 * 2.
 		((24 gcd: 32) ~= 8) ifTrue: [self fail]
 	]
@@ -205,8 +207,17 @@
 		"Test generic floating point types"
 		| x |
 		x := -233.23.
+		x asExactFraction.
 		x hash.
-		1.0 hash ~= 1 ifTrue: self failBlk
+		1.0 hash ~= 1 ifTrue: self failBlk.
+		(x rounded closeTo: -233.0) ifFalse: self failBlk.
+		(x half closeTo: 0.5) ifFalse: self failBlk.
+		x floor ~= -234 ifTrue: self failBlk.
+		x ceiling ~= -233 ifTrue: self failBlk.
+		x isExact ifTrue: self failBlk.
+		x isLiteralObject ifFalse: self failBlk.
+		((1.443 min: 2.321) closeTo: 1.443) ifFalse: self failBlk.
+		((-2.323 max: -3.234) closeTo: -2.323) ifFalse: self failBlk
 	]
 	
 	testFloatD [
