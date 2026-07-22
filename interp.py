@@ -1376,14 +1376,14 @@ class Interp(object):
         """
         Primitive handler for FloatD emax
         """
-        ctx.push(sys.float_info.max_exp)
+        ctx.push(sys.float_info.max_exp - 1)
         return True
         
     def p_FloatD_emin(self, ctx, recv, argList):
         """
         Primitive handler for FloatD emin
         """
-        ctx.push(sys.float_info.min_exp)
+        ctx.push(sys.float_info.min_exp - 1)
         return True
             
     def p_FloatD_precision(self, ctx, recv, argList):
@@ -1588,6 +1588,25 @@ class Interp(object):
         Primitive handler for FloatE nan
         """
         ctx.push(FloatE.from_flt(float("nan")))
+        return True
+        
+    def p_FloatE_fractionPart(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE fractionPart
+        """
+        rem = math.modf(recv.to_flt())[0]
+        if math.isclose(rem, 0.0):
+            rem = 0.0
+        ctx.push(FloatE.from_flt(rem))
+        return True
+        
+        
+    def p_FloatE_exponent(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE exponent
+        """
+        i = unpack(">I", recv._refs)[0]
+        ctx.push((i >> 23) & 0xff)
         return True
         
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):

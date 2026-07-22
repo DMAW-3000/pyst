@@ -213,6 +213,8 @@ Init_Primitive = (
     "FloatE_infinity",
     "FloatE_negativeInfinity",
     "FloatE_nan",
+    "FloatE_fractionPart",
+    "FloatE_exponent",
     "ArrayedCollection_replaceFromToWithStartingAt",
     "ArrayedCollection_indexOfStartingAt",
     "ArrayedCollection_equal",

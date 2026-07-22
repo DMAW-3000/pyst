@@ -66,14 +66,14 @@ accuracy as Cs "float" numbers.'>
 	"Returns the value of e. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^2.71828182846f
+	^2.718282f
     ]
 
     FloatE class >> precision [
 	"Answer the number of bits in the mantissa. 1 + (2^-precision) = 1"
 
 	<category: 'characterization'>
-	^CFloatBinaryDigits
+	^24
     ]
 
     FloatE class >> fminNormalized [
@@ -94,14 +94,14 @@ accuracy as Cs "float" numbers.'>
 	"Return the maximum allowable exponent for a FloatE that is finite."
 
 	<category: 'characterization'>
-	^CFloatMaxExp
+	^127
     ]
 
     FloatE class >> emin [
-	"Return the maximum allowable exponent for a FloatE that is finite."
+	"Return the minimum allowable exponent for a FloatE that is finite."
 
 	<category: 'characterization'>
-	^CFloatMinExp
+	^-126
     ]
 
     FloatE class >> decimalDigits [
@@ -113,21 +113,21 @@ accuracy as Cs "float" numbers.'>
 	 again, without change to the Q decimal digits."
 
 	<category: 'characterization'>
-	^CFloatDigits
+	^6
     ]
 
     FloatE class >> log10Base2 [
 	"Returns the value of log2 10. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^3.32192809488f
+	^3.321928f
     ]
 
     FloatE class >> ln10 [
 	"Returns the value of ln 10. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^2.30258509299f
+	^2.302585f
     ]
 
     FloatE class >> infinity [
@@ -156,7 +156,7 @@ accuracy as Cs "float" numbers.'>
 	"Returns the value of pi. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^3.14159265359f
+	^3.141593f
     ]
 	
 	asBytes [
