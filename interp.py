@@ -309,11 +309,7 @@ class Interp(object):
         # turn into BlockClosures
         lit = ctx.method.literals[arg]
         if is_obj(lit) and (lit.get_class() is self._sys.k_comp_block()):
-            blk = BlockClosure()
-            blk.block = lit
-            blk.outerContext = ctx
-            blk.receiver = ctx.receiver
-            lit = blk
+            lit = BlockClosure(ctx, lit, ctx.receiver)
             
         # return on stack
         ctx.push(lit)

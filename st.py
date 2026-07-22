@@ -1417,11 +1417,14 @@ class BlockClosure(Object):
     
     _Cover = None
     
-    def __init__(self):
+    def __init__(self, outer, blk, recv):
         """
         Create a new BlockClosure
         """
         super().__init__(3)
+        self.outerContext   = outer
+        self.block          = blk
+        self.receiver       = recv
         
     @property
     def outerContext(self):
