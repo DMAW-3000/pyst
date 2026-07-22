@@ -1545,7 +1545,7 @@ class Interp(object):
         """
         Primitive handler for FloatD fractionPart
         """
-        rem = recv % 1.0
+        rem = math.modf(recv)[0]
         if math.isclose(rem, 0.0):
             rem = 0.0
         ctx.push(rem)
