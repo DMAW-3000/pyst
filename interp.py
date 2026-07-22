@@ -250,8 +250,7 @@ class Interp(object):
         
     def set_debug(self, preHook, postHook):
         """
-        Set callbacks to be invoked before and after
-        every bytecode instruction.
+        Set callbacks to be invoked before and after every bytecode instruction.
         """
         self.i_debug_pre    = preHook
         self.i_debug_post   = postHook
@@ -264,7 +263,7 @@ class Interp(object):
         
     def add_primitive(self, name):
         """
-        Add a primitive handler at a given index.
+        Add a message primitive handler.
         Return True if successful, False otherwise.
         """
         name = "p_" + name
@@ -296,14 +295,16 @@ class Interp(object):
     
     def b_push_self(self, ctx, arg):
         """
-        Execute push self bytecode
+        Execute the B_PUSH_SELF bytecode.
+        Push the current receiver onto the stack.
         """
         ctx.push(ctx.receiver)
         return 2
         
     def b_push_lit_const(self, ctx, arg):
         """
-        Execute push literal constant bytecode
+        Execute the B_PUSH_LIT_CONSTANT bytecode.
+        Push a method or block literal onto the stack.
         """
         # look for compiled blocks
         # turn into BlockClosures
@@ -317,7 +318,8 @@ class Interp(object):
         
     def b_push_lit_var(self, ctx, arg):
         """
-        Execute the push literal var bytecode
+        Execute the B_PUSH_LIT_VARIABLE bytecode.
+        Push a variable named with a literal symbol onto the stack.
         """
         # get symbol
         sym = ctx.method.literals[arg]
@@ -355,14 +357,16 @@ class Interp(object):
         
     def b_push_temp_var(self, ctx, arg):
         """
-        Execute the push temp variable bytecode
+        Execute the B_PUSH_TEMPORARY_VARIABLE bytecode.
+        Push a method or block temporary variable onto the stack.
         """
         ctx.push(ctx[7 + arg])
         return 2
         
     def b_push_outer_var(self, ctx, arg):
         """
-        Execute the push outer temp variable bytecde
+        Execute the B_PUSH_OUTER_TEMP bytecde.
+        Push a method or block outer context variable onto the stack.
         """
         # get extended bytecode data
         level = ctx.method.get_code()[ctx.ip + 3]
@@ -379,36 +383,39 @@ class Interp(object):
         
     def b_push_recv_var(self, ctx, arg):
         """
-        Execute the push receiver variable bytecode
+        Execute the B_PUSH_RECEIVER_VARIABLE bytecode.
+        Push the current receiver instance variable onto the stack.
         """
         ctx.push(ctx.receiver[arg])
         return 2
         
     def b_push_int(self, ctx, arg):
         """
-        Execute the push integer literal bytecode
+        Execute the B_PUSH_INTEGER bytecode.
+        Push a literal integer 0 - 255 onto the stack.
         """
         ctx.push(arg)
         return 2
         
     def b_push_special(self, ctx, arg):
         """
-        Execute the push special bytecode
+        Execute the B_PUSH_SPECIAL bytecode.
+        Push the current method or block context onto the stack.
         """
         ctx.push(ctx)
         return 2
         
     def b_dup_top(self, ctx, arg):
         """
-        Execute the duplicate stack top bytecode.
-        Push the last value on the stack.
+        Execute the B_DUP_STACK_TOP bytecode.
+        Push the last stack value onto the stack again.
         """
         ctx.push(ctx[-1])
         return 2
         
     def b_pop_top(self, ctx, arg):
         """
-        Execute the pop stack top bytecode.
+        Execute the B_POP_STACK_TOP bytecode.
         Pop the last value from the stack and discard.
         """
         ctx.pop()
@@ -416,14 +423,16 @@ class Interp(object):
         
     def b_store_temp_var(self, ctx, arg):
         """
-        Execute the store temp variable bytecode
+        Execute the B_STORE_TEMPORARY_VARIABLE bytecode.
+        Pop from the stack and store a method or block temporary variable.
         """
         ctx[7 + arg] = ctx.pop()
         return 2
         
     def b_store_outer_var(self, ctx, arg):
         """
-        Execute the store outer temp variable bytecde
+        Execute the B_STORE_OUTER_TEMP bytecde.
+        Pop from the stack and store an outer method or block temporary variable.
         """
         # get extended bytecode data
         level = ctx.method.get_code()[ctx.ip + 3]
@@ -439,7 +448,8 @@ class Interp(object):
         
     def b_store_lit_var(self, ctx, arg):
         """
-        Execute the store literal var bytecode
+        Execute the sB_STORE_LIT_VARIABLE bytecode.
+        Pop from the stack and store the variable named by the literal symbol.
         """
         # get symbol
         sym = ctx.method.literals[arg]
@@ -477,21 +487,26 @@ class Interp(object):
         
     def b_store_recv_var(self, ctx, arg):
         """
-        Execute the store receiver variable bytecode
+        Execute the B_PUSH_RECEIVER_VARIABLE bytecode.
+        Pop from the stack and store the current receiver instance variable.
         """
         ctx.receiver[arg] = ctx.pop()
         return 2
 
     def b_send(self, ctx, arg):
         """
-        Execute the generic send message bytecode
+        Execute the SEND bytecode.
+        Send a generic message.  This method assumes the sender has setup the
+        context stack.  The reply is pushed onto the stack.
         """
         self.send_message(arg, False, None)
         return 2
         
     def b_send_super(self, ctx, arg):
         """
-        Execute the send message to super bytecode
+        Execute the SEND_SUPER bytecode.
+        Send a generic message to the receiver's superclass.  This method assumes the sender 
+        has setup the context stack.  The reply is pushed onto the stack.
         """
         self.send_message(arg, True, None)
         return 2
@@ -939,9 +954,9 @@ class Interp(object):
 
         # allocate a new context and link to old
         newCtx = BlockContext()
-        newCtx.parent = ctx
-        newCtx.receiver = recv.receiver
-        newCtx.method = blkObj
+        newCtx.parent       = ctx
+        newCtx.receiver     = recv.receiver
+        newCtx.method       = blkObj
         newCtx.outerContext = recv.outerContext
         
         # copy arguments to new stack
@@ -974,9 +989,9 @@ class Interp(object):
 
         # allocate a new context and link to old
         newCtx = BlockContext()
-        newCtx.parent = ctx
-        newCtx.receiver = recv.receiver
-        newCtx.method = blkObj
+        newCtx.parent       = ctx
+        newCtx.receiver     = recv.receiver
+        newCtx.method       = blkObj
         newCtx.outerContext = recv.outerContext
         
         # copy arguments to new stack
