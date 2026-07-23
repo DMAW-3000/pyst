@@ -123,8 +123,8 @@
 		$A asLowercase isUppercase ifTrue: self failBlk.
 		$b asUppercase isUppercase ifFalse: self failBlk.
 		$N = $r ifTrue: [self fail]. ($X = $X) ifFalse: self failBlk.
-		$J asString ~= 'J' ifTrue: self failBlk".
-		"$2 copy ~~ $2 ifTrue: self failBlk
+		$J asString ~= 'J' ifTrue: self failBlk.
+		$2 copy ~~ $2 ifTrue: self failBlk
 	]
 		
 	testBlock [

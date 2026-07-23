@@ -512,6 +512,22 @@ itself.'>
 	<primitive: VMpr_Character_equal>
 	
     ]
+	
+	shallowCopy [
+	"Returns a copy of the receiver. As Characters are identity objects, we
+	 actually return the receiver itself."
+
+	<category: 'basic'>
+	^self
+    ]
+
+    deepCopy [
+	"Returns a deep copy of the receiver. As Characters are identity objects, we
+	 actually return the receiver itself."
+
+	<category: 'basic'>
+	^self
+    ]
 
     asciiValue [
 	"Returns the integer value corresponding to self.  #codePoint,
