@@ -324,13 +324,16 @@
 	testSymbol [
 		"Test Symbols"
 		| s |
+		s := 'aNewSymbol' asSymbol.
+		s isReadOnly ifFalse: self failBlk.
 		s := #testSymbol.
 		s asString ~= 'testSymbol' ifTrue: self failBlk.
 		s copy ~~ s ifTrue: self failBlk.
 		s isSymbol ifFalse: self failBlk.
 		s isString ifTrue: self failBlk.
 		s ~~ #testSymbol ifTrue: self failBlk.
-		s numArgs ~= 0 ifTrue: self failBlk
+		s numArgs ~= 0 ifTrue: self failBlk.
+		s hash = 'testSymbol' hash ifTrue: self failBlk
 	]
 	
 	testSet [

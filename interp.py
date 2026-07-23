@@ -1807,8 +1807,20 @@ class Interp(object):
         ctx.push(hsh_seq(arr))
         return True
         
-        
-        
+    def p_Symbol_intern(self, ctx, recv, argList):
+        """
+        Primitve handler for Symbol intern:
+        Convert the String argument into a Symbol.
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_string()):
+            s = ''
+            for c in send:
+                s += chr(c.codePoint)
+            ctx.push(self._sys.symbol_find_or_add(s))
+            return True
+        return False
+            
         
         
 

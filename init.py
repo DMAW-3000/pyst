@@ -233,4 +233,5 @@ Init_Primitive = (
     "ByteArray_equal",
     "String_replaceFromToWithByteArrayStartingAt",
     "String_hash",
+    "Symbol_intern",
 )
