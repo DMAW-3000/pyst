@@ -238,7 +238,9 @@
 		(0.0 = 0.0 and: [x ~= 0.0]) ifFalse: self failBlk.
 		Float e + 10.23 - 3.4e-5 * 5.74e3 / 8.43e9.
 		FloatD fmax / 20.0e20 * 100000.0 * FloatD fminNormalized.
-		FloatD infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits
+		FloatD nan; emax; emin; precision; decimalDigits.
+		1.0e200 * 1.0e200 ~= FloatD infinity ifTrue: self failBlk.
+		-1.0e200 * 1.0e200 ~= FloatD negativeInfinity ifTrue: self failBlk
 	]
 	
 	testFloatE [
