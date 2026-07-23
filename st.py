@@ -698,8 +698,8 @@ class Namespace(_Dict):
     Internal representation of a Smalltalk Namespace
     Instance variables:
         tally
-        name
         environment
+        name
         subspaces
         sharedPools
     """
