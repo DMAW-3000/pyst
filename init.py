@@ -99,6 +99,8 @@ Init_Kernel_Mod = (
     "ExcHandling.st",
     "LookupKey.st",
     "Association.st",
+    "HomedAssoc.st",
+    "VarBinding.st",
     "Behavior.st",
     "Magnitude.st",
     "Character.st",

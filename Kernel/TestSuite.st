@@ -41,6 +41,7 @@
 				testSymbol;
 				testSet;
 				testDictionary;
+				testNamespace;
 				testStream;
 				testFileStream;
 				testException
@@ -386,6 +387,21 @@
 		d removeKey: 11 ifAbsent: [ b := true ].
 		b ifFalse: self failBlk.
 		(d includesKey: 3) ifTrue: self failBlk
+	]
+	
+	testNamespace [
+		"Test the global Smalltalk namespace"
+		| n a |
+		n := Smalltalk.
+		n size.
+		a := n at: #stdout.
+		a key ~= #stdout ifTrue: self failBlk.
+		a value class ~= FileStream ifTrue: self failBlk.
+		a environment ~= n ifTrue: self failBlk.
+		a := n at: #KernelInitialized.
+		a key ~= #KernelInitialized ifTrue: self failBlk.
+		a value ifTrue: self failBlk.
+		a environment ~= n ifTrue: self failBlk
 	]
 	
 	testStream [
