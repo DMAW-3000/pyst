@@ -88,11 +88,15 @@ def t_SSTRING(t):
 
 def t_sstring_string(t):
     r'[^\']'
+    
+def t_sstring_escape(t):
+    r'\'\''
 
 def t_sstring_squote(t):
     r'\''
     t.type = 'SSTRING'
     t.value = t.lexer.lexdata[t.lexer.code_start:t.lexer.lexpos-1]
+    t.value = t.value.replace("\'\'", "\'")
     t.lexer.lineno += t.value.count('\n')
     t.lexer.begin('INITIAL')
     return t
