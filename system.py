@@ -197,7 +197,7 @@ class Smalltalk(object):
         initSym = inst.symbol_find_or_add("initialize")
         for klassName in init.Init_Class_Init:
             klassSym = inst.symbol_find(klassName)
-            klassObj = inst.dict_find(inst.e_st_dict, klassSym).value.value
+            klassObj = inst.dict_find(inst.e_st_dict, klassSym).value
             print("Initializing class", klassSym)
             inst.g_interp.send_message_extern(klassObj, initSym, ())
             
@@ -210,7 +210,7 @@ class Smalltalk(object):
         if verbose:
             print()
             print("Smalltalk Dictionary:")
-            inst.dict_print(inst.e_st_dict, True)
+            inst.dict_print(inst.e_st_dict)
             print()
             
             print("Symbol Table:")
@@ -402,7 +402,7 @@ class Smalltalk(object):
             if not self.g_interp.add_primitive(primName):
                 self.fatal_err("cannot find primitive handler", primName)
             symObj = self.symbol_find_or_add("VMpr_" + primName)
-            self.dict_add(primDict, symObj, primId)
+            self.dict_add(primDict, symObj, Association(symObj, primId))
         if verbose:
             print("VM Primitives:")
             self.dict_print(primDict)
@@ -461,15 +461,15 @@ class Smalltalk(object):
     def find_global(self, itemName):
         """
         Find a global symbol value in the Smalltalk namespace.
-        Returns VariableBinding, or nil if not found.
+        Returns Association or VariableBinding, or None if not found.
         """
         symObj = self.symbol_find(itemName)
         if symObj.is_nil():
-            return symObj
+            return None
         assoc = self.dict_find(self.e_st_dict, symObj)
         if assoc.is_nil():
-            return assoc
-        return assoc.value
+            return None
+        return assoc
         
     def dict_add(self, dictObj, keyObj, itemObj):
         """
@@ -480,7 +480,7 @@ class Smalltalk(object):
             self.dict_grow(dictObj)
         idx = self.dict_index(dictObj, keyObj)
         if dictObj[idx].is_nil():
-            dictObj[idx] = Association(keyObj, itemObj)
+            dictObj[idx] = itemObj
             dictObj.tally = tly + 1
         else:
             raise NameError("duplicate Dictionary key: %s" % keyObj)
@@ -526,21 +526,15 @@ class Smalltalk(object):
                 dictObj[self.dict_index(dictObj, assoc.key)] = assoc
         
     @staticmethod
-    def dict_print(dictObj, nameSpace = False):
+    def dict_print(dictObj):
         """
         Display the contents of a Dictionary-like object
         """
         numInst = dictObj.get_class().get_num_inst()
         print("Tally: %d (%d)" % (dictObj.tally, dictObj.size - numInst))
         for n,assoc in enumerate(dictObj[numInst:]):
-            if not nameSpace:
-                if not assoc.is_nil():
-                    print("[%d]" % n, assoc.key, assoc.value)
-            else:
-                if not assoc.is_nil():
-                    binding = assoc.value
-                    if not binding.is_nil():
-                        print("[%d]" % n, binding.key, binding.value)
+            if not assoc.is_nil():
+                print("[%d]" % n, assoc.key, assoc.value)
                         
     def identdict_add(self, dictObj, keyObj, itemObj):
         """
@@ -682,7 +676,7 @@ class Smalltalk(object):
         bindDict.environment = klassObj
         for s in varNames:
             symObj = self.symbol_find_or_add(s)
-            self.dict_add(bindDict, symObj, self.o_nil)
+            self.dict_add(bindDict, symObj, Association(symObj, self.o_nil))
         return bindDict
         
     def create_shared_pools(self, poolNames):

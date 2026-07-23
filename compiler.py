@@ -77,7 +77,7 @@ class Compile(object):
         
         # get primitives dictionary
         bind = system.find_global("VMPrimitives")
-        if bind.is_nil():
+        if bind is None:
             raise NameError("missing global VMPrimitives")
         self._prim_dict = weakref.ref(bind.value)
         
@@ -131,7 +131,7 @@ class Compile(object):
         """
         # lookup class
         binding = self._sys.find_global(klassName)
-        if binding.is_nil():
+        if binding is None:
             raise CompileError("unknown class " + klassName)
         self._cur_klass = binding.value
         self._cur_inst_var.clear()

@@ -352,7 +352,7 @@ class Interp(object):
             raise NameError("variable %s not found" % sym)
         
         # push variable to stack
-        ctx.push(var.value.value)
+        ctx.push(var.value)
         return 2
         
     def b_push_temp_var(self, ctx, arg):
@@ -482,7 +482,7 @@ class Interp(object):
             raise NameError("variable %s not found" % sym)
         
         # pop variable from stack
-        var.value.value = ctx.pop()
+        var.value = ctx.pop()
         return 2
         
     def b_store_recv_var(self, ctx, arg):

@@ -391,17 +391,11 @@
 	
 	testNamespace [
 		"Test the global Smalltalk namespace"
-		| n a |
+		| n |
 		n := Smalltalk.
 		n size.
-		a := n at: #stdout.
-		a key ~= #stdout ifTrue: self failBlk.
-		a value class ~= FileStream ifTrue: self failBlk.
-		a environment ~= n ifTrue: self failBlk.
-		a := n at: #KernelInitialized.
-		a key ~= #KernelInitialized ifTrue: self failBlk.
-		a value ifTrue: self failBlk.
-		a environment ~= n ifTrue: self failBlk
+		(n at: #stdout) class ~= FileStream ifTrue: self failBlk.
+		(n at: #KernelInitialized) ifTrue: self failBlk
 	]
 	
 	testStream [
