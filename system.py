@@ -70,6 +70,7 @@ class Smalltalk(object):
         self.k_write_stream = None
         self.k_file_desc = None
         self.k_file_stream = None
+        self.k_text_collect = None
         self.k_number = None
         self.k_integer = None
         self.k_small_int = None
