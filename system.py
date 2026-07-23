@@ -414,7 +414,7 @@ class Smalltalk(object):
         symbol table, nil otherwise.
         """
         symTable = self.e_sym_table 
-        link = symTable[hsh_seq(map(ord, symName)) & (symTable.size - 1)]
+        link = symTable[hsh_scram(hsh_seq(map(ord, symName))) & (symTable.size - 1)]
         while not link.is_nil():
             if symName == link.symbol.to_str():
                 return link.symbol
@@ -427,7 +427,7 @@ class Smalltalk(object):
         or new one created and added to global symbol table.
         """
         symTable = self.e_sym_table
-        idx = hsh_seq(map(ord, symName)) & (symTable.size - 1)
+        idx = hsh_scram(hsh_seq(map(ord, symName))) & (symTable.size - 1)
         link = symTable[idx]
         while not link.is_nil():
             if symName == link.symbol.to_str():
