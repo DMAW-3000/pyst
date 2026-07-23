@@ -34,7 +34,7 @@ Float subclass: FloatE [
     
     <category: 'Language-Data types'>
     <comment: 'My instances represent floating point numbers that have the same
-accuracy as Cs "float" numbers.'>
+accuracy as C''s "float" numbers.'>
 
     FloatE class >> coerce: aNumber [
 	"Answer aNumber converted to a FloatE"

@@ -39,7 +39,7 @@ ContextPart subclass: BlockContext [
 executeable code that have access to the environment that they were declared
 in, take parameters, and result from BlockClosure objects created to be
 executed by methods outside the current class.  Block contexts are
-created by messages sent to compute a closures value.  They contain a stack
+created by messages sent to compute a closure''s value.  They contain a stack
 and also provide some methods that can be used in inspection or debugging.'>
 
     BlockContext class >> fromClosure: aBlockClosure parent: parentContext [

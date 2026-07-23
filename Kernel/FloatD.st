@@ -34,7 +34,7 @@ Float subclass: FloatD [
     
     <category: 'Language-Data types'>
     <comment: 'My instances represent floating point numbers that have the same
-accuracy as Cs "double" numbers.'>
+accuracy as C''s "double" numbers.'>
 
     FloatD class >> coerce: aNumber [
 	"Answer aNumber converted to a FloatD"

@@ -36,7 +36,7 @@ ArrayedCollection subclass: ByteArray [
     <category: 'Collections-Sequenceable'>
     <comment: 'My instances are similar to strings in that they are both represented as
 a sequence of bytes, but my individual elements are integers, where as
-a Strings elements are characters.'>
+a String''s elements are characters.'>
 	
 	ByteArray class >> new: size [
 	"Answer an empty ByteArray of size bytes"

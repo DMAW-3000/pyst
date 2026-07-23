@@ -35,7 +35,7 @@ SequenceableCollection subclass: ArrayedCollection [
     
     <category: 'Collections-Sequenceable'>
     <comment: 'My instances are objects that are generally fixed size, and are accessed
-by an integer index.  The ordering of my instances elements is determined 
+by an integer index.  The ordering of my instance''s elements is determined 
 externally; I will not rearrange the order of the elements.'>
 
     ArrayedCollection class >> new: size withAll: anObject [
