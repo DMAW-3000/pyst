@@ -394,8 +394,12 @@
 		| n |
 		n := Smalltalk.
 		n size.
+		n at: #KernelInitialized put: true.
+		KernelInitialized ifFalse: self failBlk.
+		(n at: #KernelInitialized) ifFalse: self failBlk.
+		KernelInitialized := false.
+		(n at: #KernelInitialized) ifTrue: self failBlk.
 		(n at: #stdout) class ~= FileStream ifTrue: self failBlk.
-		(n at: #KernelInitialized) ifTrue: self failBlk
 	]
 	
 	testStream [
