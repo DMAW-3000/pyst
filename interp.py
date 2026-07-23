@@ -967,7 +967,7 @@ class Interp(object):
         # get argument array
         argList = argList[0]
         if not is_obj(argList) or (argList.get_class() is not self._sys.k_array()):
-            return
+            return False
         numArg = argList.size
             
         # get block info and verify number of args
