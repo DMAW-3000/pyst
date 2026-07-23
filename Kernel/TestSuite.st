@@ -311,6 +311,7 @@
 		"Test string types"
 		| s |
 		s := 'andmorewords'.
+		s isString ifFalse: self failBlk.
 		s hash ~= 3235528494 ifTrue: self failBlk.
 		'abc' , 'xyz' ~= 'abcxyz' ifTrue: self failBlk.
 		s = 'andmorewords' ifFalse: self failBlk.
@@ -325,7 +326,11 @@
 		| s |
 		s := #testSymbol.
 		s asString ~= 'testSymbol' ifTrue: self failBlk.
-		s copy ~~ s ifTrue: self failBlk
+		s copy ~~ s ifTrue: self failBlk.
+		s isSymbol ifFalse: self failBlk.
+		s isString ifTrue: self failBlk.
+		s ~~ #testSymbol ifTrue: self failBlk.
+		s numArgs ~= 0 ifTrue: self failBlk
 	]
 	
 	testSet [
