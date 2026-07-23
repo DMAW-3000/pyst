@@ -118,6 +118,7 @@ Init_Kernel_Mod = (
     "ByteArray.st",
     "CharArray.st",
     "String.st",
+    "Symbol.st",
     "Set.st",
     "Dictionary.st",
     "BindingDict.st",

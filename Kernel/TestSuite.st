@@ -38,6 +38,7 @@
 				testByteArray;
 				testCharArray;
 				testString;
+				testSymbol;
 				testSet;
 				testDictionary;
 				testStream;
@@ -122,7 +123,8 @@
 		$A asLowercase isUppercase ifTrue: self failBlk.
 		$b asUppercase isUppercase ifFalse: self failBlk.
 		$N = $r ifTrue: [self fail]. ($X = $X) ifFalse: self failBlk.
-		$J asString ~= 'J' ifTrue: self failBlk
+		$J asString ~= 'J' ifTrue: self failBlk".
+		"$2 copy ~~ $2 ifTrue: self failBlk
 	]
 		
 	testBlock [
@@ -316,6 +318,14 @@
 		(s indexOf: $o startingAt: 6) ~= 9 ifTrue: self failBlk.
 		(s indexOf: $x startingAt: 2) ~= 0 ifTrue: self failBlk.
 		'test' asByteArray ~= #[116 101 115 116] ifTrue: self failBlk
+	]
+	
+	testSymbol [
+		"Test Symbols"
+		| s |
+		s := #testSymbol.
+		s asString ~= 'testSymbol' ifTrue: self failBlk.
+		s copy ~~ s ifTrue: self failBlk
 	]
 	
 	testSet [
