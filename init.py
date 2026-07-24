@@ -236,4 +236,5 @@ Init_Primitive = (
     "String_replaceFromToWithByteArrayStartingAt",
     "String_hash",
     "Symbol_intern",
+    "FileDescriptor_fileOp",
 )
