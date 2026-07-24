@@ -41,8 +41,11 @@ roughly correspond to #nextPutAll:).  I am, in fact, the class that
 implements the global Transcript object.'>
 
 	TexCollector class >> installTranscript [
+		"Create 'Transcript' global for text output"
+		
+		<category: 'set up'>
 		Smalltalk at: #Transcript
-		put: (TextCollector message: stdout -> #nextPutAllFlush:)
+			     put: (TextCollector message: stdout -> #nextPutAllFlush:)
 	]
 
     TextCollector class >> new [
@@ -56,7 +59,7 @@ implements the global Transcript object.'>
 	 key is the receiver, while its value is the selector."
 
 	<category: 'accessing'>
-	^(self new)
+	^(self basicNew)
 	    message: receiverToSelectorAssociation
     ]
 
@@ -207,7 +210,5 @@ implements the global Transcript object.'>
 	    on: Error do: [:ex | stderr nextPutAll: aString; flush. ex return]"
 	receiver perform: selector with: aString
     ]
-
+	
 ]
-
-
