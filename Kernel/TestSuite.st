@@ -52,6 +52,12 @@
 		^[self fail]
 	]
 	
+	isNil [
+		"Override for testing send to super"
+		TestClassVar := true.
+		^super isNil
+	]
+	
 	testNewInit [
 		"Test basic object creation and initialization"
 		| obj |
@@ -139,7 +145,9 @@
 	
 	testSuper [
 		"Test super messages"
-		super isNil; notNil; isNil
+		TestClassVar := false.
+		self isNil ifTrue: self failBlk.
+		TestClassVar ifFalse: self failBlk
 	]
 	
 	testArray [
@@ -394,6 +402,8 @@
 		| n |
 		n := Smalltalk.
 		n size.
+		n at: #NewSymbol put: 1.
+		NewSymbol ~= 1 ifTrue: self failBlk.
 		n at: #KernelInitialized put: true.
 		KernelInitialized ifFalse: self failBlk.
 		(n at: #KernelInitialized) ifFalse: self failBlk.
