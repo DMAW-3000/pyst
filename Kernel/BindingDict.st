@@ -150,7 +150,7 @@ more speed.'>
 	    ifAbsent: 
 		[self at: aSymbol put: nil.
 		^self].
-	SystemExceptions.AlreadyDefined signalOn: aSymbol
+	"SystemExceptions." AlreadyDefined signalOn: aSymbol
     ]
 
     import: aSymbol from: aNamespace [
