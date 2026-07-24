@@ -342,7 +342,7 @@ class Interp(object):
                 var = self._sys.dict_find(varDict, sym)
                 if not var.is_nil():
                     # push variable to stack
-                    ctx.push(var.value)
+                    ctx.push(var[1])
                     return 2
             klassObj = klassObj.superClass
             
@@ -352,7 +352,7 @@ class Interp(object):
             raise NameError("variable %s not found" % sym)
         
         # push variable to stack
-        ctx.push(var.value)
+        ctx.push(var[1])
         return 2
         
     def b_push_temp_var(self, ctx, arg):
@@ -471,8 +471,8 @@ class Interp(object):
             if not varDict.is_nil():
                 var = self._sys.dict_find(varDict, sym)
                 if not var.is_nil():
-                    # pop variable from stack
-                    var.value = ctx.pop()
+                    # pop variable from stack and store in dict assoc
+                    var[1] = ctx.pop()
                     return 2
             klassObj = klassObj.superClass
             
@@ -481,8 +481,8 @@ class Interp(object):
         if var.is_nil():
             raise NameError("variable %s not found" % sym)
         
-        # pop variable from stack
-        var.value = ctx.pop()
+        # pop variable from stack and store in dict assoc
+        var[1] = ctx.pop()
         return 2
         
     def b_store_recv_var(self, ctx, arg):

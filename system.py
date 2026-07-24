@@ -504,7 +504,7 @@ class Smalltalk(object):
         while arrSize:
             idx &= mask
             assoc = dictObj[idx + numInst]
-            if assoc.is_nil() or keyObj.is_same(assoc.key):
+            if assoc.is_nil() or keyObj.is_same(assoc[0]):
                 return idx + numInst
             idx += 1
             arrSize -= 1
@@ -523,7 +523,7 @@ class Smalltalk(object):
             dictObj[n] = r
         for assoc in oldDict[numInst:]:
             if not assoc.is_nil(): 
-                dictObj[self.dict_index(dictObj, assoc.key)] = assoc
+                dictObj[self.dict_index(dictObj, assoc[0])] = assoc
         
     @staticmethod
     def dict_print(dictObj):
@@ -534,7 +534,7 @@ class Smalltalk(object):
         print("Tally: %d (%d)" % (dictObj.tally, dictObj.size - numInst))
         for n,assoc in enumerate(dictObj[numInst:]):
             if not assoc.is_nil():
-                print("[%d]" % n, assoc.key, assoc.value)
+                print("[%d]" % n, assoc[0], assoc[1])
                         
     def identdict_add(self, dictObj, keyObj, itemObj):
         """
