@@ -362,7 +362,10 @@ class Character(Object):
         self[0] = c
     
     def __str__(self):
-        return "$\'" + chr(self.codePoint) + "\'"
+        c = chr(self.codePoint)
+        if c.isspace() or not c.isprintable():
+            c = "\\%02x" % ord(c)
+        return "$\'" + c + "\'"
    
     
 class String(Array):
@@ -390,7 +393,10 @@ class String(Array):
         s = ""
         for c in self:
             if not c.is_nil():
-                s += chr(c.codePoint)
+                c = chr(c.codePoint)
+                if (c.isspace() or not c.isprintable()) and (c != ' '):
+                    c = "\\%02X" % ord(c)
+                s += c
         return s
         
     def __str__(self):
