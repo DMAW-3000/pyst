@@ -13,6 +13,29 @@ class Interp(object):
     Interpreter definition
     """
     
+    # file operation primitive message codes
+    # these must match the values used in FileDescr.st         
+    FILE_OPEN_FILE          = 0     # open:mode: 
+    FILE_CLOSE_FILE         = 1     # no args 
+    FILE_PUT_CHARS          = 2     # data:from:to:
+    FILE_GET_CHARS          = 3     # data:from:to: 
+    FILE_FSEEK_SET          = 4     # position: 
+    FILE_FTELL              = 5     # no args 
+    FILE_FEOF               = 6     # no args 
+    FILE_OPEN_PIPE          = 7     # open:mode: 
+    FILE_FSEEK_CUR          = 8     # skip: 
+    FILE_FSIZE              = 9     # no args 
+    FILE_FTRUNCATE          = 10    # no args 
+    FILE_FILEIN             = 11    # no args 
+    FILE_FILEIN_AT          = 12    # line:file:charPos: 
+    FILE_SYNC_POLL          = 13    # read/write/exception  
+    FILE_ASYNC_POLL         = 14    # operation:semaphore: 
+    FILE_IS_PIPE            = 15    # no args 
+    FILE_MK_TEMP            = 16    # base: 
+    FILE_GET_CHARS_AT       = 17    # data:from:to:absOfs: 
+    FILE_PUT_CHARS_AT       = 18    # data:from:to:absOfs: 
+    FILE_SHUTDOWN_WRITE     = 19    # shutdown 
+    
     def __init__(self, system):
         """
         Create a new interpeter
@@ -60,10 +83,10 @@ class Interp(object):
         
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
-        fTbl[FILE_PUT_CHARS]    = self.f_put_chars
-        fTbl[FILE_IS_PIPE]      = self.f_is_pipe
-        fTbl[FILE_SYNC_POLL]    = self.f_poll
-        fTbl[FILE_ASYNC_POLL]   = self.f_poll
+        fTbl[self.FILE_PUT_CHARS]       = self.f_put_chars
+        fTbl[self.FILE_IS_PIPE]         = self.f_is_pipe
+        fTbl[self.FILE_SYNC_POLL]       = self.f_poll
+        fTbl[self.FILE_ASYNC_POLL]      = self.f_poll
         
         # debugging support
         self.i_debug_pre    = self._debug_default
@@ -1910,30 +1933,7 @@ class Interp(object):
         """
         ctx.push(0)
         return True
-            
-        
-# file operation primitive message codes
-# these must match the values used in FileDescr.st         
-FILE_OPEN_FILE          = 0     # open:mode: 
-FILE_CLOSE_FILE         = 1     # no args 
-FILE_PUT_CHARS          = 2     # data:from:to:
-FILE_GET_CHARS          = 3     # data:from:to: 
-FILE_FSEEK_SET          = 4     # position: 
-FILE_FTELL              = 5     # no args 
-FILE_FEOF               = 6     # no args 
-FILE_OPEN_PIPE          = 7     # open:mode: 
-FILE_FSEEK_CUR          = 8     # skip: 
-FILE_FSIZE              = 9     # no args 
-FILE_FTRUNCATE          = 10    # no args 
-FILE_FILEIN             = 11    # no args 
-FILE_FILEIN_AT          = 12    # line:file:charPos: 
-FILE_SYNC_POLL          = 13    # read/write/exception 
-FILE_ASYNC_POLL         = 14    # operation:semaphore: 
-FILE_IS_PIPE            = 15    # no args 
-FILE_MK_TEMP            = 16    # base: 
-FILE_GET_CHARS_AT       = 17    # data:from:to:absOfs: 
-FILE_PUT_CHARS_AT       = 18    # data:from:to:absOfs: 
-FILE_SHUTDOWN_WRITE     = 19    # shutdown 
+
 
 
         
