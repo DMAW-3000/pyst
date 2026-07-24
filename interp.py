@@ -1871,7 +1871,10 @@ class Interp(object):
                 op = self.i_fileop[op]
             except IndexError:
                 return False
-            return op(ctx, recv, argList)
+            try:
+                return op(ctx, recv, argList)
+            except OSError as ex:
+                return False
         return False
         
     def f_put_chars(self, ctx, recv, argList):
