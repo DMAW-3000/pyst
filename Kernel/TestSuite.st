@@ -20,6 +20,7 @@
 	
 	runAll [
 		"Run all of the tests"
+		'Running Kernel tests' displayNl.
 		self 	testNewInit;
 				testCopy;
 				testMessage;

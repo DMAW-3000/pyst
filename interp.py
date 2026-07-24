@@ -60,6 +60,7 @@ class Interp(object):
         
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
+        fTbl[FILE_PUT_CHARS]    = self.f_put_chars
         fTbl[FILE_IS_PIPE]      = self.f_is_pipe
         fTbl[FILE_SYNC_POLL]    = self.f_poll
         fTbl[FILE_ASYNC_POLL]   = self.f_poll
@@ -1873,6 +1874,22 @@ class Interp(object):
             return op(ctx, recv, argList)
         return False
         
+    def f_put_chars(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_PUT_CHARS.
+        """
+        data  = argList[1]
+        start = argList[2]
+        stop  = argList[3]
+        num   = stop - start + 1
+        arr = bytearray(num)
+        status = self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, num, data, start))
+        if not status:
+            return status
+        ctx.pop()
+        ctx.push(os.write(recv[1], arr))
+        return True
+        
     def f_is_pipe(self, ctx, recv, argList):
         """
         Primitive handler for file operation FILE_IS_PIPE.
@@ -1888,7 +1905,7 @@ class Interp(object):
         Primitive handler for file operations FILE_SYNC_POLL and FILE_ASYNC_POLL.
         Does nothing at the moment.
         """
-        ctx.push(recv)
+        ctx.push(0)
         return True
             
         
