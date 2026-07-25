@@ -334,6 +334,7 @@
 	testSymbol [
 		"Test Symbols"
 		| s |
+		(Symbol isSymbolString: 'testSymbol') ifFalse: self failBlk.
 		s := 'aNewSymbol' asSymbol.
 		s isReadOnly ifFalse: self failBlk.
 		s := #testSymbol.

@@ -101,6 +101,8 @@ Init_Kernel_Mod = (
     "Association.st",
     "HomedAssoc.st",
     "VarBinding.st",
+    "Link.st",
+    "SymLink.st",
     "Behavior.st",
     "Magnitude.st",
     "Character.st",
