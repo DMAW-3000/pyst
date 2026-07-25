@@ -230,8 +230,8 @@
 		"Test generic floating point types"
 		| x |
 		x := -233.23.
-		x asExactFraction.
-		x hash.
+		x asExactFraction isExact ifFalse: self failBlk.
+		x hash isInteger ifFalse: self failBlk.
 		1.0 hash ~= 1 ifTrue: self failBlk.
 		(x rounded closeTo: -233.0) ifFalse: self failBlk.
 		(x half closeTo: 0.5) ifFalse: self failBlk.
