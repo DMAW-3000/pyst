@@ -1739,12 +1739,11 @@ class Interp(object):
             spec = recv.get_class().instanceSpec
             try:
                 c = recv[(spec >> 12) + idx - 1]
-                if c.is_nil():
-                    return False
-                ret = c.codePoint
             except IndexError:
                 return False
-            ctx.push(ret)
+            if c.is_nil():
+                return False
+            ctx.push(c.codePoint)
             return True
         return False
         
