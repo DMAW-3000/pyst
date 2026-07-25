@@ -4,7 +4,6 @@ Bytecode interpreter
 
 from st import *
 import math
-import gc
 import stat
 
 
