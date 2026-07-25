@@ -217,6 +217,7 @@
 	testObject [
 		"Test advanced features of Objects"
 		| x y |
+		self testObject1.
 		(#(3 5 2) perform: #at: withArguments: #(2)) ~= 5 ifTrue: self failBlk.
 		(nil perform: #isNil) ifFalse: self failBlk. 
 		((Array perform: #new: with: 4) size ~= 4) ifTrue: self failBlk.
@@ -225,6 +226,12 @@
 		x at: 1 put: y.
 		(y allOwners size ~= 2) ifTrue: self failBlk
 	]
+	
+	testObject1 [
+		"Test advanced features of Objects"
+		(Object new: 1) addToBeFinalized
+	]
+		
 	
 	testFloat [
 		"Test generic floating point types"

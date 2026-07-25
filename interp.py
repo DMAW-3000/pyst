@@ -314,6 +314,8 @@ class Interp(object):
         """
         Handle cleanup when an object is garbage collected
         """
+        if hasattr(obj, "_weak_obj"):
+            print("DEL ", obj.get_id(), str(obj))
         pass
         
     def exec(self):
@@ -955,6 +957,17 @@ class Interp(object):
                 argList = [arg for arg in argArr]
                 ctx.push(self.send_message_intern(recv, send, argList))
                 return True
+        return False
+        
+    def p_Object_makeEphemeron(self, ctx, recv, argList):
+        """
+        Primitive handler for Object makeEphemeron.
+        Make the first receiver reference weak.
+        """
+        if is_obj(recv) and (recv.size >= 1):
+            #recv.make_ephem()
+            ctx.push(recv)
+            return True
         return False
         
     def p_BlockClosure_value(self, ctx, recv, argList):
