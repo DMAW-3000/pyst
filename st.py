@@ -200,7 +200,8 @@ class Object(object):
         Notify when the object is out of scope
         """
         global Obj_Table
-        #print("DEL", self._obj_id, self)
+        #if not isinstance(self, (BlockClosure, MethodContext, BlockContext)):
+        #    print("DEL", self._obj_id, str(self))
         Obj_Table.free_obj(self._obj_id)
         
     def __str__(self):
