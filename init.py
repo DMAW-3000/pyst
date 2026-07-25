@@ -125,6 +125,7 @@ Init_Kernel_Mod = (
     "Symbol.st",
     "Set.st",
     "Dictionary.st",
+    "LookupTable.st",
     "BindingDict.st",
     "AbstNamespc.st",
     "Namespace.st",

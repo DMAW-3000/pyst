@@ -43,6 +43,7 @@
 				testSymbol;
 				testSet;
 				testDictionary;
+				testLookupTable;
 				testNamespace;
 				testStream;
 				testFileStream;
@@ -412,6 +413,15 @@
 		(d includesKey: 3) ifTrue: self failBlk
 	]
 	
+	testLookupTable [
+		"Test lookup table types"
+		| d b |
+		d := LookupTable new.
+		d at: 1 put: 1000.
+		d at: 2 put: 2000.
+		d at: 3 put: 3000
+	]
+	
 	testNamespace [
 		"Test the global Smalltalk namespace"
 		| n |
@@ -445,7 +455,10 @@
 		"Test file streams"
 		FileStream stdout == stdout ifFalse: self failBlk.
 		FileStream stdin  == stdin  ifFalse: self failBlk.
-		FileStream stderr == stderr ifFalse: self failBlk
+		FileStream stderr == stderr ifFalse: self failBlk.
+		stdin  isOpen ifFalse: self failBlk.
+		stdout isOpen ifFalse: self failBlk.
+		stderr isOpen ifFalse: self failBlk
 	]
 	
 	testException [
