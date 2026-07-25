@@ -100,10 +100,10 @@ class Object(object):
         Create a blank object
         """
         global Obj_Table
-        self._py_cache = None
-        self._obj_id = Obj_Table.new_obj()
-        self._klass = self._Cover
-        self._flags = 0
+        self._py_cache  = None
+        self._obj_id    = Obj_Table.new_obj(self)
+        self._klass     = self._Cover
+        self._flags     = 0
         self.resize(sz)
         
     @property
@@ -153,8 +153,8 @@ class Object(object):
         """
         global Obj_Table
         newObj = copy(self)
-        newObj._obj_id = Obj_Table.new_obj()
-        newObj._refs = copy(self._refs)
+        newObj._obj_id  = Obj_Table.new_obj(newObj)
+        newObj._refs    = copy(self._refs)
         newObj.clear_readonly()
         return newObj
         
@@ -200,8 +200,8 @@ class Object(object):
         Notify when the object is out of scope
         """
         global Obj_Table
-        #if not isinstance(self, (BlockClosure, MethodContext, BlockContext)):
-        #    print("DEL", self._obj_id, str(self))
+        if not isinstance(self, (BlockClosure, MethodContext, BlockContext)):
+            print("DEL", self._obj_id, str(self))
         Obj_Table.free_obj(self._obj_id)
         
     def __str__(self):
