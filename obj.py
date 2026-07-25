@@ -26,6 +26,12 @@ class _ObjTableBase(object):
         Remove the Object id from the global set.
         """
         self._obj_map.pop(objId, None)
+        
+    def get_all_obj(self):
+        """
+        Return a list of all Objects
+        """
+        return list(self._obj_map.values())
     
 
 class _ObjTableRandom(_ObjTableBase):
