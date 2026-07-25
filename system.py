@@ -175,7 +175,9 @@ class Smalltalk(object):
         inst.name_add_sym(inst.e_st_dict, "Bigendian", inst.o_false)
         
         # initialize interpreter
+        # no Objects should be deleted before this point
         inst.g_interp = Interp(inst)
+        set_obj_del(inst.g_interp.delete_object)
         
         # seetup requested debug options
         if brkpoint is not None:

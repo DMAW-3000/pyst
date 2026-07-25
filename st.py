@@ -14,6 +14,7 @@ from obj import Obj_Table
 # globals
 _Obj_Nil    = None
 _Obj_Char   = None
+_Obj_Del    = None
 Int_Max     = sys.maxsize
 
 
@@ -51,6 +52,13 @@ def set_obj_char(x):
     """
     global _Obj_Char
     _Obj_Char = x
+    
+def set_obj_del(x):
+    """
+    Set the handler objects when they are garbage collected
+    """
+    global _Obj_Del
+    _Obj_Del = x
     
 def hsh_scram(x):
     """
@@ -199,9 +207,10 @@ class Object(object):
         """
         Notify when the object is out of scope
         """
-        global Obj_Table
+        global Obj_Table, _Obj_Del
         #if not isinstance(self, (BlockClosure, MethodContext, BlockContext)):
         #    print("DEL", self._obj_id, str(self))
+        _Obj_Del(self)
         Obj_Table.free_obj(self._obj_id)
         
     def __str__(self):

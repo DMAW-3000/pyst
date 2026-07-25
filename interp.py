@@ -310,6 +310,12 @@ class Interp(object):
         self.i_primitive.append(handler)
         return True
         
+    def delete_object(self, obj):
+        """
+        Handle cleanup when an object is garbage collected
+        """
+        pass
+        
     def exec(self):
         """
         Start executing bytecodes from current location
