@@ -28,6 +28,7 @@
 				testCharacter;
 				testBlock;
 				testSuper;
+				testLink;
 				testArray;
 				testInteger;
 				testObject;
@@ -149,6 +150,15 @@
 		TestClassVar := false.
 		self isNil ifTrue: self failBlk.
 		TestClassVar ifFalse: self failBlk
+	]
+	
+	testLink [
+		"Test Link objects"
+		| link1 link2 link3 |
+		link3 := Link new.
+		link2 := Link nextLink: link3.
+		link1 := Link nextLink: link2.
+		link1 size ~= 3 ifTrue: self failBlk
 	]
 	
 	testArray [
@@ -333,8 +343,11 @@
 	
 	testSymbol [
 		"Test Symbols"
-		| s |
+		| s b |
 		(Symbol isSymbolString: 'testSymbol') ifFalse: self failBlk.
+		b := false.
+		Symbol hasInterned: 'testSymbol' ifTrue: [:sym | b := true ].
+		b ifFalse: self failBlk.
 		s := 'aNewSymbol' asSymbol.
 		s isReadOnly ifFalse: self failBlk.
 		s := #testSymbol.
