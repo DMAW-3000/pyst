@@ -2,6 +2,7 @@
 Object ID manager
 """
 
+import weakref
 import random
 random.seed()
 
@@ -18,13 +19,19 @@ class _ObjTableBase(object):
         """
         Create an empty object table
         """
-        self._obj_map = set()
+        self._obj_map = weakref.WeakValueDictionary()
     
     def free_obj(self, objId):
         """
         Remove the Object id from the global set.
         """
-        self._obj_map.discard(objId)
+        self._obj_map.pop(objId, None)
+        
+    def get_all_obj(self):
+        """
+        Return a list of all Objects
+        """
+        return list(self._obj_map.values())
     
 
 class _ObjTableRandom(_ObjTableBase):
@@ -34,7 +41,7 @@ class _ObjTableRandom(_ObjTableBase):
     
     _Get_Random = random.randrange
     
-    def new_obj(self):
+    def new_obj(self, obj):
         """
         Allocate a new ID for the given Object.
         Returns the ID value.
@@ -43,7 +50,7 @@ class _ObjTableRandom(_ObjTableBase):
         objId = self._Get_Random(self._Min_Id, self._Max_Id)
         while objId in objMap:
             objId = self._Get_Random(self._Min_Id, self._Max_Id)
-        objMap.add(objId)
+        objMap[objId] = obj
         return objId
         
         
@@ -56,7 +63,7 @@ class _ObjTableLinear(_ObjTableBase):
         super().__init__()
         self._cur_id = self._Min_Id
 
-    def new_obj(self):
+    def new_obj(self, obj):
         """
         Allocate a new ID for the given Object.
         Returns the ID value.
@@ -67,7 +74,7 @@ class _ObjTableLinear(_ObjTableBase):
             objId += 1
             if objId > self._Max_Id:
                 objId = self._Min_Id
-        objMap.add(objId)
+        objMap[objId] = obj
         self._cur_id = objId + 1
         if self._cur_id > self._Max_Id:
             self._cur_id = self._Min_Id

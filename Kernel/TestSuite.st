@@ -405,7 +405,7 @@
 		(d includes: 2) ifFalse: self failBlk.
 		(d includes: 10) ifTrue: self failBlk.
 		(d occurrencesOf: 1) ~= 1 ifTrue: self failBlk.
-		d removeKey: 3.
+		(d removeKey: 3) ~= 4 ifTrue: self failBlk.
 		d size ~= 3 ifTrue: self failBlk.
 		b := false.
 		d removeKey: 11 ifAbsent: [ b := true ].
@@ -419,7 +419,18 @@
 		d := LookupTable new.
 		d at: 1 put: 1000.
 		d at: 2 put: 2000.
-		d at: 3 put: 3000
+		d at: 3 put: 3000.
+		d at: 4 put: 4000.
+		d at: 5 put: 5000.
+		d at: 6 put: 6000.
+		d at: 7 put: 7000.
+		d size ~= 7 ifTrue: self failBlk.
+		(d at: 2) ~= 2000 ifTrue: self failBlk.
+		(d removeKey: 4) ~= 4000 ifTrue: self failBlk.
+		d size ~= 6 ifTrue: self failBlk.
+		b := false.
+		d keysDo: [:key | key = 2 ifTrue: [ b := true ]].
+		b ifFalse: self failBlk
 	]
 	
 	testNamespace [
