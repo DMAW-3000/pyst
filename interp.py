@@ -1738,7 +1738,10 @@ class Interp(object):
         if is_int(idx):
             spec = recv.get_class().instanceSpec
             try:
-                ret = recv[(spec >> 12) + idx - 1].codePoint
+                c = recv[(spec >> 12) + idx - 1]
+                if c.is_nil():
+                    return False
+                ret = c.codePoint
             except IndexError:
                 return False
             ctx.push(ret)
@@ -1800,7 +1803,10 @@ class Interp(object):
                 n = stop - start + 1
                 try:
                     while n:
-                        recv[start + n - 2] = replaceArr[replaceStart + n - 2].codePoint
+                        c = replaceArr[replaceStart + n - 2]
+                        if c.is_nil():
+                            return False
+                        recv[start + n - 2] = c.codePoint
                         n -= 1
                 except IndexError:
                     return False
@@ -1879,6 +1885,8 @@ class Interp(object):
         if is_obj(send) and (send.get_class() is self._sys.k_string()):
             s = ''
             for c in send:
+                if c.is_nil():
+                    return False
                 s += chr(c.codePoint)
             ctx.push(self._sys.symbol_find_or_add(s))
             return True
