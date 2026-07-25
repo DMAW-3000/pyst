@@ -277,6 +277,31 @@ All classes in the system are subclasses of me.'>
 	Dependencies removeKey: self ifAbsent: []
     ]
 	
+	addToBeFinalized [
+	"Arrange things so that #finalize is sent to the object when the garbage
+	 collector finds out there are only weak references to it."
+
+	<category: 'finalization'>
+	self class finalizableObjects add: ((HomedAssociation 
+		    key: self
+		    value: nil
+		    environment: FinalizableObjects)
+		    makeEphemeron;
+		    yourself) 
+    ]
+
+    removeToBeFinalized [
+	"Unregister the object, so that #finalize is no longer sent to the object
+	 when the garbage collector finds out there are only weak references to it."
+
+	<category: 'finalization'>
+	self class finalizableObjects remove: (HomedAssociation 
+		    key: self
+		    value: nil
+		    environment: self class finalizableObjects)
+	    ifAbsent: []
+    ]
+	
 	species [
 	"This method has no unique definition. Generally speaking, methods which
 	 always return the same type usually don't use #class, but #species.
