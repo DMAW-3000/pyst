@@ -1510,6 +1510,13 @@ class FloatE(ByteArray):
         """
         return klass.from_seq(pack(">f", x))
         
+    def __init__(self, sz):
+        """
+        FloatE constructor
+        """
+        super().__init__(sz)
+        self.make_readonly()
+        
     def to_flt(self):
         """
         Return FloatE value as a python float
