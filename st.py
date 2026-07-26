@@ -217,9 +217,8 @@ class Object(object):
         Notify when the object is out of scope
         """
         global Obj_Table, _Obj_Del
-        #if not isinstance(self, (BlockClosure, MethodContext, BlockContext)):
-        #    print("DEL", self._obj_id, str(self))
-        _Obj_Del(self)
+        if _Obj_Del is not None:
+            _Obj_Del(self)
         Obj_Table.free_obj(self._obj_id)
         
     def __str__(self):
@@ -1679,6 +1678,26 @@ class WeakObject(Object):
         global _Obj_Nil
         self._refs = [weakref.ref(_Obj_Nil)] * sz
         
+    def __getitem__(self, idx):
+        """
+        Get one of the Object's child references
+        """
+        x = self._refs[idx]()
+        if x is None:
+            x = _Obj_Nil
+        return x
+        
+    def __setitem__(self, idx, x):
+        """
+        Set one of the Object's child references
+        """
+        if hasattr(x, "_weak_obj"):
+            if self not in x._weak_obj:
+                x._weak_obj.append(self)
+        else:
+            x._weak_obj = []
+        self._refs[idx] = weakref.ref(x)
+        
     def __str__(self):
         """
         Convert to printable string
@@ -1720,7 +1739,8 @@ class EphemObject(WeakObject):
         """
         if idx == 0:
             if hasattr(x, "_weak_obj"):
-                x._weak_obj.append(self)
+                if self not in x._weak_obj:
+                    x._weak_obj.append(self)
             else:
                 x._weak_obj = []
             self._refs[0] = weakref.ref(x)

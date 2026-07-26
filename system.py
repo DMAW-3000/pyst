@@ -248,6 +248,7 @@ class Smalltalk(object):
         result = inst.g_interp.send_message_extern(testObj, runSym, ())
         print()
         print(result)
+        set_obj_del(None)
         
     def build_classes_1(self):
         """

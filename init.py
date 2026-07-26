@@ -168,6 +168,7 @@ Init_Primitive = (
     "Object_allOwners",
     "Object_perform",
     "Object_performWithArguments",
+    "Object_makeWeak",
     "Object_makeEphemeron",
     "BlockClosure_value",
     "BlockClosure_cull",

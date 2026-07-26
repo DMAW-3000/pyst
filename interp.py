@@ -318,6 +318,7 @@ class Interp(object):
         # look for weak references
         # only Objects with weak references need to be finalized
         if hasattr(obj, "_weak_obj"):
+            #print("DEL: ", str(obj.get_id()), str(obj))
             # look for object in Object FinalizableObjects set
             if not self._sys.dict_find(self._sys.e_final_obj, obj).is_nil():
                 # run Object finalize
@@ -963,7 +964,20 @@ class Interp(object):
                 ctx.push(self.send_message_intern(recv, send, argList))
                 return True
         return False
-        
+    
+    def p_Object_makeWeak(self, ctx, recv, argList):
+        """
+        Primitive handler for Object makeWeak.
+        Make the all of the receiver references weak.
+        """
+        if is_obj(recv):
+            weak = WeakObject.from_obj(recv)
+            status = self.p_Object_become(ctx, recv, (weak,))
+            if status:
+                ctx.pop()
+        ctx.push(recv)
+        return True
+    
     def p_Object_makeEphemeron(self, ctx, recv, argList):
         """
         Primitive handler for Object makeEphemeron.
