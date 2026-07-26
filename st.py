@@ -171,11 +171,8 @@ class Object(object):
         Create a copy of this Object and assign
         it a fresh ID.
         """
-        global Obj_Table
-        newObj = copy(self)
-        newObj._obj_id  = Obj_Table.new_obj(newObj)
-        newObj._refs    = copy(self._refs)
-        newObj.clear_readonly()
+        newObj = self.from_seq(self)
+        newObj._klass = self.get_class()
         return newObj
         
     def is_readonly(self):
