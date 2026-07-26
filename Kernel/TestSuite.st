@@ -30,7 +30,7 @@
 				testSuper;
 				testLink;
 				testArray;
-				testWeakArray;
+				"testWeakArray;"
 				testInteger;
 				testObject;
 				testFloat;

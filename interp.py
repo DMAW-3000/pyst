@@ -47,7 +47,8 @@ class Interp(object):
         
         # get refs to special selector symbols
         self._sel_initialize    = self._make_sel("initialize")
-        self._sel_finalize      = self._make_sel("finalize")
+        self._sel_mourn_colon   = self._make_sel("mourn:")
+        self._sel_mourn         = self._make_sel("mourn")
         self._sel_value         = self._make_sel("value")
         self._sel_size          = self._make_sel("size")
         self._sel_isnil         = self._make_sel("isNil")
@@ -319,10 +320,12 @@ class Interp(object):
         # only Objects with weak references need to be finalized
         if hasattr(obj, "_weak_obj"):
             #print("DEL: ", str(obj.get_id()), str(obj))
-            # look for object in Object FinalizableObjects set
-            if not self._sys.dict_find(self._sys.e_final_obj, obj).is_nil():
-                # run Object finalize
-                self.send_message_intern(obj, self._sel_finalize(), ())
+            # send mourn: message to weak owners
+            for owner in obj._weak_obj:
+                if isinstance(owner, EphemObject):
+                    self.send_message_intern(owner, self._sel_mourn(), ())
+                else:
+                    self.send_message_intern(owner, self._sel_mourn_colon(), (obj,))
         
     def exec(self):
         """
