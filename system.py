@@ -102,7 +102,6 @@ class Smalltalk(object):
         # global environment
         self.e_sym_table    = None
         self.e_st_dict      = None
-        self.e_final_obj    = None
         
         # interpeter and compiler
         self.g_compile      = None
@@ -204,10 +203,6 @@ class Smalltalk(object):
             klassObj = inst.dict_find(inst.e_st_dict, klassSym).value
             print("Initializing class", klassSym)
             inst.g_interp.send_message_extern(klassObj, initSym, ())
-            
-        # get a reference to the Object FinalizableObjects set
-        finalSym = inst.symbol_find_or_add("finalizableObjects")
-        inst.e_final_obj = inst.g_interp.send_message_extern(inst.k_object(), finalSym, ())
             
         # standard I/O streams
         inst.name_add_sym(inst.e_st_dict, "stdin",  FileStream(sys.stdin.fileno(),  "stdin",  1))
