@@ -30,6 +30,7 @@
 				testSuper;
 				testLink;
 				testArray;
+				testWeakArray;
 				testInteger;
 				testObject;
 				testFloat;
@@ -186,6 +187,12 @@
 		x replaceFrom: 1 to: x size with: y startingAt: 1.
 		(a := Array new: 6 withAll: 10328) at: 2.
 		^ #(1 2 3 'hello' false true nil #new)
+	]
+	
+	testWeakArray [
+		"Test weak array types"
+		| a |
+		a := WeakArray with: (Object new: 1) with: (Object new: 2)
 	]
 	
 	testInteger [
