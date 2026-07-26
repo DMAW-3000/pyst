@@ -1695,7 +1695,7 @@ class WeakObject(Object):
             if self not in x._weak_obj:
                 x._weak_obj.append(self)
         else:
-            x._weak_obj = []
+            x._weak_obj = [self]
         self._refs[idx] = weakref.ref(x)
         
     def __str__(self):
@@ -1742,7 +1742,7 @@ class EphemObject(WeakObject):
                 if self not in x._weak_obj:
                     x._weak_obj.append(self)
             else:
-                x._weak_obj = []
+                x._weak_obj = [self]
             self._refs[0] = weakref.ref(x)
         else:
             self._refs[idx] = x
