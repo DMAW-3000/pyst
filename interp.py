@@ -315,8 +315,8 @@ class Interp(object):
         Handle cleanup when an object is garbage collected
         """
         if hasattr(obj, "_weak_obj"):
-            print("DEL ", obj.get_id(), str(obj))
-        pass
+            #print("DEL ", obj.get_id(), str(obj))
+            pass
         
     def exec(self):
         """
@@ -928,7 +928,7 @@ class Interp(object):
             # other objects
             refList = []
             for obj in Obj_Table.get_all_obj():
-                for ref in obj._refs:
+                for ref in obj:
                     if is_obj(ref) and ref.is_same(recv):
                         refList.append(obj)
                         break
@@ -965,7 +965,11 @@ class Interp(object):
         Make the first receiver reference weak.
         """
         if is_obj(recv) and (recv.size >= 1):
-            #recv.make_ephem()
+            ephem = EphemObject.from_obj(recv)
+            status = self.p_Object_become(ctx, recv, (ephem,))
+            if not status:
+                return status
+            ctx.pop()
             ctx.push(recv)
             return True
         return False
