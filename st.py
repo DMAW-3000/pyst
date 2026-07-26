@@ -1669,7 +1669,9 @@ class WeakObject(Object):
         """
         Create a Weak from another Object
         """
-        return klass.from_seq(x)
+        newObj = klass.from_seq(x)
+        newObj._klass = x.get_class()
+        return newObj
     
     def resize(self, sz):
         """
