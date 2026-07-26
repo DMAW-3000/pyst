@@ -166,15 +166,6 @@ class Object(object):
         """
         return self._obj_id == 0
         
-    def clone(self):
-        """
-        Create a copy of this Object and assign
-        it a fresh ID.
-        """
-        newObj = self.from_seq(self)
-        newObj._klass = self.get_class()
-        return newObj
-        
     def is_readonly(self):
         """
         Return True if Object is write

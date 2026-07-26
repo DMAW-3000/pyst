@@ -877,7 +877,13 @@ class Interp(object):
         Primitive handler for Object shallowCopy
         """
         if is_obj(recv):
-            recv = recv.clone()
+            klass = recv.get_class()
+            if klass is self._sys.k_bytearray():
+                recv = ByteArray.from_seq(recv)
+            else:
+                newObj = Object.from_seq(recv)
+                newObj._klass = klass
+                recv = newObj
         ctx.push(recv)
         return True
         
