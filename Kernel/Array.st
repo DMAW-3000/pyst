@@ -137,8 +137,10 @@ and general access behavior from SequenceableCollection.'>
 	| index |
 	(index := self identityIndexOf: oldObject) = 0
 		ifTrue: [ ^anExceptionBlock value ].
-	oldObject := self at: index.
-	self at: index put: nil.
+	[ oldObject := self at: index.
+	  self at: index put: nil.
+	  (index := self identityIndexOf: oldObject startingAt: index) = 0
+	] whileFalse.
 	^oldObject
     ]
 ]
