@@ -15,6 +15,7 @@ from obj import Obj_Table
 _Obj_Nil    = None
 _Obj_Char   = None
 _Obj_Del    = None
+_Obj_Not    = (int, float)
 Int_Max     = sys.maxsize
 
 
@@ -37,7 +38,8 @@ def is_obj(x):
     Returns True if x is an object reference,
     False otherwise.
     """
-    return isinstance(x, Object) 
+    global _Obj_Not
+    return not isinstance(x, _Obj_Not) 
 
 def set_obj_nil(x):
     """
