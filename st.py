@@ -104,7 +104,17 @@ class Object(object):
         Link the python class to its Smalltalk counterpart
         """
         klass._Cover = x
-    
+        
+    @classmethod
+    def from_seq(klass, x):
+        """
+        Create an Object from a Python sequence
+        """
+        obj = klass(len(x))
+        for n,r in enumerate(x):
+            obj[n] = r
+        return obj
+        
     def __init__(self, sz):
         """
         Create a blank object
@@ -318,16 +328,6 @@ class Array(Object):
     
     _Cover = None
     
-    @classmethod
-    def from_seq(klass, x):
-        """
-        Create an Array from a Python sequence
-        """
-        arr = klass(len(x))
-        for n,r in enumerate(x):
-            arr[n] = r
-        return arr
-        
     def __str__(self):
         return "ARRAY(%d)" % self.size
 
