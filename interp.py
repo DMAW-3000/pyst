@@ -47,6 +47,7 @@ class Interp(object):
         
         # get refs to special selector symbols
         self._sel_initialize    = self._make_sel("initialize")
+        self._sel_finalize      = self._make_sel("finalize")
         self._sel_value         = self._make_sel("value")
         self._sel_size          = self._make_sel("size")
         self._sel_isnil         = self._make_sel("isNil")
@@ -314,9 +315,13 @@ class Interp(object):
         """
         Handle cleanup when an object is garbage collected
         """
+        # look for weak references
+        # only Objects with weak references need to be finalized
         if hasattr(obj, "_weak_obj"):
-            #print("DEL ", obj.get_id(), str(obj))
-            pass
+            # look for object in Object FinalizableObjects set
+            if not self._sys.dict_find(self._sys.e_final_obj, obj).is_nil():
+                # run Object finalize
+                self.send_message_intern(obj, self._sel_finalize(), ())
         
     def exec(self):
         """
