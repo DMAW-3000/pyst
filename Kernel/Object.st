@@ -756,7 +756,7 @@ All classes in the system are subclasses of me.'>
 	 Answer the receiver so that it is not lost."
 
 	<category: 'built ins'>
-	<primitive: VMpr_Object_becomeForward>
+	<primitive: VMpr_Object_become>
 	^"SystemExceptions." ReadOnlyObject signal
     ]
 
