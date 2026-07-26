@@ -128,5 +128,17 @@ and general access behavior from SequenceableCollection.'>
 	<category: 'testing'>
 	^true
     ]
+	
+	remove: oldObject ifAbsent: anExceptionBlock [
+	"Remove oldObject from the receiver. If absent, evaluate anExceptionBlock
+	 and answer the result, else answer oldObject."
+
+	<category: 'removing'>
+	| index |
+	(index := self identityIndexOf: oldObject) = 0
+		ifTrue: [ ^anExceptionBlock value ].
+	self at: index put: nil.
+	^oldObject
+    ]
 ]
 

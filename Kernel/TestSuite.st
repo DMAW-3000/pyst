@@ -30,7 +30,7 @@
 				testSuper;
 				testLink;
 				testArray;
-				"testWeakArray;"
+				testWeakArray;
 				testInteger;
 				testObject;
 				testFloat;
@@ -194,7 +194,7 @@
 		| arr1 arr2 obj1 obj2 |
 		obj1 := Object new: 1. obj2 := Object new: 2.
 		arr1 := WeakArray with: obj1 with: obj2.
-		arr2 := WeakArray with: obj2 with: obj2.
+		arr2 := WeakArray with: obj1 with: obj2.
 		(arr1 size ~= 2 or: [ arr2 size ~= 2 ]) ifTrue: self failBlk.
 		((arr1 at: 1) ~~ obj1) ifTrue: self failBlk.
 		(arr2 anySatisfy: [:elem | elem == nil ]) ifTrue: self failBlk.
