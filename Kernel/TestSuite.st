@@ -192,7 +192,7 @@
 	testWeakArray [
 		"Test weak array types"
 		| arr1 arr2 obj1 obj2 |
-		obj1 := Object new: 1. obj2 := Object new: 2.
+		obj1 := Object new: 1. obj2 := Object new: 2. 
 		arr1 := WeakArray with: obj1 with: obj2.
 		arr2 := WeakArray with: obj1 with: obj2.
 		(arr1 size ~= 2 or: [ arr2 size ~= 2 ]) ifTrue: self failBlk.
