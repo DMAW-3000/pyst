@@ -1657,6 +1657,83 @@ class FileStream(Object):
     def writeEnd(self, x):
         self[10] = x
         
+        
+class WeakObject(Object):
+    """
+    Internal representation of Smalltalk objects that
+    contain weak references.
+    """
+
+    @classmethod
+    def from_obj(klass, x):
+        """
+        Create a Weak from another Object
+        """
+        return klass.from_seq(x)
+    
+    def resize(self, sz):
+        """
+        Resize the reference storage arrary for this weak object.
+        Weak references are used for all object items.
+        This will not preserve the old references.
+        """
+        global _Obj_Nil
+        self._refs = [weakref.ref(_Obj_Nil)] * sz
+        
+    def __str__(self):
+        """
+        Convert to printable string
+        """
+        return "WEAKOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"
+        
+        
+class EphemObject(WeakObject):
+    """
+    Internal representation of Smalltalk ephemeron object that
+    contain a weak reference.
+    """
+    
+    def resize(self, sz):
+        """
+        Resize the reference storage arrary for this weak object.
+        A weak references is used for the first object item.
+        This will not preserve the old references.
+        """
+        global _Obj_Nil
+        self._refs = [weakref.ref(_Obj_Nil)]
+        self._refs.extend((_Obj_Nil,) * (sz - 1))
+        
+    def __getitem__(self, idx):
+        """
+        Get one of the Object's child references
+        """
+        if idx == 0:
+            x = self._refs[0]()
+            if x is None:
+                x = _Obj_Nil
+        else:
+            x = self._refs[idx]
+        return x
+        
+    def __setitem__(self, idx, x):
+        """
+        Set one of the Object's child references
+        """
+        if idx == 0:
+            if hasattr(x, "_weak_obj"):
+                x._weak_obj.append(self)
+            else:
+                x._weak_obj = []
+            self._refs[0] = weakref.ref(x)
+        else:
+            self._refs[idx] = x
+        
+    def __str__(self):
+        """
+        Convert to printable string
+        """
+        return "EPHEMOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"        
+        
 
 # the global bytecode values
 B_PLUS_SPECIAL              = 0
