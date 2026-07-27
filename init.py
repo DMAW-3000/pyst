@@ -151,6 +151,7 @@ Init_Kernel_Mod = (
 # the list of classes whose 'initialize' message
 # should be sent at startup
 Init_Class_Init = (
+    "Object",
     "Character",
     "Fraction",
     "FileStream",
