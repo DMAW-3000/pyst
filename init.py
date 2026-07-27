@@ -75,6 +75,7 @@ Init_Class = (
     ("IdentityDictionary", False, "ident_dictionary", "lookup_table", False, (), (), ()),
     ("MethodDictionary", True, "meth_dictionary", "ident_dictionary", False, ("mutex",), (), ()),
     ("WeakArray", False, "weak_array", "array", False, ("values", "nilValues"), (), ()),
+    ("WeakKeyDictionary", False, "weak_key_dict", "dictionary", False, ("keys",), (), ()),
     ("TestSuite", False, "test", "object", True, ("testInst1", "testInst2"), ("TestClassVar",), ()),
 )
 
@@ -131,6 +132,7 @@ Init_Kernel_Mod = (
     "AbstNamespc.st",
     "Namespace.st",
     "WeakArray.st",
+    "WeakKeyDict.st",
     "Stream.st",
     "PosStream.st",
     "ReadStream.st",

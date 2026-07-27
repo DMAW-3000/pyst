@@ -46,6 +46,7 @@
 				testDictionary;
 				testLookupTable;
 				testNamespace;
+				testWeakKeyDict;
 				testStream;
 				testFileStream;
 				testException
@@ -473,6 +474,14 @@
 		KernelInitialized := false.
 		(n at: #KernelInitialized) ifTrue: self failBlk.
 		(n at: #stdout) class ~= FileStream ifTrue: self failBlk.
+	]
+	
+	testWeakKeyDict [
+		"Test weak key dictionaries"
+		| d key1 key2 |
+		d := WeakKeyDictionary new.
+		key1 := 'ab' copy. key2 := 'cd' copy.
+		d add: key1 -> 1
 	]
 	
 	testStream [
