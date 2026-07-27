@@ -8,8 +8,6 @@ import weakref
 from copy import copy
 from struct import pack, unpack
 
-from obj import Obj_Table
-
 
 # globals
 _Obj_Nil    = None
@@ -86,6 +84,82 @@ def hsh_seq(x):
         h = (h + ((h << 10) & m)) & m
         h ^= (h >> 6)
     return h
+    
+    
+class _ObjTableBase(object):
+    """
+    Maintain a unique ID for every Object in the system
+    """
+    
+    _Min_Id = 3
+    _Max_Id = 0xffffffff
+    
+    def __init__(self):
+        """
+        Create an empty object table
+        """
+        self._obj_map = weakref.WeakValueDictionary()
+    
+    def free_obj(self, objId):
+        """
+        Remove the Object id from the global set.
+        """
+        self._obj_map.pop(objId, None)
+        
+    def get_all_obj(self):
+        """
+        Return a list of all Objects
+        """
+        return list(self._obj_map.values())
+    
+
+class _ObjTableRandom(_ObjTableBase):
+    """
+    Maintain a unique ID for every Object in the system
+    """
+    import random
+    random.seed()
+    
+    _Get_Random = random.randrange
+    
+    def new_obj(self, obj):
+        """
+        Allocate a new ID for the given Object.
+        Returns the ID value.
+        """
+        objMap = self._obj_map
+        objId = self._Get_Random(self._Min_Id, self._Max_Id)
+        while objId in objMap:
+            objId = self._Get_Random(self._Min_Id, self._Max_Id)
+        objMap[objId] = obj
+        return objId
+        
+        
+class _ObjTableLinear(_ObjTableBase):
+
+    def __init__(self):
+        """
+        Create an empty object table
+        """
+        super().__init__()
+        self._cur_id = self._Min_Id
+
+    def new_obj(self, obj):
+        """
+        Allocate a new ID for the given Object.
+        Returns the ID value.
+        """
+        objMap = self._obj_map
+        objId = self._cur_id
+        while objId in objMap:
+            objId += 1
+            if objId > self._Max_Id:
+                objId = self._Min_Id
+        objMap[objId] = obj
+        self._cur_id = objId + 1
+        if self._cur_id > self._Max_Id:
+            self._cur_id = self._Min_Id
+        return objId
 
 
 class Object(object):
@@ -93,10 +167,20 @@ class Object(object):
     Smalltalk base Object definition.
     """
     
+    # this is dictionary of all exising Objects
+    Obj_Table = _ObjTableLinear()
+    
     # this will point to the Smalltalk class representing
     # this python class after init is complete.
     # each Object subclass will have its own _Cover
     _Cover = None
+    
+    @classmethod
+    def get_all_obj(klass):
+        """
+        Get a list of all Objects
+        """
+        return klass.Obj_Table.get_all_obj()
     
     @classmethod
     def set_cover(klass, x):
@@ -119,9 +203,8 @@ class Object(object):
         """
         Create a blank object
         """
-        global Obj_Table
         self._py_cache  = None
-        self._obj_id    = Obj_Table.new_obj(self)
+        self._obj_id    = self.Obj_Table.new_obj(self)
         self._klass     = self._Cover
         self._flags     = 0
         self.resize(sz)
@@ -207,10 +290,10 @@ class Object(object):
         """
         Notify when the object is out of scope
         """
-        global Obj_Table, _Obj_Del
+        global _Obj_Del
         if _Obj_Del is not None:
             _Obj_Del(self)
-        Obj_Table.free_obj(self._obj_id)
+        self.Obj_Table.free_obj(self._obj_id)
         
     def __str__(self):
         """
@@ -1812,3 +1895,4 @@ B_EXIT_INTERPRETER          = 53
 B_LINE_NUMBER_BYTECODE      = 54
 B_EXT_BYTE                  = 55 
 B_PUSH_SELF                 = 56
+

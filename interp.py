@@ -916,13 +916,12 @@ class Interp(object):
         """
         Primitive handler for Object become:
         """
-        global Obj_Table
         # check arguments
         send = argList[0]
         if is_obj(send) and is_obj(recv) and not recv.is_readonly():
             # get references to original object stored in
             # other objects
-            for obj in Obj_Table.get_all_obj():
+            for obj in Object.get_all_obj():
                 for idx,ref in enumerate(obj):
                     # search through this object's references
                     if is_obj(ref) and ref.is_same(recv):
@@ -937,12 +936,11 @@ class Interp(object):
         Primtive handler for Object allOwners.
         Return Array of other Objects that reference this one.
         """
-        global Obj_Table
         if is_obj(recv):
             # get references to this object stored in
             # other objects
             refList = []
-            for obj in Obj_Table.get_all_obj():
+            for obj in Object.get_all_obj():
                 for ref in obj:
                     if is_obj(ref) and ref.is_same(recv):
                         refList.append(obj)
