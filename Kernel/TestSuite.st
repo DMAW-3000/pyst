@@ -236,9 +236,13 @@
 		| x y |
 		x := Object new.
 		x dependents size ~= 0 ifTrue: self failBlk.
-		x addDependent: 'xyz'.
+		y := 'xyz'. x addDependent: y.
 		x dependents size ~= 1 ifTrue: self failBlk.
+		x changed: true.
+		x broadcast: #isNil.
 		self testObject1.
+		x removeDependent: y.
+		x dependents size ~= 0 ifTrue: self failBlk.
 		(#(3 5 2) perform: #at: withArguments: #(2)) ~= 5 ifTrue: self failBlk.
 		(nil perform: #isNil) ifFalse: self failBlk. 
 		((Array perform: #new: with: 4) size ~= 4) ifTrue: self failBlk.
