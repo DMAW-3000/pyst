@@ -195,7 +195,7 @@ class Smalltalk(object):
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
             
         # static class initialization
-        initSym = inst.symbol_find_or_add("initialize")
+        initSym = inst.symbol_find("initialize")
         for klassName in init.Init_Class_Init:
             klassSym = inst.symbol_find(klassName)
             klassObj = inst.dict_find(inst.e_st_dict, klassSym).value
@@ -230,7 +230,6 @@ class Smalltalk(object):
                                  klassObj.superClass,
                                  klassObj.classVariables))
             print()
-        
     
     @classmethod
     def run(klass):
@@ -238,8 +237,8 @@ class Smalltalk(object):
         Start execution of Smalltalk
         """
         inst = klass._SmalltalkInstance
-        newSym = inst.symbol_find_or_add("new")
-        runSym = inst.symbol_find_or_add("runAll")
+        newSym = inst.symbol_find("new")
+        runSym = inst.symbol_find("runAll")
         testObj = inst.g_interp.send_message_extern(inst.k_test(), newSym, ())
         result = inst.g_interp.send_message_extern(testObj, runSym, ())
         print()
