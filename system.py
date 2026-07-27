@@ -40,6 +40,7 @@ class Smalltalk(object):
         self.k_collection               = None
         self.k_seq_collection           = None
         self.k_arr_collection           = None
+        self.k_ord_collection           = None
         self.k_array                    = None
         self.k_bytearray                = None
         self.k_link                     = None
