@@ -139,8 +139,8 @@ class Smalltalk(object):
         set_obj_nil(inst.o_nil)
         
         # create Smalltalk Boolean singletons
-        inst.o_false = CFalse()
-        inst.o_true = CTrue()
+        inst.o_false    = CFalse()
+        inst.o_true     = CTrue()
         
         # create Smalltalk Character singletons
         for n in range(256):
@@ -234,6 +234,9 @@ class Smalltalk(object):
     
     @classmethod
     def run(klass):
+        """
+        Start execution of Smalltalk
+        """
         inst = klass._SmalltalkInstance
         newSym = inst.symbol_find_or_add("new")
         runSym = inst.symbol_find_or_add("runAll")
@@ -241,6 +244,12 @@ class Smalltalk(object):
         result = inst.g_interp.send_message_extern(testObj, runSym, ())
         print()
         print(result)
+        inst.stop()
+        
+    def stop(self):
+        """
+        Stop execution
+        """
         set_obj_del(None)
         
     def build_classes_1(self):
