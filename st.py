@@ -1786,13 +1786,13 @@ class EphemObject(WeakObject):
     """
     
     @classmethod
-    def from_seq(klass, x):
+    def from_obj(klass, x):
         """
         Create an Ephemeron from a Python sequence
         """
         if isinstance(x, EphemObject):
             return x
-        return super().from_seq(x)
+        return super().from_obj(x)
     
     def resize(self, sz):
         """
