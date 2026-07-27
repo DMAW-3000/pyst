@@ -1755,10 +1755,11 @@ class Interp(object):
         stop            = argList[1]
         replaceArr      = argList[2]
         replaceStart    = argList[3]
-        if is_int(start) and is_int(stop) and is_int(replaceStart) and (stop >= start):
+        if is_int(start) and is_int(stop) and is_int(replaceStart) and \
+                (start > 0) and (replaceStart > 0):
             n = stop - start + 1
             try:
-                while n:
+                while n > 0:
                     recv[start + n - 2] = replaceArr[replaceStart + n - 2]
                     n -= 1
             except IndexError:
@@ -1773,17 +1774,16 @@ class Interp(object):
         """
         item    = argList[0]
         start   = argList[1]
-        if is_int(start):
+        if is_int(start) and (start > 0):
             stop = recv.size
-            if (start > 0) and (stop >= start):
-                while start <= stop:
-                    if recv[start - 1].is_same(item):
-                        break
-                    start += 1
-                if start > stop:
-                    return False
-                ctx.push(start)
-                return True
+            while start <= stop:
+                if recv[start - 1].is_same(item):
+                    break
+                start += 1
+            if start > stop:
+                return False
+            ctx.push(start)
+            return True
         return False
         
     def p_ArrayedCollection_equal(self, ctx, recv, argList):
@@ -1871,11 +1871,11 @@ class Interp(object):
         replaceArr      = argList[2]
         replaceStart    = argList[3]
         if is_int(start) and is_int(stop) and is_int(replaceStart) and \
+           (start > 0) and (replaceStart > 0) and \
            is_obj(replaceArr) and (replaceArr.get_class() is self._sys.k_string()):
-            if stop >= start:
                 n = stop - start + 1
                 try:
-                    while n:
+                    while n > 0:
                         c = replaceArr[replaceStart + n - 2]
                         if c.is_nil():
                             return False
@@ -1893,7 +1893,7 @@ class Interp(object):
         """
         item    = argList[0]
         start   = argList[1]
-        if is_int(start) and is_int(item):
+        if is_int(start) and (start > 0) and is_int(item):
             try:
                 idx = recv._refs.index(item, start - 1) + 1
             except ValueError:
@@ -1925,11 +1925,11 @@ class Interp(object):
         replaceArr      = argList[2]
         replaceStart    = argList[3]
         if is_int(start) and is_int(stop) and is_int(replaceStart) and \
+           (start > 0) and (replaceStart > 0) and \
            is_obj(replaceArr) and (replaceArr.get_class() is self._sys.k_bytearray()):
-            if stop >= start:
                 n = stop - start + 1
                 try:
-                    while n:
+                    while n > 0:
                         recv[start + n - 2] = self._sys.o_char[replaceArr[replaceStart + n - 2]]
                         n -= 1
                 except IndexError:
