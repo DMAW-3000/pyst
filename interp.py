@@ -1002,6 +1002,37 @@ class Interp(object):
             return True
         return False
         
+    def p_Object_instVarAt(self, ctx, recv, argList):
+        """
+        Primitive handler for Object instVarAt:
+        Get instance variable at index.
+        """
+        idx = argList[0]
+        if is_int(idx):
+            try:
+                val = recv[idx - 1]
+            except IndexError:
+                return False
+            ctx.push(val)
+            return True
+        return False
+        
+    def p_Object_instVarAtPut(self, ctx, recv, argList):
+        """
+        Primitive handler for Object instVarAtPut:
+        Put instance variable at index.
+        """
+        idx = argList[0]
+        if is_int(idx) and not recv.is_readonly():
+            val = argList[1]
+            try:
+                recv[idx - 1] = val
+            except IndexError:
+                return False
+            ctx.push(val)
+            return True
+        return False
+        
     def p_BlockClosure_value(self, ctx, recv, argList):
         """
         Primitive handler for BlockClosure value

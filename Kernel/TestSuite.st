@@ -240,7 +240,11 @@
 		x := Array basicNew: 3.
 		y := Array basicNew: 2.
 		x at: 1 put: y.
-		(y allOwners size ~= 2) ifTrue: self failBlk
+		(y allOwners size ~= 2) ifTrue: self failBlk.
+		x := Association key: 1 value: 2.
+		((x instVarAt: 2) ~= 2) ifTrue: self failBlk.
+		x instVarAt: 2 put: 3.
+		x value ~= 3 ifTrue: self failBlk
 	]
 	
 	testObject1 [

@@ -170,6 +170,8 @@ Init_Primitive = (
     "Object_performWithArguments",
     "Object_makeWeak",
     "Object_makeEphemeron",
+    "Object_instVarAt",
+    "Object_instVarAtPut",
     "BlockClosure_value",
     "BlockClosure_cull",
     "BlockClosure_valueWithArguments",
