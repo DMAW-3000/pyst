@@ -2,8 +2,6 @@
 The entire Smalltalk environment
 """
 
-import pickle
-
 from st import *
 from compiler import Compile
 from interp import Interp
