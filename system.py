@@ -24,10 +24,6 @@ class Smalltalk(object):
         # manage the class covers
         self.g_cover_map = weakref.WeakValueDictionary()
         
-        # global dictionaries
-        self.e_st_dict = None
-        self.e_sym_table = None
-        
         # cached class definitions
         self.k_object                   = None
         self.k_undef_obj                = None
