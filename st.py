@@ -314,10 +314,10 @@ class UndefinedObject(Object):
         Create an UndefinedObject innstance.  This should only
         be called once.  The new object has special ID '0'.
         """
-        self._py_cache = None
-        self._obj_id = 0
-        self._klass = self._Cover
-        self._flags = 0
+        self._py_cache  = None
+        self._obj_id    = 0
+        self._klass     = self._Cover
+        self._flags     = 0
         self.resize(0)
         self.make_readonly()
         
@@ -339,10 +339,10 @@ class CFalse(Object):
         Create a False object innstance.  This should only
         be called once.  The new object has special ID '1'.
         """
-        self._py_cache = None
-        self._obj_id = 1
-        self._klass = self._Cover
-        self._flags = 0
+        self._py_cache  = None
+        self._obj_id    = 1
+        self._klass     = self._Cover
+        self._flags     = 0
         self.resize(1)
         self.make_readonly()
         
@@ -372,10 +372,10 @@ class CTrue(Object):
         Create a True object innstance.  This should only
         be called once.  The new object has special ID '2'.
         """
-        self._py_cache = None
-        self._obj_id = 2
-        self._klass = self._Cover
-        self._flags = 0
+        self._py_cache  = None
+        self._obj_id    = 2
+        self._klass     = self._Cover
+        self._flags     = 0
         self.resize(1)
         self.make_readonly()
         
@@ -571,8 +571,8 @@ class Association(Object):
         Create an Association
         """
         super().__init__(2)
-        self.key = keyObj
-        self.value = valueObj
+        self.key    = keyObj
+        self.value  = valueObj
         
     @property
     def key(self):
@@ -607,9 +607,9 @@ class VariableBinding(Object):
         Create an Association
         """
         super().__init__(3)
-        self.key = keyObj
-        self.value = valueObj
-        self.environment = envObj
+        self.key            = keyObj
+        self.value          = valueObj
+        self.environment    = envObj
         
     @property
     def key(self):
@@ -879,8 +879,8 @@ class Class(Object):
         Create a Class object
         """
         super().__init__(12)
-        self.superClass = superKlass
-        self.instanceSpec = numInstVars << 12
+        self.superClass     = superKlass
+        self.instanceSpec   = numInstVars << 12
         if isFixed:
             self.instanceSpec |= 0x10
         self.make_readonly()
@@ -1632,11 +1632,11 @@ class FileStream(Object):
         Create a new FileStream
         """
         super().__init__(11) 
-        self.fd = fileDesc
-        self.file = String.from_str(fileName)
-        self.access = accFlags
-        self.ptr = 1
-        self.endPtr = 0
+        self.fd         = fileDesc
+        self.file       = String.from_str(fileName)
+        self.access     = accFlags
+        self.ptr        = 1
+        self.endPtr     = 0
         self.collection = String(1024)
         
     @property
