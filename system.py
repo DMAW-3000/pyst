@@ -92,6 +92,7 @@ class Smalltalk(object):
         self.k_meth_dictionary = None
         self.k_weak_array = None
         self.k_weak_key_dict = None
+        self.k_weak_key_ident_dict = None
         self.k_test = None
         
         # fundamental objects
