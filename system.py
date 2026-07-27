@@ -107,6 +107,7 @@ class Smalltalk(object):
         # debug support
         self.d_save         = None
         self.d_breakpoint   = None
+        self.d_last_cmd     = None
         
         # bytecode disassembly table
         # each entry is (name, num_arg)
@@ -769,11 +770,16 @@ class Smalltalk(object):
         """
         Get user input and process debugger command
         """
+        line = input(">>")
         while True:
-            line = input(">>")
             if len(line) < 1:
-                print()
+                if self.d_last_cmd is None:
+                    print()
+                    line = input(">>")
+                else:
+                    line = self.d_last_cmd
                 continue
+            self.d_last_cmd = line
             c = line.split()[0]
             if c == 's':
                 break
@@ -820,6 +826,7 @@ class Smalltalk(object):
                 sys.exit(0)
             else:
                 print("???\n")
+            line = input(">>")
                 
     def context_print_byte(self):
         """
