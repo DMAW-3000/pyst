@@ -260,6 +260,28 @@ All classes in the system are subclasses of me.'>
 	^self
     ]
 	
+	addDependent: anObject [
+	"Add anObject to the set of the receiver's dependents. Important:
+	 if an object has dependents, it won't be garbage collected."
+
+	<category: 'dependents access'>
+	^(Dependencies at: self ifAbsentPut: [OrderedCollection new]) 
+	    add: anObject
+    ]
+
+    removeDependent: anObject [
+	"Remove anObject to the set of the receiver's dependents. No problem
+	 if anObject is not in the set of the receiver's dependents."
+
+	<category: 'dependents access'>
+	| dependencies |
+	dependencies := Dependencies at: self ifAbsent: [^anObject].
+	dependencies remove: anObject ifAbsent: [].
+	dependencies size < 1 ifTrue: [
+	    Dependencies removeKey: self ifAbsent: []].
+	^anObject
+    ]
+	
 	dependents [
 	"Answer a collection of the receiver's dependents."
 

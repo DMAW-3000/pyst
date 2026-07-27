@@ -236,6 +236,8 @@
 		| x y |
 		x := Object new.
 		x dependents size ~= 0 ifTrue: self failBlk.
+		x addDependent: 'xyz'.
+		x dependents size ~= 1 ifTrue: self failBlk.
 		self testObject1.
 		(#(3 5 2) perform: #at: withArguments: #(2)) ~= 5 ifTrue: self failBlk.
 		(nil perform: #isNil) ifFalse: self failBlk. 
