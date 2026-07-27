@@ -1226,7 +1226,7 @@ class _Code(Object):
         bytecodes.
         """
         super().__init__(3)
-        self._bc_arr = bytearray(1)
+        self._bc_arr = bytearray(2)
         self.make_readonly()
  
     def get_code(self):
@@ -1243,24 +1243,22 @@ class _Code(Object):
         
     @property
     def size(self):
-        return len(self._refs) + len(self._bc_arr)
+        return 3 + len(self._bc_arr)
         
     def __getitem__(self, idx):
         """
         Get one of the Object's child references
         """
-        refSize = len(self._refs)
-        if idx >= refSize:
-            return self._bc_arr[idx - refSize]
+        if idx >= 3:
+            return self._bc_arr[idx - 3]
         return self._refs[idx]
         
     def __setitem__(self, idx, x):
         """
         Set one of the Object's child references
         """
-        refSize = len(self._refs)
-        if idx >= refSize:
-            self._bc_arr[idx - refSize] = x
+        if idx >= 3:
+            self._bc_arr[idx - 3] = x
         else:
             self._refs[idx] = x
      
