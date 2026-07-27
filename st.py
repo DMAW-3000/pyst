@@ -1702,6 +1702,15 @@ class EphemObject(WeakObject):
     contain a weak reference.
     """
     
+    @classmethod
+    def from_seq(klass, x):
+        """
+        Create an Ephemeron from a Python sequence
+        """
+        if isinstance(x, EphemObject):
+            return x
+        return super().from_seq(x)
+    
     def resize(self, sz):
         """
         Resize the reference storage arrary for this weak object.
