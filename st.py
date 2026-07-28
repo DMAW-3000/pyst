@@ -117,6 +117,12 @@ class _ObjTableBase(object):
         Return a dictionary of all Objects
         """
         return dict(self._obj_map)
+        
+    def set_obj_map(self, x):
+        """
+        Set the Object table
+        """
+        self._obj_map = weakref.WeakValueDictionary(x)
     
 
 class _ObjTableRandom(_ObjTableBase):
@@ -194,6 +200,13 @@ class Object(object):
         Return a dictionary of all Objects
         """
         return klass.Obj_Table.get_obj_map()
+        
+    @classmethod
+    def set_obj_map(klass, x):
+        """
+        Set the Object dictionary
+        """
+        klass.Obj_Table.set_obj_map(x)
     
     @classmethod
     def set_cover(klass, x):
