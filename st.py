@@ -239,9 +239,15 @@ class Object(object):
         
     def get_class(self):
         """
-        Return the Smalltalk class to which Object belongs
+        Return the Smalltalk class to which the Object belongs
         """
         return self._klass
+        
+    def set_class(self, x):
+        """
+        Set the Smalltalk class to which the Object belongs
+        """
+        self._klass = x
         
     def get_id(self):
         """
