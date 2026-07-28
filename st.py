@@ -1881,6 +1881,9 @@ class ObjectReference(object):
         """
         return self._obj_id
         
+    def __str__(self):
+        return "OBJREF<" + str(self._obj_id) + ">"
+        
 
 # the global bytecode values
 B_PLUS_SPECIAL              = 0
