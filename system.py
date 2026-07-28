@@ -210,26 +210,7 @@ class Smalltalk(object):
         
         # dump information
         if verbose:
-            print()
-            print("Smalltalk Dictionary:")
-            inst.dict_print(inst.e_st_dict)
-            print()
-            
-            print("Symbol Table:")
-            inst.symbol_tbl_print()
-            print()
-            
-            print("Class Init Info:")
-            for klassInfo in init.Init_Class:
-                cacheName = klassInfo[2]
-                klassObj = getattr(inst, "k_" + cacheName)()
-                print("%s %s %s %s %s" % ( \
-                                 klassObj.name,
-                                 klassObj.instanceVariables, 
-                                 klassObj.subClasses,
-                                 klassObj.superClass,
-                                 klassObj.classVariables))
-            print()
+            inst.global_state_print()
     
     @classmethod
     def run(klass):
@@ -854,6 +835,31 @@ class Smalltalk(object):
             selName = desc.selector
         klassName = desc.klass
         print("<%s> %s[%d]:" % (klassName, selName, ip), self.dis_byte(code[ip]))
+     
+    def global_state_print(self):
+        """
+        Print info for debug
+        """
+        print()
+        print("Smalltalk Dictionary:")
+        self.dict_print(self.e_st_dict)
+        print()
+            
+        print("Symbol Table:")
+        self.symbol_tbl_print()
+        print()
+            
+        print("Class Init Info:")
+        for klassInfo in init.Init_Class:
+            cacheName = klassInfo[2]
+            klassObj = getattr(self, "k_" + cacheName)()
+            print("%s %s %s %s %s" % ( \
+                                 klassObj.name,
+                                 klassObj.instanceVariables, 
+                                 klassObj.subClasses,
+                                 klassObj.superClass,
+                                 klassObj.classVariables))
+        print()
     
     @staticmethod
     def context_print_state(ctx):
