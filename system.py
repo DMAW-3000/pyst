@@ -250,12 +250,27 @@ class Smalltalk(object):
         Save Smalltalk image to file
         """
         objMap = Object.get_obj_map()
+                
+        # break references and replace with IDs
+        # skip weak object this pass
         for obj in objMap.values():
-            obj._klass = ObjectReference(obj._klass)
+            if hasattr(obj, "_weak_obj"):
+                for n,r in enumerate(obj._weak_refs):
+                    obj._weak_refs[n] = ObjectReference(r)
             if not isinstance(obj, (WeakObject, EphemObject)):
+                obj._klass = ObjectReference(obj.get_class())
+                if hasattr(obj, "_weak_obj"):
+                    delattr(obj, "_weak_obj")
                 for n,r in enumerate(obj):
                     if is_obj(r):
                         obj[n] = ObjectReference(r)
+                    
+        # fixup weak objects
+        for obj in objMap.values():
+            if isinstance(obj, (WeakObject, EphemObject)):
+                objMap[obj.get_id()] = obj.to_obj()
+                    
+        # save image to file
         imgFile = open("test.sti", "wb")
         dill.dump(objMap, imgFile)
         imgFile.close()
