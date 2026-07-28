@@ -1763,6 +1763,14 @@ class WeakObject(Object):
         """
         Set one of the Object's child references
         """
+        current = self[idx]
+        if hasattr(current, "_weak_obj"):
+            try:
+                current._weak_obj.remove(self)
+            except ValueError:
+                pass
+            if not len(current._weak_obj):
+                delattr(current, "_weak_obj")
         if hasattr(x, "_weak_obj"):
             if self not in x._weak_obj:
                 x._weak_obj.append(self)
@@ -1807,9 +1815,7 @@ class EphemObject(WeakObject):
         Get one of the Object's child references
         """
         if idx == 0:
-            x = self._refs[0]()
-            if x is None:
-                x = _Obj_Nil
+            x = super().__getitem__(idx)
         else:
             x = self._refs[idx]
         return x
@@ -1819,12 +1825,7 @@ class EphemObject(WeakObject):
         Set one of the Object's child references
         """
         if idx == 0:
-            if hasattr(x, "_weak_obj"):
-                if self not in x._weak_obj:
-                    x._weak_obj.append(self)
-            else:
-                x._weak_obj = [self]
-            self._refs[0] = weakref.ref(x)
+            super().__setitem__(idx, x)
         else:
             self._refs[idx] = x
         
