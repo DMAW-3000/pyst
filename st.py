@@ -111,6 +111,12 @@ class _ObjTableBase(object):
         Return a list of all Objects
         """
         return list(self._obj_map.values())
+        
+    def get_obj_map(self):
+        """
+        Return a dictionary of all Objects
+        """
+        return dict(self._obj_map)
     
 
 class _ObjTableRandom(_ObjTableBase):
@@ -181,6 +187,13 @@ class Object(object):
         Get a list of all Objects
         """
         return klass.Obj_Table.get_all_obj()
+        
+    @classmethod
+    def get_obj_map(klass):
+        """
+        Return a dictionary of all Objects
+        """
+        return klass.Obj_Table.get_obj_map()
     
     @classmethod
     def set_cover(klass, x):
