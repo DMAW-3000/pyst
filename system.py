@@ -251,16 +251,14 @@ class Smalltalk(object):
         """
         objMap = Object.get_obj_map()
                 
-        # break references and replace with IDs
-        # skip weak object this pass
         for obj in objMap.values():
+            # delete weak obj list
             if hasattr(obj, "_weak_obj"):
-                for n,r in enumerate(obj._weak_refs):
-                    obj._weak_refs[n] = ObjectReference(r)
+                delattr(obj, "_weak_obj")
+            # break references and replace with IDs
+            # skip weak object this pass
             if not isinstance(obj, (WeakObject, EphemObject)):
                 obj._klass = ObjectReference(obj.get_class())
-                if hasattr(obj, "_weak_obj"):
-                    delattr(obj, "_weak_obj")
                 for n,r in enumerate(obj):
                     if is_obj(r):
                         obj[n] = ObjectReference(r)
@@ -268,7 +266,13 @@ class Smalltalk(object):
         # fixup weak objects
         for obj in objMap.values():
             if isinstance(obj, (WeakObject, EphemObject)):
-                objMap[obj.get_id()] = obj.to_obj()
+                repl = obj.to_obj()
+                repl._obj_id = obj.get_id()
+                repl._klass = ObjectReference(obj.get_class())
+                for n,r in enumerate(repl):
+                    if is_obj(r):
+                        repl[n] = ObjectReference(r)
+                objMap[obj.get_id()] = repl
                     
         # save image to file
         imgFile = open("test.sti", "wb")
