@@ -1857,7 +1857,7 @@ class EphemObject(WeakObject):
         return "EPHEMOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"
 
 
-def ObjectReference(object):
+class ObjectReference(object):
     """
     Repreent a reference to another object by ID.
     Used for image storage.
@@ -1867,7 +1867,7 @@ def ObjectReference(object):
         """
         Create an ObjectReference
         """
-        self._obj_id = obj
+        self._obj_id = obj.get_id()
         
     def get_id(self):
         """
