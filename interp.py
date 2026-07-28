@@ -319,9 +319,9 @@ class Interp(object):
         # look for weak references
         # only Objects with weak references need to be finalized
         if hasattr(obj, "_weak_obj"):
-            #print("DEL: ", str(obj.get_id()), str(obj))
             # send mourn: message to weak owners
             for owner in obj._weak_obj:
+                #print("MOURN: ", str(owner), str(obj))
                 if isinstance(owner, EphemObject):
                     self.send_message_intern(owner, self._sel_mourn(), ())
                 else:
