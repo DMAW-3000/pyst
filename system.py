@@ -212,7 +212,35 @@ class Smalltalk(object):
         # dump information
         if verbose:
             inst.global_state_print()
-    
+            
+    @classmethod
+    def load(klass, verbose, brkpoint):
+        """
+        Load a saved Smalltalk image
+        """
+        inst = klass._SmalltalkInstance
+        
+        # create Smalltalk Nil singleton
+        inst.o_nil = UndefinedObject()
+        
+        # set object global Nil so covers created
+        # after this point use Smalltalk Nil instead
+        # of Python None
+        set_obj_nil(inst.o_nil)
+        
+        # create Smalltalk Boolean singletons
+        inst.o_false    = CFalse()
+        inst.o_true     = CTrue()
+        
+        # read in saved data
+        imgFile = open("test.sti", "rb")
+        objMap = dill.load(imgFile)
+        imgFile.close()
+        
+        # get class objects
+        # after this point Class objects should be fully constructed
+        inst.load_classes(objMap)
+                    
     @classmethod
     def run(klass):
         """
@@ -278,6 +306,40 @@ class Smalltalk(object):
         imgFile = open("test.sti", "wb")
         dill.dump(objMap, imgFile)
         imgFile.close()
+        
+    def load_classes(self, objMap):
+        """
+        Class load from image
+        """
+        # build map of Kernel classes
+        klassMap = {}
+        for klassInfo in init.Init_Class:
+            klassName = klassInfo[0]
+            cacheName = "k_" + klassInfo[2]
+            if not hasattr(self, cacheName):
+                self.fatal_err("missing class cache", cacheName)
+            klassMap[klassName] = cacheName
+        
+        # find Class objects
+        for obj in objMap.values():
+            if isinstance(obj, Class):
+                # fixup references in Class object
+                obj.set_class(objMap[obj.get_class().get_id()])
+                for n,r in enumerate(obj):
+                    if isinstance(r, ObjectReference):
+                        objId = r.get_id()
+                        if objId == 0:
+                            obj[n] = self.o_nil
+                        elif objId == 1:
+                            obj[n] = self.o_false
+                        elif objId == 2:
+                            obj[n] = self.o_true
+                        else:
+                            obj[n] = objMap[objId]
+                # see if class is cached
+                if obj.name.to_str() in klassMap:
+                    setattr(self, cacheName, weakref.ref(obj))
+                    print(getattr(self, cacheName)())
             
     def build_classes_1(self):
         """

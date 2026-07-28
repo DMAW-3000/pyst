@@ -46,7 +46,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # run the system
-    Smalltalk.rebuild(args.verbose, parse_break(args.breakpoint))
-    Smalltalk.run()
+    if args.rebuild:
+        Smalltalk.rebuild(args.verbose, parse_break(args.breakpoint))
+        Smalltalk.run()
+    else:
+        Smalltalk.load(args.verbose, parse_break(args.breakpoint))
+    
     
     
