@@ -1846,7 +1846,26 @@ class EphemObject(WeakObject):
         """
         Convert to printable string
         """
-        return "EPHEMOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"        
+        return "EPHEMOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"
+
+
+def ObjectReference(object):
+    """
+    Repreent a reference to another object by ID.
+    Used for image storage.
+    """
+    
+    def __init__(self, obj):
+        """
+        Create an ObjectReference
+        """
+        self._obj_id = obj
+        
+    def get_id(self):
+        """
+        Get ID of reference
+        """
+        return self._obj_id
         
 
 # the global bytecode values
