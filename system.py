@@ -240,6 +240,11 @@ class Smalltalk(object):
         # get class objects
         # after this point Class objects should be fully constructed
         inst.load_classes(objMap)
+        
+        # fixup types for singletons
+        inst.o_nil.set_class(inst.k_undef_obj())
+        inst.o_false.set_class(inst.k_false())
+        inst.o_true.set_class(inst.k_true())
                     
     @classmethod
     def run(klass):
@@ -337,9 +342,10 @@ class Smalltalk(object):
                         else:
                             obj[n] = objMap[objId]
                 # see if class is cached
-                if obj.name.to_str() in klassMap:
-                    setattr(self, cacheName, weakref.ref(obj))
-                    print(getattr(self, cacheName)())
+                klassName = obj.name.to_str()
+                if klassName in klassMap:
+                    setattr(self, klassMap[klassName], weakref.ref(obj))
+                    print("Loaded class", klassName)
             
     def build_classes_1(self):
         """
