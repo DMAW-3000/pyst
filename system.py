@@ -245,6 +245,9 @@ class Smalltalk(object):
         inst.o_nil.set_class(inst.k_undef_obj())
         inst.o_false.set_class(inst.k_false())
         inst.o_true.set_class(inst.k_true())
+        
+        # get the remainder of the objects
+        inst.load_objects(objMap)
                     
     @classmethod
     def run(klass):
@@ -320,10 +323,11 @@ class Smalltalk(object):
         klassMap = {}
         for klassInfo in init.Init_Class:
             klassName = klassInfo[0]
+            hasCover = klassInfo[1]
             cacheName = "k_" + klassInfo[2]
             if not hasattr(self, cacheName):
                 self.fatal_err("missing class cache", cacheName)
-            klassMap[klassName] = cacheName
+            klassMap[klassName] = (cacheName, hasCover)
         
         # find Class objects
         for obj in objMap.values():
@@ -344,8 +348,37 @@ class Smalltalk(object):
                 # see if class is cached
                 klassName = obj.name.to_str()
                 if klassName in klassMap:
-                    setattr(self, klassMap[klassName], weakref.ref(obj))
+                    setattr(self, klassMap[klassName][0], weakref.ref(obj))
+                    # set cover class links
+                    if klassMap[klassName][1]:
+                        coverKlass = globals()[klassName]
+                        coverKlass.set_cover(obj)
                     print("Loaded class", klassName)
+                    
+    def load_objects(self, objMap):
+        """
+        Object load from image
+        """
+        for obj in objMap.values():
+            # skip Class objects
+            if not isinstance(obj, Class):
+                # fixup references in object
+                obj.set_class(objMap[obj.get_class().get_id()])
+                for n,r in enumerate(obj):
+                    if isinstance(r, ObjectReference):
+                        objId = r.get_id()
+                        if objId == 0:
+                            obj[n] = self.o_nil
+                        elif objId == 1:
+                            obj[n] = self.o_false
+                        elif objId == 2:
+                            obj[n] = self.o_true
+                        else:
+                            obj[n] = objMap[objId]
+                # look for special objects
+                klass = obj.get_class()
+                if klass is self.k_character():
+                    self.o_char[obj[0]] = obj
             
     def build_classes_1(self):
         """
