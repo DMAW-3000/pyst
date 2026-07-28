@@ -248,7 +248,9 @@ class Smalltalk(object):
         
         # get the remainder of the objects
         inst.load_objects(objMap)
-                    
+        set_obj_char(inst.o_char)
+        Object.set_obj_map(objMap)
+        
     @classmethod
     def run(klass):
         """
