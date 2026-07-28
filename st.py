@@ -1763,6 +1763,14 @@ class WeakObject(Object):
         global _Obj_Nil
         self._refs = [weakref.ref(_Obj_Nil)] * sz
         
+    def to_obj(self):
+        """
+        Return a copy of self as a regular (non-weak) Object.
+        """
+        newObj = Object.from_seq(self)
+        newObj._klass = self.get_class()
+        return newObj
+        
     def __getitem__(self, idx):
         """
         Get one of the Object's child references
