@@ -922,18 +922,6 @@ All classes in the system are subclasses of me.'>
 	    reason: 'ephemerons should have at least one instance variables'
     ]
 
-    asOop [
-	"Answer the object index associated to the receiver. The object
-	 index doesn't change when garbage collection is performed."
-
-	"We are an integer - fail"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_hash>
-	"SystemExceptions." InvalidValue signalOn: self
-	    reason: 'Instances of Integer have no associated OOP!'
-    ]
-
     identityHash [
 	"Answer an hash value for the receiver. This method must not be
 	 overridden"
