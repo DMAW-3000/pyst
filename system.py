@@ -200,13 +200,13 @@ class Smalltalk(object):
             klassSym = inst.symbol_find(klassName)
             klassObj = inst.dict_find(inst.e_st_dict, klassSym).value
             print("Initializing class", klassSym)
-            inst.g_interp.send_message_extern(klassObj, initSym, ())
+            inst.exec(klassObj, initSym, ())
             
         # standard I/O streams
         inst.name_add_sym(inst.e_st_dict, "stdin",  FileStream(sys.stdin.fileno(),  "stdin",  1))
         inst.name_add_sym(inst.e_st_dict, "stdout", FileStream(sys.stdout.fileno(), "stdout", 2))
         inst.name_add_sym(inst.e_st_dict, "stderr", FileStream(sys.stderr.fileno(), "stderr", 2))
-        inst.g_interp.send_message_extern(inst.k_text_collect(), inst.symbol_find("installTranscript"), ())
+        inst.exec(inst.k_text_collect(), inst.symbol_find("installTranscript"), ())
         
         # dump information
         if verbose:
@@ -239,11 +239,22 @@ class Smalltalk(object):
         inst = klass._SmalltalkInstance
         newSym = inst.symbol_find("new")
         runSym = inst.symbol_find("runAll")
-        testObj = inst.g_interp.send_message_extern(inst.k_test(), newSym, ())
-        result = inst.g_interp.send_message_extern(testObj, runSym, ())
+        testObj = inst.exec(inst.k_test(), newSym, ())
+        result = inst.exec(testObj, runSym, ())
         print()
         print(result)
         inst.stop()
+        
+    def exec(self, recv, sel, args):
+        """
+        Start execution of the interpreter by sending a message
+        """
+        try:
+            reply = self.g_interp.send_message_extern(recv, sel, args)
+        except Exception:
+            self.stop()
+            raise
+        return reply
         
     def stop(self):
         """
