@@ -814,6 +814,7 @@ class Smalltalk(object):
                 print("x = examine context")
                 print()
             elif c == 'q':
+                self.stop()
                 sys.exit(0)
             else:
                 print("???\n")
