@@ -6,6 +6,7 @@ from st import *
 from compiler import Compile
 from interp import Interp
 import init
+import dill
 
 
 class Smalltalk(object):
@@ -225,6 +226,7 @@ class Smalltalk(object):
         print()
         print(result)
         inst.stop()
+        inst.save()
         
     def exec(self, recv, sel, args):
         """
@@ -243,6 +245,21 @@ class Smalltalk(object):
         """
         set_obj_del(None)
         
+    def save(self):
+        """
+        Save Smalltalk image to file
+        """
+        objMap = Object.get_obj_map()
+        for obj in objMap.values():
+            obj._klass = ObjectReference(obj._klass)
+            if not isinstance(obj, (WeakObject, EphemObject)):
+                for n,r in enumerate(obj):
+                    if is_obj(r):
+                        obj[n] = ObjectReference(r)
+        imgFile = open("test.sti", "wb")
+        dill.dump(objMap, imgFile)
+        imgFile.close()
+            
     def build_classes_1(self):
         """
         Class rebuild
