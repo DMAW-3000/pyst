@@ -28,10 +28,18 @@ if __name__ == '__main__':
     parser = ArgumentParser(prog = "pyst.py",
                             description = "A Smalltalk environment implemented in python")
     #parser.add_argument("img_file", type=str, help = "system state image file")
+    parser.add_argument("img_file",
+                        type = str,
+                        action = "store",
+                        help = "image file name")
     parser.add_argument("-r", "--rebuild",
                         action = "store_true",
                         default = False,
                         help = "rebuild system image from scratch")
+    parser.add_argument("-s", "--save",
+                        action = "store_true",
+                        default = False,
+                        help = "save image file after rebuild or load")
     parser.add_argument("-v", "--verbose",
                         action = "store_true",
                         default = False,
@@ -47,10 +55,10 @@ if __name__ == '__main__':
 
     # run the system
     if args.rebuild:
-        Smalltalk.rebuild(args.verbose, parse_break(args.breakpoint))
+        Smalltalk.rebuild(args, parse_break(args.breakpoint))
         Smalltalk.run()
     else:
-        Smalltalk.load(args.verbose, parse_break(args.breakpoint))
+        Smalltalk.load(args, parse_break(args.breakpoint))
     
     
     

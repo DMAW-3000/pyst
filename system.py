@@ -20,6 +20,9 @@ class Smalltalk(object):
         """
         Create a blank Smalltalk environment
         """
+        # the image file name
+        self.g_img_file     = None
+        
         # manage the class covers
         self.g_cover_map = weakref.WeakValueDictionary()
         
@@ -115,11 +118,12 @@ class Smalltalk(object):
         self.g_dis = [None] * 256
     
     @classmethod
-    def rebuild(klass, verbose, brkpoint):
+    def rebuild(klass, args, brkpoint):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
         inst = klass._SmalltalkInstance
+        inst.g_img_file = args.img_file
             
         # Class initialization pass 1
         # this establishes the Class tree.
@@ -187,10 +191,10 @@ class Smalltalk(object):
             inst.g_interp.set_debug(inst.break_hook_pre, inst.d_save[1])
         
         # initialize primitive ops
-        inst.build_primitives(verbose)
+        inst.build_primitives(args.verbose)
         
         # compile the Kernel modules
-        inst.g_compile = Compile(inst, verbose)
+        inst.g_compile = Compile(inst, args.verbose)
         for mod in init.Init_Kernel_Mod:
             print("Compiling module", mod)
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
@@ -210,11 +214,15 @@ class Smalltalk(object):
         inst.exec(inst.k_text_collect(), inst.symbol_find("installTranscript"), ())
         
         # dump information
-        if verbose:
+        if args.verbose:
             inst.global_state_print()
             
+        # save image file
+        #if args.save:
+        #    inst.save()
+            
     @classmethod
-    def load(klass, verbose, brkpoint):
+    def load(klass, args, brkpoint):
         """
         Load a saved Smalltalk image
         """
@@ -233,9 +241,10 @@ class Smalltalk(object):
         inst.o_true     = CTrue()
         
         # read in saved data
-        imgFile = open("test.sti", "rb")
+        imgFile = open(args.img_file, "rb")
         objMap = dill.load(imgFile)
         imgFile.close()
+        inst.g_img_file = args.img_file
         
         # get class objects
         # after this point Class objects should be fully constructed
@@ -313,7 +322,7 @@ class Smalltalk(object):
                 objMap[obj.get_id()] = repl
                     
         # save image to file
-        imgFile = open("test.sti", "wb")
+        imgFile = open(self.g_img_file, "wb")
         dill.dump(objMap, imgFile)
         imgFile.close()
         
