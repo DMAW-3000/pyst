@@ -92,6 +92,7 @@ class Smalltalk(object):
         self.k_weak_array               = None
         self.k_weak_key_dict            = None
         self.k_weak_key_ident_dict      = None
+        self.k_symbol_table             = None
         self.k_test                     = None
         
         # fundamental objects
@@ -152,7 +153,8 @@ class Smalltalk(object):
         set_obj_char(inst.o_char)
         
         # create global symbol table
-        inst.e_sym_table = Array(512)
+        inst.e_sym_table = stArr = SymbolTableArray(512)
+        stArr.set_class(inst.k_symbol_table)
         
         # create the global namespace dictionary ("Smalltalk")
         inst.e_st_dict = stDict = Namespace.new_n(512)
@@ -256,6 +258,11 @@ class Smalltalk(object):
         inst.load_objects(objMap)
         set_obj_char(inst.o_char)
         Object.set_obj_map(objMap)
+        
+        # initialize interpreter
+        # no Objects should be deleted before this point
+        inst.g_interp = Interp(inst)
+        set_obj_del(inst.g_interp.delete_object)
         
     @classmethod
     def run(klass):
@@ -380,6 +387,9 @@ class Smalltalk(object):
                 elif klass is self.k_sys_dictionary():
                     # global namespace
                     self.e_st_dict = obj
+                elif klass is self.k_symbol_table():
+                    # global symbol table
+                    self.e_sym_table = obj
             
     def build_classes_1(self):
         """

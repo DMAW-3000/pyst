@@ -605,6 +605,13 @@ class SymLink(Object):
         self[1] = x
         
 
+class SymbolTableArray(Array):
+    """
+    Internal representation of Smalltalk SymbolTable
+    """
+    pass
+        
+
 class Association(Object):
     """
     Internal representation of a Smalltalk Association
