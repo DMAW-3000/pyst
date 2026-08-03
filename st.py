@@ -1810,6 +1810,7 @@ class WeakObject(Object):
         """
         Get one of the Object's child references
         """
+        global _Obj_Nil
         x = self._refs[idx]()
         if x is None:
             x = _Obj_Nil
