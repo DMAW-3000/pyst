@@ -304,12 +304,10 @@ class Smalltalk(object):
             if hasattr(obj, "_weak_obj"):
                 delattr(obj, "_weak_obj")
             # break references and replace with IDs
-            # skip weak object this pass
-            obj._klass = ObjectReference(obj.get_class())
+            obj.set_class(ObjectReference(obj.get_class()))
             for n,r in enumerate(obj):
                 if is_obj(r):
-                    if not isinstance(obj, (WeakObject, EphemObject)):
-                        obj[n] = ObjectReference(r)
+                    obj[n] = ObjectReference(r)
                     
         # save image to file
         imgFile = open(self.g_img_file, "wb")
