@@ -156,7 +156,7 @@ class Smalltalk(object):
         
         # create the global namespace dictionary ("Smalltalk")
         inst.e_st_dict = stDict = Namespace.new_n(512)
-        stDict._klass = inst.k_sys_dictionary
+        stDict.set_class(inst.k_sys_dictionary)
         stDict.name = inst.name_add_sym(stDict, "Smalltalk", stDict)
         
         # add global objects
@@ -357,6 +357,7 @@ class Smalltalk(object):
         for obj in objMap.values():
             # skip Class objects
             if not isinstance(obj, Class):
+                
                 # fixup references in object
                 obj.set_class(objMap[obj.get_class().get_id()])
                 for n,r in enumerate(obj):
@@ -370,10 +371,15 @@ class Smalltalk(object):
                             obj[n] = self.o_true
                         else:
                             obj[n] = objMap[objId]
+                            
                 # look for special objects
                 klass = obj.get_class()
                 if klass is self.k_character():
+                    # character singletons
                     self.o_char[obj[0]] = obj
+                elif klass is self.k_sys_dictionary():
+                    # global namespace
+                    self.e_st_dict = obj
             
     def build_classes_1(self):
         """
