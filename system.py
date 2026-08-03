@@ -218,14 +218,15 @@ class Smalltalk(object):
             inst.global_state_print()
             
         # save image file
-        #if args.save:
-        #    inst.save()
+        if args.save:
+            inst.save()
             
     @classmethod
     def load(klass, args, brkpoint):
         """
         Load a saved Smalltalk image
         """
+        print("Loading image", args.img_file)
         inst = klass._SmalltalkInstance
         
         # create Smalltalk Nil singleton
@@ -273,7 +274,6 @@ class Smalltalk(object):
         print()
         print(result)
         inst.stop()
-        inst.save()
         
     def exec(self, recv, sel, args):
         """
@@ -296,6 +296,7 @@ class Smalltalk(object):
         """
         Save Smalltalk image to file
         """
+        print("Saving image", self.g_img_file)
         objMap = Object.get_obj_map()
                 
         for obj in objMap.values():
@@ -304,22 +305,11 @@ class Smalltalk(object):
                 delattr(obj, "_weak_obj")
             # break references and replace with IDs
             # skip weak object this pass
-            if not isinstance(obj, (WeakObject, EphemObject)):
-                obj._klass = ObjectReference(obj.get_class())
-                for n,r in enumerate(obj):
-                    if is_obj(r):
+            obj._klass = ObjectReference(obj.get_class())
+            for n,r in enumerate(obj):
+                if is_obj(r):
+                    if not isinstance(obj, (WeakObject, EphemObject)):
                         obj[n] = ObjectReference(r)
-                    
-        # fixup weak objects
-        for obj in objMap.values():
-            if isinstance(obj, (WeakObject, EphemObject)):
-                repl = obj.to_obj()
-                repl._obj_id = obj.get_id()
-                repl._klass = ObjectReference(obj.get_class())
-                for n,r in enumerate(repl):
-                    if is_obj(r):
-                        repl[n] = ObjectReference(r)
-                objMap[obj.get_id()] = repl
                     
         # save image to file
         imgFile = open(self.g_img_file, "wb")

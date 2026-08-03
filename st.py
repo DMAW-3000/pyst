@@ -8,6 +8,9 @@ import weakref
 from copy import copy
 from struct import pack, unpack
 
+# this is needed to make pickle dump work
+sys.setrecursionlimit(10000)
+
 
 # globals
 _Obj_Nil    = None
@@ -116,7 +119,16 @@ class _ObjTableBase(object):
         """
         Return a dictionary of all Objects
         """
-        return dict(self._obj_map)
+        objMap = {}
+        for objId, obj in self._obj_map.items():
+            newObj = copy(obj)
+            if isinstance(obj, (WeakObject, EphemObject)):
+                newObj.__class__ = Object
+            newObj._is_copy = True
+            newRefs = [ref for ref in obj]
+            newObj._refs = newRefs
+            objMap[objId] = newObj
+        return objMap
         
     def set_obj_map(self, x):
         """
@@ -323,6 +335,8 @@ class Object(object):
         Notify when the object is out of scope
         """
         global _Obj_Del
+        if hasattr(self, "_is_copy"):
+            return
         if _Obj_Del is not None:
             _Obj_Del(self)
         self.Obj_Table.free_obj(self._obj_id)
@@ -1781,14 +1795,6 @@ class WeakObject(Object):
         """
         global _Obj_Nil
         self._refs = [weakref.ref(_Obj_Nil)] * sz
-        
-    def to_obj(self):
-        """
-        Return a copy of self as a regular (non-weak) Object.
-        """
-        newObj = Object.from_seq(self)
-        newObj._klass = self.get_class()
-        return newObj
         
     def __getitem__(self, idx):
         """
