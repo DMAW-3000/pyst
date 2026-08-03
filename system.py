@@ -114,8 +114,7 @@ class Smalltalk(object):
         self.d_last_cmd     = None
         
         # bytecode disassembly table
-        # each entry is (name, num_arg)
-        self.g_dis = [None] * 256
+        self.build_disassembly()
     
     @classmethod
     def rebuild(klass, args, brkpoint):
@@ -171,9 +170,6 @@ class Smalltalk(object):
         # finalize class build
         # after this point, the class cache attributes are weakrefs
         inst.build_classes_3()
-        
-        # generate disassembly info
-        inst.build_disassembly()
             
         # initialize runtime objects
         inst.name_add_sym(inst.e_st_dict, "Bigendian", inst.o_false)
@@ -483,7 +479,8 @@ class Smalltalk(object):
         1 = number bytes
         2 = number of parameters
         """
-        disTbl = self.g_dis
+        self.g_dis = disTbl = [None] * 256
+        
         disTbl[B_PUSH_SELF]                 = ("PUSH_SELF", 2, 0)
         disTbl[B_RETURN_METHOD_STACK_TOP]   = ("RETURN_METHOD", 2, 0)
         disTbl[B_RETURN_CONTEXT_STACK_TOP]  = ("RETURN_CONTEXT", 2, 0)
