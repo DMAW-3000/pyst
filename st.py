@@ -160,7 +160,10 @@ class _ObjTableRandom(_ObjTableBase):
         
         
 class _ObjTableLinear(_ObjTableBase):
-
+    """
+    Maintain a unique ID for every Object in the system
+    """
+    
     def __init__(self):
         """
         Create an empty object table
