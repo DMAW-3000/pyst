@@ -334,6 +334,7 @@ class Smalltalk(object):
         # find Class objects
         for obj in objMap.values():
             if isinstance(obj, Class):
+                
                 # fixup references in Class object
                 obj.set_class(objMap[obj.get_class().get_id()])
                 for n,r in enumerate(obj):
@@ -347,6 +348,7 @@ class Smalltalk(object):
                             obj[n] = self.o_true
                         else:
                             obj[n] = objMap[objId]
+                            
                 # see if class is cached
                 klassName = obj.name.to_str()
                 if klassName in klassMap:
@@ -355,6 +357,12 @@ class Smalltalk(object):
                     if klassMap[klassName][1]:
                         coverKlass = globals()[klassName]
                         coverKlass.set_cover(obj)
+                    print("Loaded class", klassName)
+                elif klassName == "False":
+                    CFalse.set_cover(obj)
+                    print("Loaded class", klassName)
+                elif klassName == "True":
+                    CTrue.set_cover(obj)
                     print("Loaded class", klassName)
                     
     def load_objects(self, objMap):
