@@ -454,7 +454,7 @@ class Smalltalk(object):
             classVars = klassInfo[6]
             poolNames = klassInfo[7]
             klassObj = getattr(self, "k_" + cacheName)
-            metaObj = klassObj._klass
+            metaObj = klassObj.get_class()
             if metaObj is None:
                 metaObj = self.create_meta(klassObj)
             superObj = klassObj.superClass
@@ -766,7 +766,7 @@ class Smalltalk(object):
         object.
         """
         metaObj = Metaclass(instObj)
-        instObj._klass = metaObj
+        instObj.set_class(metaObj)
         numSubclass = instObj.subClasses
         if numSubclass > 0:
             metaObj.subClasses = Array(numSubclass)
