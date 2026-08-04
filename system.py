@@ -277,6 +277,10 @@ class Smalltalk(object):
         # setup compiler
         inst.g_compile = Compile(inst, args.verbose)
         
+        # dump information    
+        if args.verbose:
+            inst.global_state_print()
+        
     @classmethod
     def run(klass):
         """
@@ -345,7 +349,9 @@ class Smalltalk(object):
             klassMap[klassName] = (cacheName, hasCover)
         
         # find Class objects
+        # delete copy indicator for all objects
         for obj in objMap.values():
+            delattr(obj, "_is_copy")
             if isinstance(obj, Class):
                 
                 # fixup references in Class object
