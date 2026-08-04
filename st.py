@@ -535,14 +535,21 @@ class String(Array):
         s = ""
         for c in self:
             if not c.is_nil():
-                c = chr(c.codePoint)
-                if (c.isspace() or not c.isprintable()) and (c != ' '):
-                    c = "\\%02X" % ord(c)
-                s += c
+                s += chr(c[0])
         return s
         
     def __str__(self):
-        return "\'" + self.to_str() + "\'"
+        """
+        Print object string
+        """
+        s = "\'"
+        for c in self:
+            if not c.is_nil():
+                c = chr(c[0])
+                if (c.isspace() or not c.isprintable()) and (c != ' '):
+                    c = "\\%02X" % ord(c)
+                s += c
+        return s + "\'"
         
         
 class Symbol(String):
@@ -577,7 +584,10 @@ class Symbol(String):
         return self._py_cache
             
     def __str__(self):
-        return "#\'" + self.to_str() + '\''
+        """
+        Print object string
+        """
+        return "#" + super().__str__()
         
         
 class SymLink(Object):
