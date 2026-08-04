@@ -56,9 +56,9 @@ if __name__ == '__main__':
     # run the system
     if args.rebuild:
         Smalltalk.rebuild(args, parse_break(args.breakpoint))
-        Smalltalk.run()
     else:
         Smalltalk.load(args, parse_break(args.breakpoint))
+    Smalltalk.run()
     
     
     
