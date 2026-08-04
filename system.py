@@ -181,7 +181,7 @@ class Smalltalk(object):
         inst.g_interp = Interp(inst)
         set_obj_del(inst.g_interp.delete_object)
         
-        # seetup requested debug options
+        # setup requested debug options
         if brkpoint is not None:
             # break at [Class, method]
             inst.d_breakpoint = brkpoint
@@ -263,6 +263,19 @@ class Smalltalk(object):
         # no Objects should be deleted before this point
         inst.g_interp = Interp(inst)
         set_obj_del(inst.g_interp.delete_object)
+        
+        # setup requested debug options
+        if brkpoint is not None:
+            # break at [Class, method]
+            inst.d_breakpoint = brkpoint
+            inst.d_save = inst.g_interp.get_debug()
+            inst.g_interp.set_debug(inst.break_hook_pre, inst.d_save[1])
+            
+        # initialize primitive ops
+        inst.load_primitives(args.verbose)
+        
+        # setup compiler
+        inst.g_compile = Compile(inst, args.verbose)
         
     @classmethod
     def run(klass):
@@ -566,6 +579,20 @@ class Smalltalk(object):
         if verbose:
             print("VM Primitives:")
             self.dict_print(primDict)
+            print()
+            
+    def load_primitives(self, verbose):
+        """
+        Load the primitives dictionrary and register ops with
+        interpreter.
+        """
+        for primId,primName in enumerate(init.Init_Primitive):
+            primId += 1     # 0 is reserved
+            if not self.g_interp.add_primitive(primName):
+                self.fatal_err("cannot find primitive handler", primName)
+        if verbose:
+            print("VM Primitives:")
+            self.dict_print(self.find_global("VMPrimitives").value)
             print()
         
     def symbol_find(self, symName):
