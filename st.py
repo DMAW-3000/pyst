@@ -125,8 +125,7 @@ class _ObjTableBase(object):
             if isinstance(obj, (WeakObject, EphemObject)):
                 newObj.__class__ = Object
             newObj._is_copy = True
-            newRefs = [ref for ref in obj]
-            newObj._refs = newRefs
+            newObj._refs = obj.get_refs()
             objMap[objId] = newObj
         return objMap
         
@@ -264,6 +263,12 @@ class Object(object):
         """
         global _Obj_Nil
         self._refs = [_Obj_Nil] * sz
+        
+    def get_refs(self):
+        """
+        Return a copy of this Object's references
+        """
+        return [ref for ref in self]
         
     def get_class(self):
         """
@@ -465,6 +470,12 @@ class ByteArray(Array):
         values stored in the object are not preserved.
         """
         self._refs = bytearray(sz)
+        
+    def get_refs(self):
+        """
+        Return a copy of this Object's references
+        """
+        return self._refs
     
     def __str__(self):
         return "BYTEARRAY(%d)" % self.size    
@@ -1278,7 +1289,7 @@ class _Code(Object):
     def __init__(self):
         """
         Create a new code object.  Extend the usual
-        reference list by an bytearray to hold the objects
+        reference list by an bytearray to hold the object's
         bytecodes.
         """
         super().__init__(3)
@@ -1300,6 +1311,12 @@ class _Code(Object):
     @property
     def size(self):
         return 3 + len(self._bc_arr)
+        
+    def get_refs(self):
+        """
+        Return a copy of this Object's references
+        """
+        return [ref for ref in self._refs]
         
     def __getitem__(self, idx):
         """
