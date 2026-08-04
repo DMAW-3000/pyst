@@ -325,37 +325,5 @@ accuracy as C''s "double" numbers.'>
 	<primitive: VMpr_FloatD_timesTwoPower>
 	
     ]
-	
-	at: anIndex [
-	"Answer the index-th indexed instance variable of the receiver.
-	 This method always fails."
-
-	<category: 'builtins'>
-	"SystemExceptions." NotIndexable signalOn: self
-    ]
-
-    basicAt: anIndex [
-	"Answer the index-th indexed instance variable of the receiver.
-	 This method always fails."
-
-	<category: 'builtins'>
-	"SystemExceptions." NotIndexable signalOn: self
-    ]
-
-    at: anIndex put: value [
-	"Store value in the index-th indexed instance variable of the receiver
-	 This method always fails."
-
-	<category: 'builtins'>
-	"SystemExceptions." NotIndexable signalOn: self
-    ]
-
-    basicAt: anIndex put: value [
-	"Store value in the index-th indexed instance variable of the receiver
-	 This method always fails."
-
-	<category: 'builtins'>
-	"SystemExceptions." NotIndexable signalOn: self
-    ]
 ]
 
