@@ -8,6 +8,9 @@ import weakref
 from copy import copy
 from struct import pack, unpack
 
+# this is needed to make pickle dump work
+sys.setrecursionlimit(10000)
+
 
 # globals
 _Obj_Nil    = None
@@ -111,6 +114,26 @@ class _ObjTableBase(object):
         Return a list of all Objects
         """
         return list(self._obj_map.values())
+        
+    def get_obj_map(self):
+        """
+        Return a dictionary of all Objects
+        """
+        objMap = {}
+        for objId, obj in self._obj_map.items():
+            newObj = copy(obj)
+            if isinstance(obj, (WeakObject, EphemObject)):
+                newObj.__class__ = Object
+            newObj._is_copy = True
+            newObj._refs = obj.get_refs()
+            objMap[objId] = newObj
+        return objMap
+        
+    def set_obj_map(self, x):
+        """
+        Set the Object table
+        """
+        self._obj_map = weakref.WeakValueDictionary(x)
     
 
 class _ObjTableRandom(_ObjTableBase):
@@ -136,7 +159,10 @@ class _ObjTableRandom(_ObjTableBase):
         
         
 class _ObjTableLinear(_ObjTableBase):
-
+    """
+    Maintain a unique ID for every Object in the system
+    """
+    
     def __init__(self):
         """
         Create an empty object table
@@ -181,6 +207,20 @@ class Object(object):
         Get a list of all Objects
         """
         return klass.Obj_Table.get_all_obj()
+        
+    @classmethod
+    def get_obj_map(klass):
+        """
+        Return a dictionary of all Objects
+        """
+        return klass.Obj_Table.get_obj_map()
+        
+    @classmethod
+    def set_obj_map(klass, x):
+        """
+        Set the Object dictionary
+        """
+        klass.Obj_Table.set_obj_map(x)
     
     @classmethod
     def set_cover(klass, x):
@@ -224,11 +264,23 @@ class Object(object):
         global _Obj_Nil
         self._refs = [_Obj_Nil] * sz
         
+    def get_refs(self):
+        """
+        Return a copy of this Object's references
+        """
+        return [ref for ref in self]
+        
     def get_class(self):
         """
-        Return the Smalltalk class to which Object belongs
+        Return the Smalltalk class to which the Object belongs
         """
         return self._klass
+        
+    def set_class(self, x):
+        """
+        Set the Smalltalk class to which the Object belongs
+        """
+        self._klass = x
         
     def get_id(self):
         """
@@ -291,6 +343,8 @@ class Object(object):
         Notify when the object is out of scope
         """
         global _Obj_Del
+        if hasattr(self, "_is_copy"):
+            return
         if _Obj_Del is not None:
             _Obj_Del(self)
         self.Obj_Table.free_obj(self._obj_id)
@@ -416,6 +470,12 @@ class ByteArray(Array):
         values stored in the object are not preserved.
         """
         self._refs = bytearray(sz)
+        
+    def get_refs(self):
+        """
+        Return a copy of this Object's references
+        """
+        return self._refs
     
     def __str__(self):
         return "BYTEARRAY(%d)" % self.size    
@@ -554,6 +614,13 @@ class SymLink(Object):
     @symbol.setter
     def symbol(self, x):
         self[1] = x
+        
+
+class SymbolTableArray(Array):
+    """
+    Internal representation of Smalltalk SymbolTable
+    """
+    pass
         
 
 class Association(Object):
@@ -1222,7 +1289,7 @@ class _Code(Object):
     def __init__(self):
         """
         Create a new code object.  Extend the usual
-        reference list by an bytearray to hold the objects
+        reference list by an bytearray to hold the object's
         bytecodes.
         """
         super().__init__(3)
@@ -1244,6 +1311,12 @@ class _Code(Object):
     @property
     def size(self):
         return 3 + len(self._bc_arr)
+        
+    def get_refs(self):
+        """
+        Return a copy of this Object's references
+        """
+        return [ref for ref in self._refs]
         
     def __getitem__(self, idx):
         """
@@ -1754,6 +1827,7 @@ class WeakObject(Object):
         """
         Get one of the Object's child references
         """
+        global _Obj_Nil
         x = self._refs[idx]()
         if x is None:
             x = _Obj_Nil
@@ -1833,7 +1907,29 @@ class EphemObject(WeakObject):
         """
         Convert to printable string
         """
-        return "EPHEMOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"        
+        return "EPHEMOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"
+
+
+class ObjectReference(object):
+    """
+    Repreent a reference to another object by ID.
+    Used for image storage.
+    """
+    
+    def __init__(self, obj):
+        """
+        Create an ObjectReference
+        """
+        self._obj_id = obj.get_id()
+        
+    def get_id(self):
+        """
+        Get ID of reference
+        """
+        return self._obj_id
+        
+    def __str__(self):
+        return "OBJREF<" + str(self._obj_id) + ">"
         
 
 # the global bytecode values

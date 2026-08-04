@@ -40,7 +40,7 @@ in a weak array; I track which of them are garbage collected and, as
 soon as I encounter one of them, I swiftly remove all the associations
 for the garbage collected keys'>
 
-    WeakKeyDictionary class >> postLoad [
+    postLoad [
 	"Called after loading an object; must restore it to the state before
 	 `preStore' was called.  Make it weak again"
 

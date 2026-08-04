@@ -78,6 +78,7 @@ Init_Class = (
     ("WeakArray", False, "weak_array", "array", False, ("values", "nilValues"), (), ()),
     ("WeakKeyDictionary", False, "weak_key_dict", "dictionary", False, ("keys",), (), ()),
     ("WeakKeyIdentityDictionary", False, "weak_key_ident_dict", "weak_key_dict", False, (), (), ()),
+    ("SymbolTableArray", True, "symbol_table", "array", False, (), (), ()),
     ("TestSuite", False, "test", "object", True, ("testInst1", "testInst2"), ("TestClassVar",), ()),
 )
 

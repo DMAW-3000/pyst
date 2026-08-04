@@ -885,7 +885,7 @@ class Interp(object):
                 recv = ByteArray.from_seq(recv)
             else:
                 newObj = Object.from_seq(recv)
-                newObj._klass = klass
+                newObj.set_class(klass)
                 recv = newObj
         ctx.push(recv)
         return True
@@ -1140,7 +1140,7 @@ class Interp(object):
             spec = recv.instanceSpec
             if spec & 0x10:
                 obj = Object(spec >> 12)
-                obj._klass = recv
+                obj.set_class(recv)
                 ctx.push(obj)
                 return True
         return False
@@ -1156,7 +1156,7 @@ class Interp(object):
             spec = recv.instanceSpec
             if not (spec & 0x10):
                 obj = Object((spec >> 12) + sz)
-                obj._klass = recv
+                obj.set_class(recv)
                 ctx.push(obj)
                 return True
         return False

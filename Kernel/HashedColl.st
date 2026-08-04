@@ -380,7 +380,7 @@ give fast responses on their presence in the collection.'>
 	 objects will most likely mutate their hashes."
 
 	<category: 'saving and loading'>
-	self rehash
+	"self rehash"
     ]
 
     postStore [

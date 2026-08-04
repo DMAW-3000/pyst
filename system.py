@@ -6,6 +6,7 @@ from st import *
 from compiler import Compile
 from interp import Interp
 import init
+import dill
 
 
 class Smalltalk(object):
@@ -19,6 +20,9 @@ class Smalltalk(object):
         """
         Create a blank Smalltalk environment
         """
+        # the image file name
+        self.g_img_file     = None
+        
         # manage the class covers
         self.g_cover_map = weakref.WeakValueDictionary()
         
@@ -88,6 +92,7 @@ class Smalltalk(object):
         self.k_weak_array               = None
         self.k_weak_key_dict            = None
         self.k_weak_key_ident_dict      = None
+        self.k_symbol_table             = None
         self.k_test                     = None
         
         # fundamental objects
@@ -110,15 +115,15 @@ class Smalltalk(object):
         self.d_last_cmd     = None
         
         # bytecode disassembly table
-        # each entry is (name, num_arg)
-        self.g_dis = [None] * 256
+        self.build_disassembly()
     
     @classmethod
-    def rebuild(klass, verbose, brkpoint):
+    def rebuild(klass, args, brkpoint):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
         inst = klass._SmalltalkInstance
+        inst.g_img_file = args.img_file
             
         # Class initialization pass 1
         # this establishes the Class tree.
@@ -148,11 +153,12 @@ class Smalltalk(object):
         set_obj_char(inst.o_char)
         
         # create global symbol table
-        inst.e_sym_table = Array(512)
+        inst.e_sym_table = stArr = SymbolTableArray(512)
+        stArr.set_class(inst.k_symbol_table)
         
         # create the global namespace dictionary ("Smalltalk")
         inst.e_st_dict = stDict = Namespace.new_n(512)
-        stDict._klass = inst.k_sys_dictionary
+        stDict.set_class(inst.k_sys_dictionary)
         stDict.name = inst.name_add_sym(stDict, "Smalltalk", stDict)
         
         # add global objects
@@ -166,9 +172,6 @@ class Smalltalk(object):
         # finalize class build
         # after this point, the class cache attributes are weakrefs
         inst.build_classes_3()
-        
-        # generate disassembly info
-        inst.build_disassembly()
             
         # initialize runtime objects
         inst.name_add_sym(inst.e_st_dict, "Bigendian", inst.o_false)
@@ -178,7 +181,7 @@ class Smalltalk(object):
         inst.g_interp = Interp(inst)
         set_obj_del(inst.g_interp.delete_object)
         
-        # seetup requested debug options
+        # setup requested debug options
         if brkpoint is not None:
             # break at [Class, method]
             inst.d_breakpoint = brkpoint
@@ -186,10 +189,10 @@ class Smalltalk(object):
             inst.g_interp.set_debug(inst.break_hook_pre, inst.d_save[1])
         
         # initialize primitive ops
-        inst.build_primitives(verbose)
+        inst.build_primitives(args.verbose)
         
         # compile the Kernel modules
-        inst.g_compile = Compile(inst, verbose)
+        inst.g_compile = Compile(inst, args.verbose)
         for mod in init.Init_Kernel_Mod:
             print("Compiling module", mod)
             inst.g_compile.parse_file(os.path.join("Kernel", mod))
@@ -209,9 +212,81 @@ class Smalltalk(object):
         inst.exec(inst.k_text_collect(), inst.symbol_find("installTranscript"), ())
         
         # dump information
-        if verbose:
+        if args.verbose:
             inst.global_state_print()
-    
+            
+        # save image file
+        if args.save:
+            inst.save()
+            
+    @classmethod
+    def load(klass, args, brkpoint):
+        """
+        Load a saved Smalltalk image
+        """
+        print("Loading image", args.img_file)
+        inst = klass._SmalltalkInstance
+        
+        # create Smalltalk Nil singleton
+        inst.o_nil = UndefinedObject()
+        
+        # set object global Nil so covers created
+        # after this point use Smalltalk Nil instead
+        # of Python None
+        set_obj_nil(inst.o_nil)
+        
+        # create Smalltalk Boolean singletons
+        inst.o_false    = CFalse()
+        inst.o_true     = CTrue()
+        
+        # read in saved data
+        imgFile = open(args.img_file, "rb")
+        objMap = dill.load(imgFile)
+        imgFile.close()
+        inst.g_img_file = args.img_file
+        
+        # get class objects
+        # after this point Class objects should be fully constructed
+        inst.load_classes(objMap)
+        
+        # fixup types for singletons
+        inst.o_nil.set_class(inst.k_undef_obj())
+        inst.o_false.set_class(inst.k_false())
+        inst.o_true.set_class(inst.k_true())
+        
+        # get the remainder of the objects
+        inst.load_objects(objMap)
+        set_obj_char(inst.o_char)
+        Object.set_obj_map(objMap)
+        
+        # initialize interpreter
+        # no Objects should be deleted before this point
+        inst.g_interp = Interp(inst)
+        set_obj_del(inst.g_interp.delete_object)
+        
+        # setup requested debug options
+        if brkpoint is not None:
+            # break at [Class, method]
+            inst.d_breakpoint = brkpoint
+            inst.d_save = inst.g_interp.get_debug()
+            inst.g_interp.set_debug(inst.break_hook_pre, inst.d_save[1])
+            
+        # initialize primitive ops
+        inst.load_primitives(args.verbose)
+        
+        # setup compiler
+        inst.g_compile = Compile(inst, args.verbose)
+        
+        # dump information    
+        if args.verbose:
+            inst.global_state_print()
+        
+        # send postLoad message to all Objects
+        print("Sending postLoad")
+        postSym = inst.symbol_find("postLoad")
+        for obj in objMap.values():
+            inst.exec(obj, postSym, ())
+        
     @classmethod
     def run(klass):
         """
@@ -243,6 +318,112 @@ class Smalltalk(object):
         """
         set_obj_del(None)
         
+    def save(self):
+        """
+        Save Smalltalk image to file
+        """
+        print("Saving image", self.g_img_file)
+        objMap = Object.get_obj_map()
+                
+        for obj in objMap.values():
+            # delete weak obj list
+            if hasattr(obj, "_weak_obj"):
+                delattr(obj, "_weak_obj")
+            # break references and replace with IDs
+            obj.set_class(ObjectReference(obj.get_class()))
+            for n,r in enumerate(obj):
+                if is_obj(r):
+                    obj[n] = ObjectReference(r)
+                    
+        # save image to file
+        imgFile = open(self.g_img_file, "wb")
+        dill.dump(objMap, imgFile)
+        imgFile.close()
+        
+    def load_classes(self, objMap):
+        """
+        Class load from image
+        """
+        # build map of Kernel classes
+        klassMap = {}
+        for klassInfo in init.Init_Class:
+            klassName = klassInfo[0]
+            hasCover = klassInfo[1]
+            cacheName = "k_" + klassInfo[2]
+            if not hasattr(self, cacheName):
+                self.fatal_err("missing class cache", cacheName)
+            klassMap[klassName] = (cacheName, hasCover)
+        
+        # find Class objects
+        # delete copy indicator for all objects
+        for obj in objMap.values():
+            delattr(obj, "_is_copy")
+            if isinstance(obj, Class):
+                
+                # fixup references in Class object
+                obj.set_class(objMap[obj.get_class().get_id()])
+                for n,r in enumerate(obj):
+                    if isinstance(r, ObjectReference):
+                        objId = r.get_id()
+                        if objId == 0:
+                            obj[n] = self.o_nil
+                        elif objId == 1:
+                            obj[n] = self.o_false
+                        elif objId == 2:
+                            obj[n] = self.o_true
+                        else:
+                            obj[n] = objMap[objId]
+                            
+                # see if class is cached
+                klassName = obj.name.to_str()
+                if klassName in klassMap:
+                    setattr(self, klassMap[klassName][0], weakref.ref(obj))
+                    # set cover class links
+                    if klassMap[klassName][1]:
+                        coverKlass = globals()[klassName]
+                        coverKlass.set_cover(obj)
+                    print("Loaded class", klassName)
+                elif klassName == "False":
+                    CFalse.set_cover(obj)
+                    print("Loaded class", klassName)
+                elif klassName == "True":
+                    CTrue.set_cover(obj)
+                    print("Loaded class", klassName)
+                    
+    def load_objects(self, objMap):
+        """
+        Object load from image
+        """
+        for obj in objMap.values():
+            # skip Class objects
+            if not isinstance(obj, Class):
+                
+                # fixup references in object
+                obj.set_class(objMap[obj.get_class().get_id()])
+                for n,r in enumerate(obj):
+                    if isinstance(r, ObjectReference):
+                        objId = r.get_id()
+                        if objId == 0:
+                            obj[n] = self.o_nil
+                        elif objId == 1:
+                            obj[n] = self.o_false
+                        elif objId == 2:
+                            obj[n] = self.o_true
+                        else:
+                            obj[n] = objMap[objId]
+                            
+                # look for special objects
+                klass = obj.get_class()
+                if klass is self.k_character():
+                    # character singletons
+                    self.o_char[obj[0]] = obj
+                elif klass is self.k_sys_dictionary():
+                    # global namespace
+                    self.e_st_dict = obj
+                elif klass is self.k_symbol_table():
+                    # global symbol table
+                    self.e_sym_table = obj
+            
     def build_classes_1(self):
         """
         Class rebuild
@@ -316,7 +497,7 @@ class Smalltalk(object):
             classVars = klassInfo[6]
             poolNames = klassInfo[7]
             klassObj = getattr(self, "k_" + cacheName)
-            metaObj = klassObj._klass
+            metaObj = klassObj.get_class()
             if metaObj is None:
                 metaObj = self.create_meta(klassObj)
             superObj = klassObj.superClass
@@ -347,7 +528,8 @@ class Smalltalk(object):
         1 = number bytes
         2 = number of parameters
         """
-        disTbl = self.g_dis
+        self.g_dis = disTbl = [None] * 256
+        
         disTbl[B_PUSH_SELF]                 = ("PUSH_SELF", 2, 0)
         disTbl[B_RETURN_METHOD_STACK_TOP]   = ("RETURN_METHOD", 2, 0)
         disTbl[B_RETURN_CONTEXT_STACK_TOP]  = ("RETURN_CONTEXT", 2, 0)
@@ -409,6 +591,20 @@ class Smalltalk(object):
         if verbose:
             print("VM Primitives:")
             self.dict_print(primDict)
+            print()
+            
+    def load_primitives(self, verbose):
+        """
+        Load the primitives dictionrary and register ops with
+        interpreter.
+        """
+        for primId,primName in enumerate(init.Init_Primitive):
+            primId += 1     # 0 is reserved
+            if not self.g_interp.add_primitive(primName):
+                self.fatal_err("cannot find primitive handler", primName)
+        if verbose:
+            print("VM Primitives:")
+            self.dict_print(self.find_global("VMPrimitives").value)
             print()
         
     def symbol_find(self, symName):
@@ -627,7 +823,7 @@ class Smalltalk(object):
         object.
         """
         metaObj = Metaclass(instObj)
-        instObj._klass = metaObj
+        instObj.set_class(metaObj)
         numSubclass = instObj.subClasses
         if numSubclass > 0:
             metaObj.subClasses = Array(numSubclass)
