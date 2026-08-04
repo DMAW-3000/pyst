@@ -281,6 +281,12 @@ class Smalltalk(object):
         if args.verbose:
             inst.global_state_print()
         
+        # send postLoad message to all Objects
+        print("Sending postLoad")
+        postSym = inst.symbol_find("postLoad")
+        for obj in objMap.values():
+            inst.exec(obj, postSym, ())
+        
     @classmethod
     def run(klass):
         """
