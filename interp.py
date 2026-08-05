@@ -176,7 +176,7 @@ class Interp(object):
         """
         # create the root context
         # leave the parent nil
-        self.i_context = ctx = MethodContext()
+        self.i_context = ctx = self.alloc_mth_context()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
@@ -275,7 +275,7 @@ class Interp(object):
                 return
         
         # allocate a new context and link to old
-        newCtx = MethodContext()
+        newCtx          = self.alloc_mth_context()
         newCtx.parent   = oldCtx
         newCtx.receiver = recvObj
         newCtx.method   = methObj
@@ -331,6 +331,31 @@ class Interp(object):
                 else:
                     self.send_message_intern(owner, self._sel_mourn_colon(), (obj,))
                     
+    def alloc_mth_context(self):
+        """
+        Allocate a new MethodContext for use
+        """
+        try:
+            # get free context from slab and reset state
+            ctx = self.i_slab_mth.pop()
+            ctx.resize(7)
+            ctx.sp = 6
+            ctx.ip = 0
+            return ctx
+        except IndexError:
+            # slab is empty, refill
+            print("MTH FILL")
+            for n in range(512):
+                self.i_slab_mth.append(MethodContext())
+            return self.i_slab_mth.pop()    
+            
+    def free_mth_context(self, ctx):
+        """
+        Release an unused MethodContext
+        """   
+        # return to slab
+        self.i_slab_mth.append(ctx)
+                    
     def alloc_blk_context(self):
         """
         Allocate a new BlockContext for use
@@ -352,8 +377,9 @@ class Interp(object):
         Release an unused BlockContext
         """
         # reset context stack
-        ctx.resize(7)
-        ctx.sp = 6
+        if ctx.size > 7:
+            ctx.resize(7)
+            ctx.sp = 6
         
         # return to slab
         self.i_slab_blk.append(ctx)
@@ -819,6 +845,9 @@ class Interp(object):
         # pop return value from current stack
         # and push onto sender's stack
         newCtx.push(ctx.pop())
+        
+        # free context object
+        self.free_mth_context(outCtx)
         
         # return control to sender
         self.i_context = newCtx
