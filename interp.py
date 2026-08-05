@@ -176,6 +176,8 @@ class Interp(object):
         """
         # create the root context
         # leave the parent nil
+        if not self.i_context.is_nil():
+            self.free_mth_context(self.i_context)
         self.i_context = ctx = self.alloc_mth_context()
         
         # push receiver and args onto current stack
