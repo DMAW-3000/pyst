@@ -200,8 +200,22 @@ class Interp(object):
         # save the root context
         ctxSave = self.i_context
         
-        # send the message smd get reply value
-        ret = self.send_message_extern(recvObj, selObj, argValues)
+        # create the root context
+        # leave the parent nil
+        self.i_context = ctx = self.alloc_mth_context()
+        
+        # push receiver and args onto current stack
+        ctx.push(recvObj)
+        for arg in argValues:
+            ctx.push(arg)
+            
+        # send message and run until control
+        # returns to this root context
+        self.send_message(len(argValues), False, selObj)
+        self.exec()
+        
+        # pop return value from stack
+        ret = ctx.pop()
         
         # restore context and return value
         self.i_context = ctxSave
