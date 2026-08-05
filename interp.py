@@ -339,6 +339,7 @@ class Interp(object):
             # get free context from slab and reset state
             ctx = self.i_slab_mth.pop()
             ctx.resize(7)
+            ctx.flags = 0
             ctx.sp = 6
             ctx.ip = 0
             return ctx
