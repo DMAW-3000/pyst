@@ -179,6 +179,8 @@ class Interp(object):
         if not self.i_context.is_nil():
             self.free_mth_context(self.i_context)
         self.i_context = ctx = self.alloc_mth_context()
+        ctx.parent      = self._nil()
+        ctx.receiver    = self._nil()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
@@ -203,8 +205,10 @@ class Interp(object):
         ctxSave = self.i_context
         
         # create the root context
-        # leave the parent nil
+        # leave the parent and receiver nil
         self.i_context = ctx = self.alloc_mth_context()
+        ctx.parent      = self._nil()
+        ctx.receiver    = self._nil()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
@@ -354,7 +358,8 @@ class Interp(object):
         try:
             # get free context from slab and reset state
             ctx = self.i_slab_mth.pop()
-            ctx.resize(7)
+            if ctx.size > 7:
+                ctx.resize(7)
             ctx.flags = 0
             ctx.sp = 6
             ctx.ip = 0
