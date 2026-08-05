@@ -82,6 +82,10 @@ class Interp(object):
         # index 0 is reserved
         self.i_primitive = [None]
         
+        # context slab caches
+        self.i_slab_blk     = []
+        self.i_slab_mth     = []
+        
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
         fTbl[self.FILE_PUT_CHARS]       = self.f_put_chars
@@ -326,6 +330,40 @@ class Interp(object):
                     self.send_message_intern(owner, self._sel_mourn(), ())
                 else:
                     self.send_message_intern(owner, self._sel_mourn_colon(), (obj,))
+                    
+    def alloc_blk_context(self):
+        """
+        Allocate a new BlockContext for use
+        """
+        try:
+            # get free context from slab and reset IP
+            ctx = self.i_slab_blk.pop()
+            ctx.ip = 0
+            return ctx
+        except IndexError:
+            # slab is empty, refill
+            print("BLK FILL")
+            for n in range(512):
+                self.i_slab_blk.append(BlockContext())
+            return self.i_slab_blk.pop()    
+            
+    def free_blk_context(self, ctx):
+        """
+        Release an unused BlockContext
+        """
+        # reset context stack
+        ctx.resize(7)
+        ctx.sp = 6
+        
+        # return to slab
+        self.i_slab_blk.append(ctx)
+        
+    def clear_slabs(self):
+        """
+        Clear the slab caches
+        """
+        self.i_slab_blk.clear()
+        self.i_slab_mth.clear()
         
     def exec(self):
         """
@@ -796,6 +834,9 @@ class Interp(object):
         # pop return value from current stack
         # and push onto sender's stack
         newCtx.push(ctx.pop())
+        
+        # free context object
+        self.free_blk_context(ctx)
 
         # return control to sender
         self.i_context = newCtx
@@ -1044,7 +1085,7 @@ class Interp(object):
             return False
 
         # allocate a new context and link to old
-        newCtx              = BlockContext()
+        newCtx              = self.alloc_blk_context()
         newCtx.parent       = ctx
         newCtx.receiver     = recv.receiver
         newCtx.method       = blkObj
@@ -1077,7 +1118,7 @@ class Interp(object):
         argList = argList[:numHdrArgs]
 
         # allocate a new context and link to old
-        newCtx = BlockContext()
+        newCtx              = self.alloc_blk_context()
         newCtx.parent       = ctx
         newCtx.receiver     = recv.receiver
         newCtx.method       = blkObj
@@ -1112,7 +1153,7 @@ class Interp(object):
             return False
 
         # allocate a new context and link to old
-        newCtx = BlockContext()
+        newCtx              = self.alloc_blk_context()
         newCtx.parent       = ctx
         newCtx.receiver     = recv.receiver
         newCtx.method       = blkObj

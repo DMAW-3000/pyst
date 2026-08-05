@@ -323,8 +323,12 @@ class Smalltalk(object):
         Save Smalltalk image to file
         """
         print("Saving image", self.g_img_file)
-        objMap = Object.get_obj_map()
-                
+        
+        # clear caches
+        self.g_interp.clear_slabs()
+        
+        # get a copy of the object table
+        objMap = Object.get_obj_map()        
         for obj in objMap.values():
             # delete weak obj list
             if hasattr(obj, "_weak_obj"):
