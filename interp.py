@@ -1212,7 +1212,7 @@ class Interp(object):
         send = argList[0]
         ret = self._false()
         if is_obj(send) and (send.get_class() is self._sys.k_character()):
-            if recv.codePoint == send.codePoint:
+            if recv[0] == send[0]:
                 ret = self._true()
         ctx.push(ret)
         return True
@@ -1815,7 +1815,7 @@ class Interp(object):
                 return False
             if c.is_nil():
                 return False
-            ctx.push(c.codePoint)
+            ctx.push(c[0])
             return True
         return False
         
@@ -1877,7 +1877,7 @@ class Interp(object):
                         c = replaceArr[replaceStart + n - 2]
                         if c.is_nil():
                             return False
-                        recv[start + n - 2] = c.codePoint
+                        recv[start + n - 2] = c[0]
                         n -= 1
                 except IndexError:
                     return False
@@ -1958,7 +1958,7 @@ class Interp(object):
             for c in send:
                 if c.is_nil():
                     return False
-                s += chr(c.codePoint)
+                s += chr(c[0])
             ctx.push(self._sys.symbol_find_or_add(s))
             return True
         return False
