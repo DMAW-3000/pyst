@@ -299,10 +299,8 @@ class Interp(object):
         # check for primitive operation
         # return control immediately to sender if
         # the primitive op is successful
-        if primId:
-            primFunc = self.i_primitive[primId]
-            if primFunc(oldCtx, recvObj, argList):
-                return
+        if primId and self.i_primitive[primId](oldCtx, recvObj, argList):
+            return
         
         # allocate a new context and link to old
         newCtx          = self.alloc_mth_context()
