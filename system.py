@@ -824,8 +824,7 @@ class Smalltalk(object):
         for n,x in enumerate(arrObj):
             print("[%d]" % n, x)
         
-    @staticmethod
-    def create_meta(instObj):
+    def create_meta(self, instObj):
         """
         Create a Metaclass and link it with instance Class
         Also create the subclass arrays in both objects
@@ -840,6 +839,9 @@ class Smalltalk(object):
             metaObj.subClasses[0] = numSubclass
             instObj.subClasses = Array(numSubclass)
             instObj.subClasses[0] = numSubclass
+        else:
+            metaObj.subClasses = self.o_nil
+            instObj.subClasses = self.o_nil
         return metaObj
     
     @staticmethod
