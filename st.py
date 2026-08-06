@@ -194,7 +194,7 @@ class Object(object):
     """
     
     # this is dictionary of all exising Objects
-    Obj_Table = _ObjTableLinear()
+    _Obj_Table = _ObjTableLinear()
     
     # this will point to the Smalltalk class representing
     # this python class after init is complete.
@@ -206,21 +206,21 @@ class Object(object):
         """
         Get a list of all Objects
         """
-        return klass.Obj_Table.get_all_obj()
+        return klass._Obj_Table.get_all_obj()
         
     @classmethod
     def get_obj_map(klass):
         """
         Return a dictionary of all Objects
         """
-        return klass.Obj_Table.get_obj_map()
+        return klass._Obj_Table.get_obj_map()
         
     @classmethod
     def set_obj_map(klass, x):
         """
         Set the Object dictionary
         """
-        klass.Obj_Table.set_obj_map(x)
+        klass._Obj_Table.set_obj_map(x)
     
     @classmethod
     def set_cover(klass, x):
@@ -244,7 +244,7 @@ class Object(object):
         Create a blank object
         """
         self._py_cache  = None
-        self._obj_id    = self.Obj_Table.new_obj(self)
+        self._obj_id    = self._Obj_Table.new_obj(self)
         self._klass     = self._Cover
         self._flags     = 0
         self.resize(sz)
@@ -347,7 +347,7 @@ class Object(object):
             return
         if _Obj_Del is not None:
             _Obj_Del(self)
-        self.Obj_Table.free_obj(self._obj_id)
+        self._Obj_Table.free_obj(self._obj_id)
         
     def __str__(self):
         """
