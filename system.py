@@ -286,6 +286,10 @@ class Smalltalk(object):
         postSym = inst.symbol_find("postLoad")
         for obj in objMap.values():
             inst.exec(obj, postSym, ())
+            
+        # save image file
+        if args.save:
+            inst.save()
         
     @classmethod
     def run(klass):
