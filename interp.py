@@ -178,10 +178,7 @@ class Interp(object):
         # leave the parent nil
         if not self.i_context.is_nil():
             self.free_mth_context(self.i_context)
-        self.i_context = ctx = self.alloc_mth_context()
-        ctx.parent      = self._nil()
-        ctx.receiver    = self._nil()
-        ctx.method      = CompiledMethod()
+        self.i_context = ctx = self._alloc_root_context()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
@@ -207,10 +204,7 @@ class Interp(object):
         
         # create the root context
         # leave the parent and receiver nil
-        self.i_context = ctx = self.alloc_mth_context()
-        ctx.parent      = self._nil()
-        ctx.receiver    = self._nil()
-        ctx.method      = CompiledMethod()
+        self.i_context = ctx = self._alloc_root_context()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
@@ -231,6 +225,17 @@ class Interp(object):
         # restore context and return value
         self.i_context = ctxSave
         return ret
+        
+    def _alloc_root_context(self):
+        """
+        Create a root MethodContext
+        """
+        ctx             = self.alloc_mth_context()
+        ctx.parent      = self._nil()
+        ctx.receiver    = self._nil()
+        ctx.method      = CompiledMethod()
+        ctx.flags       = 4
+        return ctx
         
     def send_message(self, numArgs, isSuper, selObj):
         """
@@ -282,14 +287,14 @@ class Interp(object):
                         break
             klassObj = klassObj.superClass 
         if methObj.is_nil():
-            raise NameError("unknown method %s" % selObj)
+            raise SmalltalkException("unknown method %s" % selObj)
 
         # get method info
         numHdrArgs, numTemp, depth, primId = methObj.get_hdr()
         
         # check number of arguments
         if numArgs != numHdrArgs:
-            raise RuntimeError("wrong number of args %d for %s" % (numArgs, selObj))
+            raise SmalltalkException("wrong number of args %d for %s" % (numArgs, selObj))
             
         # check for primitive operation
         # return control immediately to sender if
@@ -492,7 +497,7 @@ class Interp(object):
         # look in globals
         var = self._sys.dict_find(self._sys.e_st_dict, sym)
         if var.is_nil():
-            raise NameError("variable %s not found" % sym)
+            raise SmalltalkException("variable %s not found" % sym)
         
         # push variable to stack
         ctx.push(var[1])

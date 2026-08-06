@@ -1228,7 +1228,7 @@ class _Context(Object):
         Pop an item from the context stack
         """
         if self.size == 7:
-            raise IndexError("stack underflow")
+            raise SmalltalkException("stack underflow")
         self.sp -= 1
         return self._refs.pop()
         
@@ -1957,6 +1957,13 @@ class ObjectReference(object):
     def __str__(self):
         return "OBJREF<" + str(self._obj_id) + ">"
         
+
+class SmalltalkException(Exception):
+    """
+    Represent an unhandled Smalltalk exception in python
+    """
+    pass
+
 
 # the global bytecode values
 B_PLUS_SPECIAL              = 0
