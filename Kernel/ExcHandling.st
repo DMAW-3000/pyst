@@ -304,7 +304,7 @@ handler with a lower priority.'>
 
 	<category: 'built ins'>
 	| exc |
-	exc := SystemExceptions.UnhandledException new
+	exc := "SystemExceptions." UnhandledException new
 	    originalException: self;
 	    messageText: message; yourself.
 	thisContext parentContext
