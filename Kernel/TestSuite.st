@@ -119,7 +119,6 @@
 	
 	testClass [
 		"Test class behavior"
-		Integer printHierarchy.
 		(Object lookupSelector: #isString) notNil ifFalse: self failBlk.
 		(Object >> #isString isMemberOf: CompiledMethod) ifFalse: self failBlk.
 		Object hasMethods ifFalse: self failBlk.
