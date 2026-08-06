@@ -46,6 +46,7 @@
 				testDictionary;
 				testLookupTable;
 				testNamespace;
+				testWeakSet;
 				testWeakKeyDict;
 				testStream;
 				testFileStream;
@@ -484,12 +485,23 @@
 		(n at: #stdout) class ~= FileStream ifTrue: self failBlk.
 	]
 	
+	testWeakSet [
+		"Test weak sets"
+		| s key1 |
+		s := WeakSet new.
+		s add: (key1 := 'abc' copy).
+		s size ~= 1 ifTrue: self failBlk.
+		(s includes: key1) ifFalse: self failBlk
+	]
+		
+	
 	testWeakKeyDict [
 		"Test weak key dictionaries"
 		| d key1 key2 |
 		d := WeakKeyDictionary new.
 		key1 := 'ab' copy. key2 := 'cd' copy.
-		d add: key1 -> 1
+		d add: key1 -> 1.
+		d add: key2 -> 2
 	]
 	
 	testStream [
