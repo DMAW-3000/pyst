@@ -360,8 +360,8 @@ class Interp(object):
             ctx = self.i_slab_mth.pop()
             if ctx.size > 7:
                 ctx.resize(7)
+                ctx.sp = 6
             ctx.flags = 0
-            ctx.sp = 6
             ctx.ip = 0
             return ctx
         except IndexError:
@@ -383,8 +383,11 @@ class Interp(object):
         Allocate a new BlockContext for use
         """
         try:
-            # get free context from slab and reset IP
+            # get free context from slab and reset state
             ctx = self.i_slab_blk.pop()
+            if ctx.size > 7:
+                ctx.resize(7)
+                ctx.sp = 6
             ctx.ip = 0
             return ctx
         except IndexError:
@@ -398,11 +401,6 @@ class Interp(object):
         """
         Release an unused BlockContext
         """
-        # reset context stack
-        if ctx.size > 7:
-            ctx.resize(7)
-            ctx.sp = 6
-        
         # return to slab
         self.i_slab_blk.append(ctx)
         
@@ -868,7 +866,14 @@ class Interp(object):
         # and push onto sender's stack
         newCtx.push(ctx.pop())
         
-        # free context object
+        # free context objects including any 
+        # skipped over to get to outer context
+        while not outCtx.is_same(ctx):
+            if is_int(ctx[6]):
+                self.free_mth_context(ctx)
+            else:
+                self.free_blk_context(ctx)
+            ctx = ctx.parent
         self.free_mth_context(outCtx)
         
         # return control to sender
