@@ -79,7 +79,7 @@ class Compile(object):
         bind = system.find_global("VMPrimitives")
         if bind is None:
             raise NameError("missing global VMPrimitives")
-        self._prim_dict = weakref.ref(bind.value)
+        self._prim_dict = weakref.ref(bind)
         
         # the lexer and parser
         self._lex   = Lexer
@@ -133,7 +133,7 @@ class Compile(object):
         binding = self._sys.find_global(klassName)
         if binding is None:
             raise CompileError("unknown class " + klassName)
-        self._cur_klass = binding.value
+        self._cur_klass = binding
         self._cur_inst_var.clear()
         if self._verbose:
             print("Compiling class", self._cur_klass.name)

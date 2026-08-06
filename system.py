@@ -614,7 +614,7 @@ class Smalltalk(object):
                 self.fatal_err("cannot find primitive handler", primName)
         if verbose:
             print("VM Primitives:")
-            self.dict_print(self.find_global("VMPrimitives").value)
+            self.dict_print(self.find_global("VMPrimitives"))
             print()
         
     def symbol_find(self, symName):
@@ -670,7 +670,7 @@ class Smalltalk(object):
     def find_global(self, itemName):
         """
         Find a global symbol value in the Smalltalk namespace.
-        Returns Association or VariableBinding, or None if not found.
+        Returns value, or None if not found.
         """
         symObj = self.symbol_find(itemName)
         if symObj.is_nil():
@@ -678,7 +678,7 @@ class Smalltalk(object):
         assoc = self.dict_find(self.e_st_dict, symObj)
         if assoc.is_nil():
             return None
-        return assoc
+        return assoc.value
         
     def dict_add(self, dictObj, keyObj, itemObj):
         """
