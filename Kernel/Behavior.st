@@ -908,15 +908,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	^false
     ]
 
-    kindOfSubclass [
-	"Return a string indicating the type of class the receiver is"
-
-	<category: 'testing the class hierarchy'>
-	self isVariable ifFalse: [^'subclass:'].
-	self isPointers ifTrue: [^'variableSubclass:'].
-	^'variable: ' , self shape storeString , 'subclass:'
-    ]
-
     allSuperclassesDo: aBlock [
 	"Invokes aBlock for all superclasses, both direct and indirect."
 
@@ -991,49 +982,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	<category: 'enumerating'>
 	subClasses isNil ifTrue: [^self].
 	subClasses do: aBlock
-    ]
-
-    methods [
-	"Don't use this, it's only present to file in from Smalltalk/V"
-
-	<category: 'compilation (alternative)'>
-	^self methodsFor: 'no category'
-    ]
-
-    methodsFor [
-	"Don't use this, it's only present to file in from Dolphin Smalltalk"
-
-	<category: 'compilation (alternative)'>
-	^self methodsFor: 'no category'
-    ]
-
-    methodsFor: category ifFeatures: features [
-	"Start compiling methods in the receiver if this implementation of
-	 Smalltalk has the given features, else skip the section"
-
-	<category: 'compilation (alternative)'>
-	^self methodsFor: category ifTrue: (Smalltalk hasFeatures: features)
-    ]
-
-    methodsFor: category stamp: notUsed [
-	"Don't use this, it's only present to file in from Squeak"
-
-	<category: 'compilation (alternative)'>
-	^self methodsFor: category
-    ]
-
-    privateMethods [
-	"Don't use this, it's only present to file in from IBM Smalltalk"
-
-	<category: 'compilation (alternative)'>
-	^self methodsFor: 'private'
-    ]
-
-    publicMethods [
-	"Don't use this, it's only present to file in from IBM Smalltalk"
-
-	<category: 'compilation (alternative)'>
-	^self methodsFor: 'public'
     ]
 
     article [

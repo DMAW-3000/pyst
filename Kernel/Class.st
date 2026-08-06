@@ -533,50 +533,6 @@ the class category.'>
 	<category: 'filing'>
 	self notYetImplemented
     ]
-
-    binaryRepresentationVersion [
-	"Answer a number >= 0 which represents the current version of the
-	 object's representation.  The default implementation answers
-	 zero."
-
-	<category: 'saving and loading'>
-	^0
-    ]
-
-    nonVersionedInstSize [
-	"Answer the number of instance variables that the class used to have
-	 when objects were stored without using a VersionableObjectProxy.
-	 The default implementation answers the current instSize."
-
-	<category: 'saving and loading'>
-	^self instSize
-    ]
-
-    convertFromVersion: version withFixedVariables: fixed indexedVariables: indexed for: anObjectDumper [
-	"This method is called if a VersionableObjectProxy is attached to
-	 a class.  It receives the version number that was stored for the
-	 object (or nil if the object did not use a VersionableObjectProxy),
-	 the fixed instance variables, the indexed instance variables,
-	 and the ObjectDumper that has read the object.
-	 The default implementation ignores the version and simply fills
-	 in an instance of the receiver with the given fixed and indexed
-	 instance variables (nil if the class instances are of fixed size).
-	 If instance variables were removed from the class, extras are
-	 ignored; if the class is now fixed and used to be indexed,
-	 indexed is not used."
-
-	<category: 'saving and loading'>
-	| object |
-	object := self isFixed 
-		    ifTrue: [self basicNew]
-		    ifFalse: [self basicNew: indexed size].
-	fixed 
-	    from: 1
-	    to: (fixed size min: self instSize)
-	    keysAndValuesDo: [:i :obj | object instVarAt: i put: obj].
-	(self isFixed or: [indexed isNil]) ifTrue: [^object].
-	indexed keysAndValuesDo: [:i :obj | object basicAt: i put: obj].
-	^object
-    ]
+	
 ]
 
