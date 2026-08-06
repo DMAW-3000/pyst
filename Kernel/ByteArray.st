@@ -83,6 +83,18 @@ a String''s elements are characters.'>
 	<category: 'storing'>
 	^self isReadOnly not
     ]
+	
+	printOn: aStream [
+	"Print a representation for the receiver on aStream"
+
+	<category: 'printing'>
+	aStream nextPut: $[.
+	self do: 
+		[:elt | 
+		elt printOn: aStream.
+		aStream space].
+	aStream nextPut: $]
+    ]
 
     storeLiteralOn: aStream [
 	"Put a Smalltalk literal evaluating to the receiver on aStream."
