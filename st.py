@@ -1367,6 +1367,13 @@ class CompiledMethod(_Code):
     """
     
     _Cover = None
+    
+    def __init__(self):
+        """
+        Create a new CompiledMethod
+        """
+        super().__init__()
+        self.header = 0
         
     def set_hdr(self, numArg, numTemp, depth, primId):
         """
@@ -1523,7 +1530,6 @@ class CompiledBlock(_Code):
         
     def __str__(self):
         return "BLOCKCODE(" + str(self.method) + ")"
-        
         
         
 class MethodInfo(Object):

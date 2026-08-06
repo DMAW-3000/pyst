@@ -181,6 +181,7 @@ class Interp(object):
         self.i_context = ctx = self.alloc_mth_context()
         ctx.parent      = self._nil()
         ctx.receiver    = self._nil()
+        ctx.method      = CompiledMethod()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
@@ -209,6 +210,7 @@ class Interp(object):
         self.i_context = ctx = self.alloc_mth_context()
         ctx.parent      = self._nil()
         ctx.receiver    = self._nil()
+        ctx.method      = CompiledMethod()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
