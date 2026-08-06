@@ -439,11 +439,11 @@ class Smalltalk(object):
         Class rebuild
         """
         for klassInfo in init.Init_Class:
-            klassName = klassInfo[0]
-            cacheName = klassInfo[2]
-            superName = klassInfo[3]
-            isFixed = klassInfo[4]
-            instVars = klassInfo[5]
+            klassName   = klassInfo[0]
+            cacheName   = "k_" + klassInfo[2]
+            superName   = klassInfo[3]
+            isFixed     = klassInfo[4]
+            instVars    = klassInfo[5]
             if superName is not None:
                 superName = "k_" + superName
                 if not hasattr(self, superName):
@@ -457,7 +457,6 @@ class Smalltalk(object):
             klassObj.subClasses = 0
             if superObj is not None:
                 superObj.subClasses += 1
-            cacheName = "k_" + cacheName
             if not hasattr(self, cacheName):
                 self.fatal_err("missing class cache", cacheName)
             setattr(self, cacheName, klassObj)
@@ -468,11 +467,11 @@ class Smalltalk(object):
         """
         metaInstVarNames = None
         for klassInfo in init.Init_Class:
-            klassName = klassInfo[0]
-            hasCover = klassInfo[1]
-            cacheName = klassInfo[2]
-            instVars = klassInfo[5]
-            klassObj = getattr(self, "k_" + cacheName)
+            klassName   = klassInfo[0]
+            hasCover    = klassInfo[1]
+            cacheName   = "k_" + klassInfo[2]
+            instVars    = klassInfo[5]
+            klassObj = getattr(self, cacheName)
             if hasCover and (klassObj is not self.k_class):
                 coverKlass = globals()[klassName]
                 self.g_cover_map[klassName] = coverKlass
@@ -501,12 +500,12 @@ class Smalltalk(object):
         # after this all of the Class objects are
         # correctly initialized
         for klassInfo in init.Init_Class:
-            klassName = klassInfo[0]
-            cacheName = klassInfo[2]
-            instVars = klassInfo[5]
-            classVars = klassInfo[6]
-            poolNames = klassInfo[7]
-            klassObj = getattr(self, "k_" + cacheName)
+            klassName   = klassInfo[0]
+            cacheName   = "k_" + klassInfo[2]
+            instVars    = klassInfo[5]
+            classVars   = klassInfo[6]
+            poolNames   = klassInfo[7]
+            klassObj = getattr(self, cacheName)
             metaObj = klassObj.get_class()
             if metaObj is None:
                 metaObj = self.create_meta(klassObj)
@@ -529,7 +528,7 @@ class Smalltalk(object):
             klassObj.category = self.o_nil
             klassObj.pragmaHandlers = self.o_nil
             klassObj.name = self.name_add_sym(self.e_st_dict, klassName, klassObj)
-            setattr(self, "k_" + cacheName, weakref.ref(klassObj))
+            setattr(self, cacheName, weakref.ref(klassObj))
     
     def build_disassembly(self):
         """
@@ -1058,8 +1057,8 @@ class Smalltalk(object):
             
         print("Class Init Info:")
         for klassInfo in init.Init_Class:
-            cacheName = klassInfo[2]
-            klassObj = getattr(self, "k_" + cacheName)()
+            cacheName = "k_" + klassInfo[2]
+            klassObj = getattr(self, cacheName)()
             print("%s %s %s %s %s" % ( \
                                  klassObj.name,
                                  klassObj.instanceVariables, 
