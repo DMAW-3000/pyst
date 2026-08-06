@@ -23,7 +23,7 @@ class Compile(object):
     _Ret_Self_Bytes = bytearray((B_PUSH_SELF, 0, B_RETURN_METHOD_STACK_TOP, 0))
     
     # reserved keywords
-    _Keyword_Names = set(("self", "nil", "true", "false", "super", "thisContext"))
+    _Keyword_Names = frozenset(("self", "nil", "true", "false", "super", "thisContext"))
     
     # mapping for unary special messages
     _Special_Unary = {
