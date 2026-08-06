@@ -119,6 +119,13 @@
 	
 	testClass [
 		"Test class behavior"
+		Integer printHierarchy.
+		(Object lookupSelector: #isString) notNil ifFalse: self failBlk.
+		(Object >> #isString isMemberOf: CompiledMethod) ifFalse: self failBlk.
+		Object hasMethods ifFalse: self failBlk.
+		(Integer allSuperclasses includes: Magnitude) ifFalse: self failBlk.
+		(Object subclasses includes: Magnitude) ifFalse: self failBlk.
+		Magnitude superclass ~= Object ifTrue: self failBlk.
 		Collection isReadOnly ifFalse: self failBlk.
 		((Array new: 1) isReadOnly) ifTrue: self failBlk.
 		TestSuite testClassVar: #(10 20 30).
@@ -262,8 +269,7 @@
 	testObject1 [
 		"Test advanced features of Objects"
 		(Object new: 1) addToBeFinalized
-	]
-		
+	]		
 	
 	testFloat [
 		"Test generic floating point types"
