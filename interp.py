@@ -82,6 +82,10 @@ class Interp(object):
         # index 0 is reserved
         self.i_primitive = [None]
         
+        # context slab caches
+        self.i_slab_blk     = []
+        self.i_slab_mth     = []
+        
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
         fTbl[self.FILE_PUT_CHARS]       = self.f_put_chars
@@ -172,7 +176,11 @@ class Interp(object):
         """
         # create the root context
         # leave the parent nil
-        self.i_context = ctx = MethodContext()
+        if not self.i_context.is_nil():
+            self.free_mth_context(self.i_context)
+        self.i_context = ctx = self.alloc_mth_context()
+        ctx.parent      = self._nil()
+        ctx.receiver    = self._nil()
         
         # push receiver and args onto current stack
         ctx.push(recvObj)
@@ -196,8 +204,27 @@ class Interp(object):
         # save the root context
         ctxSave = self.i_context
         
-        # send the message smd get reply value
-        ret = self.send_message_extern(recvObj, selObj, argValues)
+        # create the root context
+        # leave the parent and receiver nil
+        self.i_context = ctx = self.alloc_mth_context()
+        ctx.parent      = self._nil()
+        ctx.receiver    = self._nil()
+        
+        # push receiver and args onto current stack
+        ctx.push(recvObj)
+        for arg in argValues:
+            ctx.push(arg)
+            
+        # send message and run until control
+        # returns to this root context
+        self.send_message(len(argValues), False, selObj)
+        self.exec()
+        
+        # pop return value from stack
+        ret = ctx.pop()
+        
+        # free root context
+        self.free_mth_context(ctx)
         
         # restore context and return value
         self.i_context = ctxSave
@@ -271,7 +298,7 @@ class Interp(object):
                 return
         
         # allocate a new context and link to old
-        newCtx = MethodContext()
+        newCtx          = self.alloc_mth_context()
         newCtx.parent   = oldCtx
         newCtx.receiver = recvObj
         newCtx.method   = methObj
@@ -326,6 +353,66 @@ class Interp(object):
                     self.send_message_intern(owner, self._sel_mourn(), ())
                 else:
                     self.send_message_intern(owner, self._sel_mourn_colon(), (obj,))
+                    
+    def alloc_mth_context(self):
+        """
+        Allocate a new MethodContext for use
+        """
+        try:
+            # get free context from slab and reset state
+            ctx = self.i_slab_mth.pop()
+            if ctx.size > 7:
+                ctx.resize(7)
+                ctx.sp = 6
+            ctx.flags = 0
+            ctx.ip = 0
+            return ctx
+        except IndexError:
+            # slab is empty, refill
+            #print("MTH FILL")
+            for n in range(512):
+                self.i_slab_mth.append(MethodContext())
+            return self.i_slab_mth.pop()    
+            
+    def free_mth_context(self, ctx):
+        """
+        Release an unused MethodContext
+        """   
+        # return to slab
+        self.i_slab_mth.append(ctx)
+                    
+    def alloc_blk_context(self):
+        """
+        Allocate a new BlockContext for use
+        """
+        try:
+            # get free context from slab and reset state
+            ctx = self.i_slab_blk.pop()
+            if ctx.size > 7:
+                ctx.resize(7)
+                ctx.sp = 6
+            ctx.ip = 0
+            return ctx
+        except IndexError:
+            # slab is empty, refill
+            #print("BLK FILL")
+            for n in range(512):
+                self.i_slab_blk.append(BlockContext())
+            return self.i_slab_blk.pop()    
+            
+    def free_blk_context(self, ctx):
+        """
+        Release an unused BlockContext
+        """
+        # return to slab
+        self.i_slab_blk.append(ctx)
+        
+    def clear_slabs(self):
+        """
+        Clear the slab caches
+        """
+        self.i_slab_blk.clear()
+        self.i_slab_mth.clear()
         
     def exec(self):
         """
@@ -782,6 +869,16 @@ class Interp(object):
         # and push onto sender's stack
         newCtx.push(ctx.pop())
         
+        # free context objects including any 
+        # skipped over to get to outer context
+        while not outCtx.is_same(ctx):
+            if is_int(ctx[6]):
+                self.free_mth_context(ctx)
+            else:
+                self.free_blk_context(ctx)
+            ctx = ctx.parent
+        self.free_mth_context(outCtx)
+        
         # return control to sender
         self.i_context = newCtx
         return 0
@@ -796,6 +893,9 @@ class Interp(object):
         # pop return value from current stack
         # and push onto sender's stack
         newCtx.push(ctx.pop())
+        
+        # free context object
+        self.free_blk_context(ctx)
 
         # return control to sender
         self.i_context = newCtx
@@ -1044,7 +1144,7 @@ class Interp(object):
             return False
 
         # allocate a new context and link to old
-        newCtx              = BlockContext()
+        newCtx              = self.alloc_blk_context()
         newCtx.parent       = ctx
         newCtx.receiver     = recv.receiver
         newCtx.method       = blkObj
@@ -1077,7 +1177,7 @@ class Interp(object):
         argList = argList[:numHdrArgs]
 
         # allocate a new context and link to old
-        newCtx = BlockContext()
+        newCtx              = self.alloc_blk_context()
         newCtx.parent       = ctx
         newCtx.receiver     = recv.receiver
         newCtx.method       = blkObj
@@ -1112,7 +1212,7 @@ class Interp(object):
             return False
 
         # allocate a new context and link to old
-        newCtx = BlockContext()
+        newCtx              = self.alloc_blk_context()
         newCtx.parent       = ctx
         newCtx.receiver     = recv.receiver
         newCtx.method       = blkObj
