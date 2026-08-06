@@ -850,21 +850,6 @@ method dictionary, and iterating over the class hierarchy.'>
 		((self environment at: dictName asGlobalKey) includesKey: nameSym) 
 		    ifTrue: [^aBlock value]]
     ]
-	
-	isBits [
-	"Answer whether my instances' variables are immediate, non-OOP
-	 values."
-	<category: 'testing the form of the instances'>
-	^self shape notNil and: [self isPointers not]
-    ]
-
-    isPointers [
-	"Answer whether the instance variables of the receiver's instances
-	 are objects"
-
-	<category: 'testing the form of the instances'>
-	^(self instanceSpec bitAnd: 31) = 31
-    ]
 
     isIdentity [
 	"Answer whether x = y implies x == y for instances of the receiver"
@@ -930,13 +915,6 @@ method dictionary, and iterating over the class hierarchy.'>
 	self isVariable ifFalse: [^'subclass:'].
 	self isPointers ifTrue: [^'variableSubclass:'].
 	^'variable: ' , self shape storeString , 'subclass:'
-    ]
-	
-	shape [
-	"Answer the symbolic shape of my instances."
-	<category: 'testing the class hierarchy'>
-	self isVariable ifFalse: [^nil].
-	^self shapes at: (instanceSpec bitAnd: 15) + 1
     ]
 
     allSuperclassesDo: aBlock [
