@@ -111,6 +111,8 @@ Init_Kernel_Mod = (
     "Link.st",
     "SymLink.st",
     "Behavior.st",
+    "ClassDesc.st",
+    "Class.st",
     "Magnitude.st",
     "Character.st",
     "Number.st",
