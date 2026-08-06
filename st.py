@@ -1338,6 +1338,22 @@ class _Code(Object):
         """
         return [ref for ref in self._refs]
         
+    @property
+    def literals(self):
+        return self[0]
+        
+    @literals.setter
+    def literals(self, x):
+        self[0] = x
+    
+    @property
+    def header(self):
+        return self[1]
+        
+    @header.setter
+    def header(self, x):
+        self[1] = x
+        
     def __getitem__(self, idx):
         """
         Get one of the Object's child references
@@ -1419,22 +1435,6 @@ class CompiledMethod(_Code):
         """
         return (self.header >> 17) & 0x1ff
         
-    @property
-    def literals(self):
-        return self[0]
-        
-    @literals.setter
-    def literals(self, x):
-        self[0] = x
-    
-    @property
-    def header(self):
-        return self[1]
-        
-    @header.setter
-    def header(self, x):
-        self[1] = x
-        
     @property    
     def descriptor(self):
         return self[2]
@@ -1444,6 +1444,9 @@ class CompiledMethod(_Code):
         self[2] = x
         
     def __str__(self):
+        """
+        Print state
+        """
         if (not self.descriptor.is_nil()) and \
            (not self.descriptor.selector.is_nil()):
             s = str(self.descriptor.selector)
@@ -1499,26 +1502,6 @@ class CompiledBlock(_Code):
         Get depth of block
         """
         return (self.header >> 5) & 0x3f
-    
-    @property
-    def literals(self):
-        return self[0]
-        
-    @property
-    def literals(self):
-        return self[0]
-        
-    @literals.setter
-    def literals(self, x):
-        self[0] = x
-    
-    @property
-    def header(self):
-        return self[1]
-        
-    @header.setter
-    def header(self, x):
-        self[1] = x
         
     @property
     def method(self):
@@ -1529,6 +1512,9 @@ class CompiledBlock(_Code):
         self[2] = x
         
     def __str__(self):
+        """
+        Print state
+        """
         return "BLOCKCODE(" + str(self.method) + ")"
         
         
