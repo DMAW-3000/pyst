@@ -369,7 +369,7 @@ class Interp(object):
             return ctx
         except IndexError:
             # slab is empty, refill
-            print("MTH FILL")
+            #print("MTH FILL")
             for n in range(512):
                 self.i_slab_mth.append(MethodContext())
             return self.i_slab_mth.pop()    
@@ -395,7 +395,7 @@ class Interp(object):
             return ctx
         except IndexError:
             # slab is empty, refill
-            print("BLK FILL")
+            #print("BLK FILL")
             for n in range(512):
                 self.i_slab_blk.append(BlockContext())
             return self.i_slab_blk.pop()    
