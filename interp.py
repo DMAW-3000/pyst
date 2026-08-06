@@ -517,7 +517,7 @@ class Interp(object):
         Push a method or block outer context variable onto the stack.
         """
         # get extended bytecode data
-        level = ctx.method.get_code()[ctx.ip + 3]
+        level = ctx.method[ctx.ip + 6]
 
         # look through context frames
         outer = ctx.outerContext
@@ -583,7 +583,7 @@ class Interp(object):
         Pop from the stack and store an outer method or block temporary variable.
         """
         # get extended bytecode data
-        level = ctx.method.get_code()[ctx.ip + 3]
+        level = ctx.method[ctx.ip + 6]
 
         # look through context frames
         outer = ctx.outerContext
