@@ -24,7 +24,7 @@ class Smalltalk(object):
         self.g_img_file     = None
         
         # manage the class covers
-        self.g_cover_map = weakref.WeakValueDictionary()
+        self.g_cover_map = weakref.WeakKeyDictionary()
         
         # cached class definitions
         self.k_object                   = None
@@ -392,13 +392,14 @@ class Smalltalk(object):
                     if klassMap[klassName][1]:
                         coverKlass = globals()[klassName]
                         coverKlass.set_cover(obj)
+                        self.g_cover_map[obj] = coverKlass
                     print("Loaded class", klassName)
-                elif klassName == "False":
+                if klassName == "False":
                     CFalse.set_cover(obj)
-                    print("Loaded class", klassName)
+                    self.g_cover_map[self.k_false()] = CFalse
                 elif klassName == "True":
                     CTrue.set_cover(obj)
-                    print("Loaded class", klassName)
+                    self.g_cover_map[self.k_true()] = CTrue
                     
     def load_objects(self, objMap):
         """
@@ -474,13 +475,13 @@ class Smalltalk(object):
             klassObj = getattr(self, cacheName)
             if hasCover and (klassObj is not self.k_class):
                 coverKlass = globals()[klassName]
-                self.g_cover_map[klassName] = coverKlass
+                self.g_cover_map[klassObj] = coverKlass
                 coverKlass.set_cover(klassObj)
             if klassObj is self.k_class:
                 metaInstVarNames = instVars
-        self.g_cover_map["False"] = self.k_false
+        self.g_cover_map[self.k_false] = CFalse
         CFalse.set_cover(self.k_false)
-        self.g_cover_map["True"] = self.k_true
+        self.g_cover_map[self.k_true] = CTrue
         CTrue.set_cover(self.k_true)
                 
     def build_classes_3(self):
@@ -1065,6 +1066,11 @@ class Smalltalk(object):
                                  klassObj.subClasses,
                                  klassObj.superClass,
                                  klassObj.classVariables))
+       
+        print()
+        print("Class Cover Map:")
+        for st, py in self.g_cover_map.items():
+            print(st, py)
         print()
     
     @staticmethod
