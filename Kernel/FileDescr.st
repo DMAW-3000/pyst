@@ -258,7 +258,7 @@ do arbitrary processing on the files.'>
 
 	<category: 'initialization'>
 	"ObjectMemory addDependent: self."
-	AllOpenFiles := WeakIdentitySet new.
+	AllOpenFiles := WeakIdentitySet new
     ]
 
     FileDescriptor class >> update: aspect [

@@ -76,6 +76,8 @@ Init_Class = (
     ("IdentityDictionary", False, "ident_dictionary", "lookup_table", False, (), (), ()),
     ("MethodDictionary", True, "meth_dictionary", "ident_dictionary", False, ("mutex",), (), ()),
     ("WeakArray", False, "weak_array", "array", False, ("values", "nilValues"), (), ()),
+    ("WeakSet", False, "weak_set", "set", False, (), (), ()),
+    ("WeakIdentitySet", False, "weak_ident_set", "weak_set", False, (), (), ()),
     ("WeakKeyDictionary", False, "weak_key_dict", "dictionary", False, ("keys",), (), ()),
     ("WeakKeyIdentityDictionary", False, "weak_key_ident_dict", "weak_key_dict", False, (), (), ()),
     ("SymbolTableArray", True, "symbol_table", "array", False, (), (), ()),
@@ -136,6 +138,8 @@ Init_Kernel_Mod = (
     "AbstNamespc.st",
     "Namespace.st",
     "WeakArray.st",
+    "WeakSet.st",
+    "WeakIdentSet.st",
     "WeakKeyDict.st",
     "WeakKeyIdentDict.st",
     "Stream.st",
@@ -157,6 +161,7 @@ Init_Class_Init = (
     "Object",
     "Character",
     "Fraction",
+    "FileDescriptor",
     "FileStream",
 )
 
