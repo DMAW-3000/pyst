@@ -223,6 +223,9 @@ class Interp(object):
         # pop return value from stack
         ret = ctx.pop()
         
+        # free root context
+        self.free_mth_context(ctx)
+        
         # restore context and return value
         self.i_context = ctxSave
         return ret
