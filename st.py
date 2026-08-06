@@ -105,7 +105,7 @@ class _ObjTableBase(object):
     
     def free_obj(self, objId):
         """
-        Remove the Object id from the global set.
+        Remove the Object from the global table.
         """
         self._obj_map.pop(objId, None)
         
@@ -117,7 +117,14 @@ class _ObjTableBase(object):
         
     def get_obj_map(self):
         """
-        Return a dictionary of all Objects
+        Return a dictionary of all Objects, keyed by Object ID.
+        The instances of Objects in the returned dictionary
+        are modifiable copies of the actual Objects. This
+        allows for reference fixup.  The only intended client
+        of this method is the system image save process.
+        Weak and Ephem Objects are cast back to base form.
+        The returned dictionary should be discarded as soon
+        as possble.
         """
         objMap = {}
         for objId, obj in self._obj_map.items():
@@ -131,7 +138,10 @@ class _ObjTableBase(object):
         
     def set_obj_map(self, x):
         """
-        Set the Object table
+        Set the Object table.
+        The input should be a dictionary of Objects keyed
+        by Object ID.  The only intended client of this
+        method is the system image load process.
         """
         self._obj_map = weakref.WeakValueDictionary(x)
     
