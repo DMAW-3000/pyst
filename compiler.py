@@ -899,7 +899,7 @@ class Compile(object):
             elif isinstance(x, int):
                 itemObj = x
             elif isinstance(x, ParseLiteralSymbol):
-                itemObj = Symbol.from_str(x.value)
+                itemObj = self._sys.symbol_find_or_add(x.value)
             elif isinstance(x, ParseLiteralString):
                 itemObj = String.from_str(x.value)
             elif isinstance(x, ParseLiteralBytearray):

@@ -168,6 +168,8 @@
 	testArray [
 		"Test array types"
 		| a b c x y |
+		a := #(#testSymbol).
+		(a at: 1) == #testSymbol ifFalse: self failBlk.
 		a := #[5 6 7 100].
 		b := #([1 2 3] [8 9 10 11 23]).
 		c := #(('abc' 'xyz') (1 2 9 7 3 19) 20).
