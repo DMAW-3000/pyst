@@ -86,6 +86,7 @@ class Smalltalk(object):
         self.k_comp_method              = None
         self.k_comp_block               = None
         self.k_meth_info                = None
+        self.k_ident_set                = None
         self.k_lookup_table             = None
         self.k_ident_dictionary         = None
         self.k_meth_dictionary          = None
