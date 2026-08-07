@@ -66,7 +66,7 @@ Error subclass: InvalidValue [
 	"Answer an exception's message text."
 
 	<category: 'accessing'>
-	^'Invalid value ',  value asString, ': ', self basicMessageText
+	^'Invalid value ',  value printString, ': ', self basicMessageText
     ]
 
     value [

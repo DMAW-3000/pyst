@@ -58,7 +58,7 @@ valid range.'>
 	"Answer an exception's message text."
 
 	<category: 'accessing'>
-	^'Invalid index ', self value asString, ': ', self basicMessageText
+	^'Invalid index ', self value printString, ': ', self basicMessageText
     ]
 
     collection [

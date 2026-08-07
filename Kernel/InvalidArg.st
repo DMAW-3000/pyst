@@ -38,6 +38,6 @@
 	"Answer an exception's message text."
 
 	<category: 'accessing'>
-	^'Invalid argument ', self value asString, ': ', self basicMessageText
+	^'Invalid argument ', self value printString, ': ', self basicMessageText
     ]
 ]
