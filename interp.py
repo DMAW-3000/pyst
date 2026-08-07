@@ -1235,6 +1235,12 @@ class Interp(object):
         self.i_context = newCtx
         return True
         
+    def p_ContextPart_continue(self, ctx, recv, argList):
+        """
+        Primitive handler for ContextPart continue:
+        """
+        self._sys.fatal_err("unhandled Smalltalk exception")
+        
     def p_Behavior_basicNew(self, ctx, recv, argList):
         """
         Primitiive handler for Behavior basicNew

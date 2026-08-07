@@ -33,6 +33,7 @@ class Smalltalk(object):
         self.k_true                     = None
         self.k_false                    = None
         self.k_exception                = None
+        self.k_unhandled_except         = None
         self.k_message                  = None
         self.k_behavior                 = None
         self.k_class_desc               = None
@@ -1123,6 +1124,7 @@ class Smalltalk(object):
         system state will be saved.
         """
         print("ERROR:", *s)
+        self.stop()
         sys.exit(-1)
             
         

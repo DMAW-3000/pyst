@@ -19,6 +19,7 @@ Init_Class = (
     ("False", False, "false", "boolean", True, ("truthValue",), (), ()),
     ("True", False, "true", "boolean", True, ("truthValue",), (), ()),
     ("Exception", False, "exception", "object", True, ("creator", "tag", "messageText", "resumeBlock", "onDoBlock", "handlerBlock", "context", "isNested", "previousState"), ("NoTag",), ()),
+    ("UnhandledException", False, "unhandled_except", "exception", True, ("originalException",), (), ()),
     ("Message", False, "message", "object", True, ("selector", "args"), (), ()),
     ("Behavior", False, "behavior", "object", True, ("superClass", "methodDictionary", "instanceSpec", "subClasses", "instanceVariables"), (), ()), 
     ("ClassDescription", False, "class_desc", "behavior", True, (), (), ()),
@@ -105,6 +106,7 @@ Init_Kernel_Mod = (
     "MthContext.st",
     "Message.st",
     "ExcHandling.st",
+    "UnhandledExcept.st",
     "LookupKey.st",
     "Association.st",
     "HomedAssoc.st",
@@ -156,6 +158,7 @@ Init_Kernel_Mod = (
     "CompildCode.st",
     "CompiledBlk.st",
     "CompildMeth.st",
+    "MethodInfo.st",
     "TestSuite.st",
 )
 
@@ -192,6 +195,7 @@ Init_Primitive = (
     "BlockClosure_value",
     "BlockClosure_cull",
     "BlockClosure_valueWithArguments",
+    "ContextPart_continue",
     "Behavior_basicNew",
     "Behavior_basicNewColon",
     "Behavior_newInitialize",
