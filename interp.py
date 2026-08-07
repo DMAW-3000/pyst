@@ -926,7 +926,7 @@ class Interp(object):
         the same object ID.
         """
         send = argList[0]
-        if is_obj(send) and recv.is_same(send):
+        if is_obj(recv) and is_obj(send) and recv.is_same(send):
             ret = self._true()
         else:
             ret = self._false()
