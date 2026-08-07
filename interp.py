@@ -287,7 +287,7 @@ class Interp(object):
                         break
             klassObj = klassObj.superClass 
         if methObj.is_nil():
-            raise SmalltalkException("unknown method %s" % selObj)
+            raise SmalltalkException("unknown method %s for %s" % (selObj, recvObj))
 
         # get method info
         numHdrArgs, numTemp, depth, primId = methObj.get_hdr()
