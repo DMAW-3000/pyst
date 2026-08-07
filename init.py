@@ -133,6 +133,7 @@ Init_Kernel_Mod = (
     "Behavior.st",
     "ClassDesc.st",
     "Class.st",
+    "Metaclass.st",
     "Magnitude.st",
     "Character.st",
     "Number.st",
