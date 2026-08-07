@@ -53,6 +53,11 @@
 				testException
 	]
 	
+	initialize [
+		"Setup test initial state"
+		testInst1 := testInst2 := 0
+	]
+	
 	failBlk [
 		"Block to run on test failure"
 		^[self fail]
@@ -67,6 +72,7 @@
 	testNewInit [
 		"Test basic object creation and initialization"
 		| obj |
+		(testInst1 isNil or: [ testInst2 isNil ]) ifTrue: self failBlk.
 		obj := Object basicNew.
 		obj notNil ifFalse: self failBlk.
 		obj size ~= 0 ifTrue: self failBlk.
@@ -94,7 +100,8 @@
 		obj isReadOnly ifFalse: self failBlk.
 		obj := #testSymbol.
 		obj size ~= 10 ifTrue: self failBlk.
-		obj isReadOnly ifFalse: self failBlk
+		obj isReadOnly ifFalse: self failBlk.
+		obj ~= obj yourself ifTrue: self failBlk
 	]
 	
 	testCopy [
@@ -119,6 +126,7 @@
 	
 	testClass [
 		"Test class behavior"
+		('hello' respondsTo: #indexOf:startingAt:) ifFalse: self failBlk.
 		(Object lookupSelector: #isString) notNil ifFalse: self failBlk.
 		(Object >> #isString isMemberOf: CompiledMethod) ifFalse: self failBlk.
 		Object hasMethods ifFalse: self failBlk.
