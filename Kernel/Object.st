@@ -713,7 +713,7 @@ All classes in the system are subclasses of me.'>
 	<category: 'built ins'>
 	| shape size |
 	self class isFixed ifTrue: [^"SystemExceptions." NotIndexable signalOn: self].
-	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signal].
+	self isReadOnly ifTrue: [^"SystemExceptions." ReadOnlyObject signalOn: self].
 	index isInteger 
 	    ifFalse: [^"SystemExceptions." WrongClass signalOn: index mustBe: SmallInteger].
 	index < 1 
