@@ -183,6 +183,18 @@ methods that can be used in inspection or debugging.'>
 	sourceCode isNil ifTrue: [ ^'source not available' ].
 	^sourceCode printedFileName
     ]
+	
+	currentLine [
+        "Answer the 1-based number of the line that is pointed to by the receiver's
+         instruction pointer.  The DebugTools package caches information,
+         thus making the implementation faster."
+
+        <category: 'debugging'>
+        | res |
+        res := self method sourceCodeMap at: self ip + 1.
+        ^ res = 0 ifTrue: [ self error: 'IP(', self ip + 1 displayString, ') is not correct' ]
+                  ifFalse: [ res ]
+    ]
 
     debugger [
 	"Answer the debugger that is attached to the given context.  It
