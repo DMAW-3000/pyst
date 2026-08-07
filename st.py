@@ -1822,6 +1822,8 @@ class WeakObject(Object):
         """
         Create a Weak from another Object
         """
+        if isinstance(x, WeakObject):
+            return x
         newObj = klass.from_seq(x)
         newObj._klass = x.get_class()
         return newObj
