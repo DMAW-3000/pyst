@@ -531,6 +531,7 @@
 		x peek ~= $t ifTrue: self failBlk.
 		x next: 2.
 		x peek ~= $i ifTrue: self failBlk.
+		10 timesRepeat: [x next].
 	]
 	
 	testFileStream [
