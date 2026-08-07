@@ -1134,15 +1134,6 @@ All classes in the system are subclasses of me.'>
 	self primitiveFailed
     ]
 
-    error: message [
-	"Stop the execution and/or bring up a debugger. message is an error
-	 message to be shown"
-
-	<category: 'built ins'>
-	<primitive: VMpr_Object_bootstrapError>
-	
-    ]
-
     basicPrint [
 	"Print a basic representation of the receiver"
 
@@ -1156,13 +1147,6 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'built ins'>
 	^self halt: 'halt encountered'
-    ]
-
-    halt: aString [
-	"Called to enter the debugger"
-
-	<category: 'built ins'>
-	^self error: aString
     ]
 
     mark: aSymbol [
@@ -1206,13 +1190,30 @@ All classes in the system are subclasses of me.'>
 	"SystemExceptions." NotYetImplemented signal
     ]
 
-    doesNotUnderstand: message [
+    doesNotUnderstand: aMessage [
 	"Called by the system when a selector was not found. message is a
 	 Message containing information on the receiver"
 
-	<category: 'VM callbacks'>
-	<primitive: VMpr_Object_bootstrapDNU>
-	
+	<category: 'error raising'>
+	^(MessageNotUnderstood new)
+	    message: aMessage receiver: self;
+	    signal
+    ]
+
+    error: message [
+	"Display a walkback for the receiver, with the given error message.
+	 Signal an `Error' exception."
+
+	<category: 'error raising'>
+	^Error new signal: message
+    ]
+
+    halt: message [
+	"Display a walkback for the receiver, with the given error message.
+	 Signal an `Halt' exception."
+
+	<category: 'error raising'>
+	^Halt new signal: message
     ]
 
     badReturnError [
