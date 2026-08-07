@@ -64,11 +64,11 @@ current process.'>
 	    display: self messageText;
 	    nl.
 	"RegressionTesting 
-	    ifFalse: 
-		[context := thisContext.
-		[context isInternalExceptionHandlingContext] 
+	    ifFalse:"
+	context := thisContext.
+	[context isInternalExceptionHandlingContext] 
 		    whileTrue: [context := context parentContext].
-		context backtraceOn: Transcript]."
+	context backtraceOn: Transcript.
 
 	thisContext environment continue: nil
     ]
