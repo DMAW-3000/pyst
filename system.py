@@ -36,6 +36,8 @@ class Smalltalk(object):
         self.k_unhandled_except         = None
         self.k_error                    = None
         self.k_invalid_value            = None
+        self.k_not_indexable            = None
+        self.k_read_only_obj            = None
         self.k_invalid_arg              = None
         self.k_arg_range                = None
         self.k_index_range              = None
