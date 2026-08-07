@@ -38,6 +38,7 @@ class Smalltalk(object):
         self.k_invalid_value            = None
         self.k_not_indexable            = None
         self.k_read_only_obj            = None
+        self.k_wrong_class              = None
         self.k_invalid_arg              = None
         self.k_arg_range                = None
         self.k_index_range              = None
@@ -75,6 +76,7 @@ class Smalltalk(object):
         self.k_pos_stream               = None
         self.k_read_stream              = None
         self.k_write_stream             = None
+        self.k_rw_stream                = None
         self.k_file_desc                = None
         self.k_file_stream              = None
         self.k_text_collect             = None
