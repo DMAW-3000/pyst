@@ -1610,6 +1610,40 @@ class Interp(object):
             return True
         return False
         
+    def p_Float_pow(self, ctx, recv, argList):
+        """
+        Primitive handler for Float raisedTo:
+        """
+        send = argList[0]
+        if is_flt(recv) and is_flt(send):
+            ctx.push(math.pow(recv, send))
+            return True
+        return False
+        
+    def p_Float_ceil(self, ctx, recv, argList):
+        """
+        Primitive handler for Float ceiling
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.ceil(recv))
+            return True
+        return False
+        
+    def p_Float_floor(self, ctx, recv, argList):
+        """
+        Primitive handler for Float ceiling
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.floor(recv))
+            return True
+        return False
+        
     def p_Float_sin(self, ctx, recv, argList):
         """
         Primitive handler for Float sin
@@ -1643,6 +1677,50 @@ class Interp(object):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.tan(recv))
+            return True
+        return False
+        
+    def p_Float_arcSin(self, ctx, recv, argList):
+        """
+        Primitive handler for Float arcSin
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            try:
+                ret = math.asin(recv)
+            except ValueError:
+                return False
+            ctx.push(ret)
+            return True
+        return False
+        
+    def p_Float_arcCos(self, ctx, recv, argList):
+        """
+        Primitive handler for Float arcCos
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            try:
+                ret = math.acos(recv)
+            except ValueError:
+                return False
+            ctx.push(ret)
+            return True
+        return False
+        
+    def p_Float_arcTan(self, ctx, recv, argList):
+        """
+        Primitive handler for Float arcTan
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.atan(recv))
             return True
         return False
         
