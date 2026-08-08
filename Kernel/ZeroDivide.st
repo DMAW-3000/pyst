@@ -70,6 +70,6 @@ handler.'>
 	"Answer a textual description of the exception."
 
 	<category: 'description'>
-	^'The program attempted to divide a number ', dividend printString, ' by zero'
+	^'The program attempted to divide a number by zero'
     ]
 ]
