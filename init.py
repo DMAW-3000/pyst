@@ -249,6 +249,8 @@ Init_Primitive = (
     "SmallInteger_asFloatD",
     "SmallInteger_scramble",
     "Float_primHash",
+    "Float_sin",
+    "Float_cos",
     "FloatD_fromBytes",
     "FloatD_infinity",
     "FloatD_negativeInfinity",

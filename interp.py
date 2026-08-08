@@ -1574,6 +1574,30 @@ class Interp(object):
         ctx.push(hsh_seq(recv))
         return True
         
+    def p_Float_sin(self, ctx, recv, argList):
+        """
+        Primitive handler for Float sin
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.sin(recv))
+            return True
+        return False
+        
+    def p_Float_cos(self, ctx, recv, argList):
+        """
+        Primitive handler for Float cos
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.cos(recv))
+            return True
+        return False
+        
     def p_FloatD_fromBytes(self, ctx, recv, argList):
         """
         Primitive handler for FloatD fromBytes

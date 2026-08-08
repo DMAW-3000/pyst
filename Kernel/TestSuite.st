@@ -281,6 +281,11 @@
 	testFloat [
 		"Test generic floating point types"
 		| x |
+		x := Float pi / 2.
+		(x sin closeTo: 1.0) ifFalse: self failBlk.
+		(0 sin closeTo: 0.0) ifFalse: self failBlk.
+		(x cos closeTo: 0.0) ifFalse: self failBlk.
+		(0 cos closeTo: 1.0) ifFalse: self failBlk.
 		x := -233.23.
 		x asExactFraction isExact ifFalse: self failBlk.
 		x hash isInteger ifFalse: self failBlk.
