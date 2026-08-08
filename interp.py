@@ -1574,6 +1574,42 @@ class Interp(object):
         ctx.push(hsh_seq(recv))
         return True
         
+    def p_Float_exp(self, ctx, recv, argList):
+        """
+        Primitive handler for Float exp
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.exp(recv))
+            return True
+        return False
+        
+    def p_Float_ln(self, ctx, recv, argList):
+        """
+        Primitive handler for Float ln
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.log(recv))
+            return True
+        return False
+        
+    def p_Float_sqrt(self, ctx, recv, argList):
+        """
+        Primitive handler for Float sqrt
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.sqrt(recv))
+            return True
+        return False
+        
     def p_Float_sin(self, ctx, recv, argList):
         """
         Primitive handler for Float sin
@@ -1595,6 +1631,18 @@ class Interp(object):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.cos(recv))
+            return True
+        return False
+        
+    def p_Float_tan(self, ctx, recv, argList):
+        """
+        Primitive handler for Float tan
+        """
+        if is_flt(recv) or \
+          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            ctx.push(math.tan(recv))
             return True
         return False
         

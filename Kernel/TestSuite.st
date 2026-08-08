@@ -281,11 +281,19 @@
 	testFloat [
 		"Test generic floating point types"
 		| x |
+		x := Float e.
+		(0.0 exp closeTo: 1.0) ifFalse: self failBlk.
+		(1 exp closeTo: x) ifFalse: self failBlk.
+		(1 ln closeTo: 0.0) ifFalse: self failBlk.
+		(x ln closeTo: 1.0) ifFalse: self failBlk.
+		(x sqrt * x sqrt closeTo: x) ifFalse: self failBlk.
 		x := Float pi / 2.
 		(x sin closeTo: 1.0) ifFalse: self failBlk.
 		(0 sin closeTo: 0.0) ifFalse: self failBlk.
 		(x cos closeTo: 0.0) ifFalse: self failBlk.
 		(0 cos closeTo: 1.0) ifFalse: self failBlk.
+		((x / 2) tan closeTo: 1.0) ifFalse: self failBlk.
+		(0 tan closeTo: 0.0) ifFalse: self failBlk.
 		x := -233.23.
 		x asExactFraction isExact ifFalse: self failBlk.
 		x hash isInteger ifFalse: self failBlk.
