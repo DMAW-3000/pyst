@@ -304,6 +304,9 @@
 		(0.0 arcTan closeTo: 0.0) ifFalse: self failBlk.
 		x := -233.23.
 		x negative ifFalse: self failBlk.
+		x positive ifTrue: self failBlk.
+		x strictlyPositive ifTrue: self failBlk.
+		0.0 positive ifFalse: self failBlk.
 		(x abs closeTo: x negated) ifFalse: self failBlk.
 		x asExactFraction isExact ifFalse: self failBlk.
 		x hash isInteger ifFalse: self failBlk.

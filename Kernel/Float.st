@@ -208,6 +208,7 @@ if the hardware supports it.'>
 
 	<category: 'testing'>
 	self = 0.0 ifTrue: [^false].
+	self = -0.0 ifTrue: [^true].
 	^self <= self zero and: [self unity / self <= self zero]
     ]
 
@@ -223,6 +224,8 @@ if the hardware supports it.'>
 	 not positive, so the definition is not simply >= 0."
 
 	<category: 'testing'>
+	self = 0.0 ifTrue: [^true].
+	self = -0.0 ifTrue: [^false].
 	^self >= self zero and: [self unity / self >= self zero]
     ]
 
