@@ -472,6 +472,123 @@ if the hardware supports it.'>
 	(printString includes: self exponentLetter) 
 	    ifFalse: [aStream nextPut: self exponentLetter]
     ]
+	
+	printOn: aStream special: whatToPrintArray [
+	"Private - Print a decimal representation of the receiver on aStream,
+	 printing one of the three elements of whatToPrintArray if it is
+	 infinity, negative infinity, or a NaN"
+
+	<category: 'private'>
+	"First, take care of the easy cases."
+
+	| me exponential small num sameUp sameDown weight prevWeight digit
+          eps precision digits digitStream exponent dotPrinted allNines adjust |
+	self isNaN 
+	    ifTrue: [^aStream nextPutAll: (whatToPrintArray at: 3)].
+	self = self class infinity 
+	    ifTrue: [^aStream nextPutAll: (whatToPrintArray at: 1)].
+	self = self class negativeInfinity 
+	    ifTrue: [^aStream nextPutAll: (whatToPrintArray at: 2)].
+
+	"We deal only with positive values."
+	me := self abs.
+	self negative ifTrue: [aStream nextPut: $-].
+	self = self zero 
+	    ifTrue: 
+		[aStream nextPutAll: '0.0'.
+		^self].
+
+	"Figure out some quantities and the way we'll print the number."
+	exponential := me exponent abs > me class precision.
+	small := me < me unity.
+
+	"Compute the digits one by one."
+	num := me asExactFraction.
+	exponent := (num floorLog: 10) + 1.
+	digits := 0.
+	weight := 10 raisedToInteger: exponent - 1.
+
+	"Smallest number such that me + eps ~= eps"
+	eps := 2 raisedToInteger: me exponent - me class precision + 1.
+
+	allNines := true.
+        sameDown := true.
+        sameUp := true.
+
+        [digit := num // weight.
+        num := num \\ weight.
+	allNines := allNines and: [digit = 9].
+        sameDown := sameDown and: [num >= eps].
+        sameUp := sameUp and: [num < (weight - eps)].
+	digits := digits * 10 + digit.
+	prevWeight := weight.
+	weight := weight / 10.
+	sameDown or: [sameUp]] whileTrue.
+
+        "For large numbers, don't let round-to-even bite us."
+        eps isInteger ifTrue: [eps := eps / 2].
+
+	adjust := 0.
+
+        "Round the last digit if it allows to save trailing digits while
+         not changing the meaning."
+	(digit <= 5 and: [num + (digit * prevWeight) < (eps / 2)])
+            ifTrue: [adjust := digit negated].
+	(digit > 5 and: [num + ((digit - 10) * prevWeight) > (eps / -2)])
+            ifTrue: [adjust := 10 - digit].
+
+         "... otherwise, try rounding it up if it is a better approximation."
+	(adjust = 0 and: [digit > 0]) ifTrue: [
+            (num - prevWeight) abs < num ifTrue: [adjust := 1]].
+
+	digits := digits + adjust.
+	(adjust > 0 and: [allNines])
+            ifTrue: [allNines := false. exponent := exponent + 1].
+
+	digits := digits printString.
+
+	"Print the non-significant zeros."
+	dotPrinted := false.
+	(small and: [exponential not]) 
+	    ifTrue: 
+		[1 - exponent timesRepeat: 
+			[aStream nextPut: $0.
+			dotPrinted 
+			    ifFalse: 
+				[dotPrinted := true.
+				aStream nextPut: $.].
+			exponent := exponent + 1]].
+
+	"Make a stream with the significant digits."
+	precision := digits findLast: [:ch | ch ~= $0].
+	digitStream := ReadStream 
+		    on: digits
+		    from: 1
+		    to: precision.
+
+	"Print the integer part (only one digit if using exponential notation)."
+	
+	[digitStream atEnd 
+	    ifTrue: [aStream nextPut: $0]
+	    ifFalse: [aStream nextPut: digitStream next].
+	exponent := exponent - 1.
+	exponent > 0 and: [exponential not]] 
+		whileTrue.
+
+	"Print the fractional part."
+	digitStream atEnd 
+	    ifTrue: [dotPrinted ifFalse: [aStream nextPutAll: '.0']]
+	    ifFalse: 
+		[dotPrinted ifFalse: [aStream nextPut: $.].
+		digitStream do: [:each | aStream nextPut: each]].
+
+	"Finally, print the exponent if necessary."
+	exponential 
+	    ifTrue: 
+		[aStream
+		    nextPut: me exponentLetter;
+		    print: exponent]
+    ]
 
     checkCoercion [
 	"Private - Fail if the receiver is only representable as a Float"
