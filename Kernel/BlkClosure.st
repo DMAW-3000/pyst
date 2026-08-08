@@ -44,6 +44,55 @@ execution context; this property can be used in the construction of
 control flow methods.  They also provide some methods that are used in the
 creation of Processes from blocks.'>
 
+	BlockClosure class >> exceptionHandlerResetBlock [
+	<category: 'private-instance creation'>
+	^[:context | context at: context numArgs + 1 put: 0]
+    ]
+
+    BlockClosure class >> exceptionHandlerSearchBlock [
+	<category: 'private-instance creation'>
+	^
+	[:context :signal | 
+	| best bestGoodness goodness activeHandlers nested |
+	bestGoodness := -1.
+	activeHandlers := context at: context numArgs + 1.
+	context at: context numArgs + 1 put: -1.
+	nested := activeHandlers = -1.
+	nested 
+	    ifFalse: 
+		[1 to: context numArgs - 1
+		    by: 2
+		    do: 
+			[:i | 
+			goodness := (context at: i) goodness: signal class.
+			goodness > -1 
+			    ifTrue: 
+				[(activeHandlers bitAt: i) = 1 
+				    ifTrue: 
+					["Sorry, this handler is already active..."
+
+					nested := true.
+					goodness := -1]].
+			goodness > bestGoodness 
+			    ifTrue: 
+				[best := i.
+				bestGoodness := goodness]]].
+
+	"Now instantiate the best handler we found"
+	best isNil 
+	    ifFalse: 
+		[context at: context numArgs + 1 put: (activeHandlers setBit: best).
+		signal 
+		    onDoBlock: context receiver
+		    handlerBlock: (context at: best + 1)
+		    onDoContext: context
+		    previousState: activeHandlers.
+		#found]
+	    ifTrue: 
+		[context at: context numArgs + 1 put: activeHandlers.
+		nested ifTrue: [#skip] ifFalse: [nil]]]
+    ]
+
     BlockClosure class >> numArgs: args numTemps: temps bytecodes: bytecodes depth: depth literals: literalArray [
 	"Answer a BlockClosure for a new CompiledBlock that is created using
 	 the passed parameters.  To make it work, you must put the BlockClosure
@@ -74,6 +123,109 @@ creation of Processes from blocks.'>
 	"Answer a shallow copy."
 	<category: 'overriding'>
 	^self shallowCopy	"it's about as deep as we need to get"
+    ]
+	
+	 asContext: parent [
+	"Answer a context which will evaluate the receiver without effects on
+	 the given context's stack (the return value won't be pushed), as
+	 soon as it becomes the VM's thisContext.
+	 parent can be nil - in which case reaching the end of the block will
+	 probably crash Smalltalk.
+	 Note that the block has no home, so it cannot contain returns."
+
+	<category: 'private'>
+	^BlockContext
+	    fromClosure: [
+	        | top |
+	        top := parent isNil
+		    ifTrue: [nil]
+		    ifFalse: [
+                        "This is really ugly.  The right solution would be
+                         to move the receiver into the first stack slot,
+                         so that sp is guaranteed to be non-negative."
+			parent sp == -1
+			    ifTrue: [parent instVarAt: parent class instSize]
+			    ifFalse: [parent at: parent sp + 1]].
+	        self value. top]
+	    parent: parent.
+    ]
+
+    on: anException do: aBlock [
+	"Evaluate the receiver; when anException is signaled, evaluate aBlock
+	 passing a Signal describing the exception. Answer either the result of
+	 evaluating the receiver or the parameter of a Signal>>#return:"
+
+	<category: 'exception handling'>
+	| active |
+	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
+	reset: BlockClosure exceptionHandlerResetBlock>"
+	active := 0.
+	^self valueAndResumeOnUnwind
+    ]
+
+    on: e1 do: b1 on: e2 do: b2 [
+	"Evaluate the receiver; when e1 or e2 are signaled, evaluate respectively
+	 b1 or b2, passing a Signal describing the exception. Answer either the
+	 result of evaluating the receiver or the argument of a Signal>>#return:"
+
+	<category: 'exception handling'>
+	| active |
+	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
+	reset: BlockClosure exceptionHandlerResetBlock>"
+	active := 0.
+	^self valueAndResumeOnUnwind
+    ]
+
+    on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 [
+	"Evaluate the receiver; when e1, e2 or e3 are signaled, evaluate
+	 respectively b1, b2 or b3, passing a Signal describing the exception.
+	 Answer either the result of evaluating the receiver or the parameter of a
+	 Signal>>#return:"
+
+	<category: 'exception handling'>
+	| active |
+	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
+	reset: BlockClosure exceptionHandlerResetBlock>"
+	active := 0.
+	^self valueAndResumeOnUnwind
+    ]
+
+    on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 on: e4 do: b4 [
+	"Evaluate the receiver; when e1, e2, e3 or e4 are signaled, evaluate
+	 respectively b1, b2, b3 or b4, passing a Signal describing the exception.
+	 Answer either the result of evaluating the receiver or the parameter of a
+	 Signal>>#return:"
+
+	<category: 'exception handling'>
+	| active |
+	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
+	reset: BlockClosure exceptionHandlerResetBlock>"
+	active := 0.
+	^self valueAndResumeOnUnwind
+    ]
+
+    on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 on: e4 do: b4 on: e5 do: b5 [
+	"Evaluate the receiver; when e1, e2, e3, e4 or e5 are signaled, evaluate
+	 respectively b1, b2, b3, b4 or b5, passing a Signal describing the exception.
+	 Answer either the result of evaluating the receiver or the parameter of a
+	 Signal>>#return:"
+
+	<category: 'exception handling'>
+	| active |
+	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
+	reset: BlockClosure exceptionHandlerResetBlock>"
+	active := 0.
+	^self valueAndResumeOnUnwind
+    ]
+	
+	ifError: aBlock [
+	"Evaluate the receiver; when #error: is called, pass to aBlock the receiver
+	 and the parameter, and answer the result of evaluating aBlock.  If another
+	 exception is raised, it is passed to an outer handler; if no exception is
+	 raised, the result of evaluating the receiver is returned."
+
+	<category: 'exception handling'>
+	^self on: Error do: [:sig | sig return: (aBlock cull: sig messageText)]
     ]
 
     ensure: aBlock [
