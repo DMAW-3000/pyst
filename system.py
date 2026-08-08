@@ -39,6 +39,7 @@ class Smalltalk(object):
         self.k_msg_not_under            = None
         self.k_arith_error              = None
         self.k_invalid_value            = None
+        self.k_vm_error                 = None
         self.k_not_indexable            = None
         self.k_read_only_obj            = None
         self.k_wrong_class              = None
@@ -46,6 +47,8 @@ class Smalltalk(object):
         self.k_arg_range                = None
         self.k_index_range              = None
         self.k_zero_divide              = None
+        self.k_primitive_fail           = None
+        self.k_wrong_arg_count          = None
         self.k_end_of_stream            = None
         self.k_message                  = None
         self.k_behavior                 = None
