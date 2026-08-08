@@ -640,7 +640,40 @@ class SymbolTableArray(Array):
     """
     Internal representation of Smalltalk SymbolTable
     """
-    pass
+    
+    _Cover = None
+    
+    
+class Message(Object):
+    """
+    Internal representation of a Smalltalk Message
+    """
+    
+    _Cover = None
+    
+    def __init__(self, sel, args):
+        """
+        Create an new Message
+        """
+        super().__init__(2)
+        self.selector   = sel
+        self.args       = args
+    
+    @property
+    def selector(self):
+        return self[0]
+        
+    @selector.setter
+    def selector(self, x):
+        self[0] = x
+        
+    @property
+    def args(self):
+        return self[1]
+        
+    @args.setter
+    def args(self, x):
+        self[1] = x
         
 
 class Association(Object):

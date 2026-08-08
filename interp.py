@@ -49,6 +49,7 @@ class Interp(object):
         self._sel_initialize    = self._make_sel("initialize")
         self._sel_mourn_colon   = self._make_sel("mourn:")
         self._sel_mourn         = self._make_sel("mourn")
+        self._sel_no_know       = self._make_sel("doesNotUnderstand:")
         self._sel_value         = self._make_sel("value")
         self._sel_size          = self._make_sel("size")
         self._sel_isnil         = self._make_sel("isNil")
@@ -269,6 +270,7 @@ class Interp(object):
             klassObj = self._sys.k_float_d()
         else:
             klassObj = recvObj.get_class()
+        origKlass = klassObj
             
         # lookup method object from selector symbol
         # search from receiver's class through its
@@ -286,8 +288,12 @@ class Interp(object):
                     else:
                         break
             klassObj = klassObj.superClass 
+            
+        # if message is not found send doesNotUnderstand: to object
         if methObj.is_nil():
-            raise SmalltalkException("unknown method %s for %s" % (selObj, recvObj))
+            methObj = self._does_not_understand(origKlass)
+            numArgs = 1
+            argList = (Message(selObj, Array.from_seq(argList)),)
 
         # get method info
         numHdrArgs, numTemp, depth, primId = methObj.get_hdr()
@@ -318,6 +324,24 @@ class Interp(object):
         
         # transfer control to new context
         self.i_context = newCtx
+        
+    def _does_not_understand(self, klass):
+        """
+        Lookup doesNotUnderstand: selector because of unknown message
+        """
+        methObj = self._nil()
+        selObj = self._sel_no_know()
+        while not klass.is_nil():
+            #print("meth lookup", klassObj)
+            methDict = klass.methodDictionary
+            if not methDict.is_nil():
+                methObj = self._sys.identdict_find(methDict, selObj)
+                if not methObj.is_nil():
+                    break
+            klass = klass.superClass
+        if methObj.is_nil():
+            raise SmalltalkException("doesNotUnderstand: not found")
+        return methObj
         
     def set_debug(self, preHook, postHook):
         """

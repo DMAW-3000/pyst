@@ -36,6 +36,7 @@ class Smalltalk(object):
         self.k_unhandled_except         = None
         self.k_error                    = None
         self.k_notification             = None
+        self.k_msg_not_under            = None
         self.k_arith_error              = None
         self.k_invalid_value            = None
         self.k_not_indexable            = None
