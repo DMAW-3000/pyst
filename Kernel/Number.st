@@ -1039,14 +1039,19 @@ implicit type coercing code for binary operations.'>
 	^result
     ]
 
-    arithmeticError: message [
-	<category: 'errors'>
-	self error: message
+    arithmeticError: msg [
+	"Raise an ArithmeticError exception having msg as its message text."
+
+	<category: 'error raising'>
+	^ArithmeticError new signal: msg
     ]
 
     zeroDivide [
-	<category: 'errors'>
-	self error: 'cannot divide by zero'
+	"Raise a division-by-zero (ZeroDivide) exception whose dividend
+	 is the receiver."
+
+	<category: 'error raising'>
+	^(ZeroDivide dividend: self) signal
     ]
 
     raisedToInteger: n withCache: cache [
