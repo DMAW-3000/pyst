@@ -509,7 +509,7 @@ if the hardware supports it.'>
 
 	<category: 'built ins'>
 	<primitive: VMpr_Float_pow>
-	aNumber isFloat ifTrue: [self arithmeticError: 'invalid operands'].
+	aNumber isNumber ifFalse: [self arithmeticError: 'invalid operands'].
 	^self raisedTo: (self coerce: aNumber)
     ]
 
