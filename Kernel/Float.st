@@ -507,13 +507,15 @@ if the hardware supports it.'>
 	small := me < me unity.
 
 	"Compute the digits one by one."
-	num := me asExactFraction.
+	num := me asFloat.
 	exponent := (num floorLog: 10) + 1.
 	digits := 0.
 	weight := 10 raisedToInteger: exponent - 1.
+	weight := weight asFloat.
 
 	"Smallest number such that me + eps ~= eps"
 	eps := 2 raisedToInteger: me exponent - me class precision + 1.
+	eps := eps asFloat.
 
 	allNines := true.
         sameDown := true.
@@ -550,7 +552,7 @@ if the hardware supports it.'>
             ifTrue: [allNines := false. exponent := exponent + 1].
 
 	digits := digits printString.
-
+	
 	"Print the non-significant zeros."
 	dotPrinted := false.
 	(small and: [exponential not]) 
