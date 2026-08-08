@@ -207,6 +207,7 @@ if the hardware supports it.'>
 	"Answer whether the receiver is negative"
 
 	<category: 'testing'>
+	self = 0.0 ifTrue: [^false].
 	^self <= self zero and: [self unity / self <= self zero]
     ]
 
