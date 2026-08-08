@@ -231,11 +231,12 @@ class Interp(object):
         """
         Create a root MethodContext
         """
-        ctx             = self.alloc_mth_context()
-        ctx.parent      = self._nil()
-        ctx.receiver    = self._nil()
-        ctx.method      = CompiledMethod()
-        ctx.flags       = 4
+        ctx                     = self.alloc_mth_context()
+        ctx.parent              = self._nil()
+        ctx.receiver            = self._nil()
+        ctx.method              = CompiledMethod()
+        ctx.method.descriptor   = MethodInfo(self._nil())
+        ctx.flags               = 4
         return ctx
         
     def send_message(self, numArgs, isSuper, selObj):
@@ -291,6 +292,7 @@ class Interp(object):
             
         # if message is not found send doesNotUnderstand: to object
         if methObj.is_nil():
+            #raise SmalltalkException("%s not understood by %s" % (selObj, recvObj))
             methObj = self._does_not_understand(origKlass)
             numArgs = 1
             argList = (Message(selObj, Array.from_seq(argList)),)
