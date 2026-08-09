@@ -500,9 +500,9 @@ to speed them up a bit.'>
     negated [
 	"Answer the receiver's negated"
 
+	<primitive: VMpr_LargeInteger_negated>
 	<category: 'arithmetic'>
 	| newBytes carry a |
-	<primitive: VMpr_LargeInteger_negated>
 	newBytes := ByteArray new: self size + 1.
 	carry := 256.
 	1 to: self size
