@@ -91,6 +91,10 @@ class Smalltalk(object):
         self.k_number                   = None
         self.k_integer                  = None
         self.k_small_int                = None
+        self.k_large_int                = None
+        self.k_large_pos_int            = None
+        self.k_large_neg_int            = None
+        self.k_large_zero_int           = None
         self.k_fraction                 = None
         self.k_float                    = None
         self.k_float_d                  = None

@@ -1657,6 +1657,30 @@ class BlockClosure(Object):
     def __str__(self):
         return "BLOCK(" + str(self.block.method) + ")"
         
+
+class LargeInteger(ByteArray):
+    """
+    Internal representation of Smalltalk LargeInteger
+    """
+    
+    _Cover = None
+
+    @classmethod
+    def from_int(klass, x):
+        """
+        Create a LargeInteger from a python int
+        """
+        klass.from_seq(x.to_bytes())
+        
+    def to_int(self):
+        """
+        Return LargeInteger value as a python int
+        """
+        return int.from_bytes(self._refs)
+        
+    def __str__(self):
+        return "LARGEINT(" + str(self.to_int()) + ")"
+
         
 class Fraction(Object):
     """
