@@ -32,6 +32,7 @@
 				testArray;
 				testWeakArray;
 				testInteger;
+				testLargeInteger;
 				testObject;
 				testFloat;
 				testFloatD;
@@ -246,6 +247,12 @@
 		x isExact ifFalse: self failBlk.
 		1 / 4 * 2.
 		((24 gcd: 32) ~= 8) ifTrue: [self fail]
+	]
+	
+	testLargeInteger [
+		"Test LargeInteger types"
+		| x |
+		x := SmallInteger largest + 10
 	]
 	
 	testObject [

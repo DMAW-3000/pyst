@@ -1670,7 +1670,13 @@ class LargeInteger(ByteArray):
         """
         Create a LargeInteger from a python int
         """
-        klass.from_seq(x.to_bytes(byteorder = 'little'))
+        if x > 0:
+            obj = LargePositiveInteger.from_seq(x.to_bytes(byteorder = 'little'))
+        elif x < 0:
+            obj = LargeNegativeInteger.from_seq(x.to_bytes(byteorder = 'little'))
+        else:
+            obj = LargeZeroInteger()
+        return obj            
         
     def to_int(self):
         """
@@ -1680,6 +1686,34 @@ class LargeInteger(ByteArray):
         
     def __str__(self):
         return "LARGEINT(" + str(self.to_int()) + ")"
+        
+
+class LargePositiveInteger(LargeInteger):
+    """
+    Internal representation of Smalltalk LargePositiveInteger
+    """
+    
+    _Cover = None
+    
+    
+class LargeNegativeInteger(LargeInteger):
+    """
+    Internal representation of Smalltalk LargePositiveInteger
+    """
+    
+    _Cover = None
+    
+    
+class LargeZeroInteger(LargePositiveInteger):
+    """
+    Internal representation of Smalltalk LargePositiveInteger
+    """
+    
+    _Cover = None
+    
+    def __init__(self):
+        super().__init__(1)
+        self.make_readonly()
 
         
 class Fraction(Object):
