@@ -462,8 +462,7 @@ class Interp(object):
         ctx = self.i_context
         ip = ctx.ip
         code = ctx.method.get_code()
-        op = self.b_table[code[ip]]    
-        ctx.ip = ip + op(ctx, code[ip + 1])
+        self.b_table[code[ip]](ctx, code[ip + 1])
     
     def b_push_self(self, ctx, arg):
         """
@@ -471,7 +470,7 @@ class Interp(object):
         Push the current receiver onto the stack.
         """
         ctx.push(ctx.receiver)
-        return 2
+        ctx.ip += 2
         
     def b_push_lit_const(self, ctx, arg):
         """
@@ -486,7 +485,7 @@ class Interp(object):
             
         # return on stack
         ctx.push(lit)
-        return 2
+        ctx.ip += 2
         
     def b_push_lit_var(self, ctx, arg):
         """
@@ -515,6 +514,7 @@ class Interp(object):
                 if not var.is_nil():
                     # push variable to stack
                     ctx.push(var[1])
+                    ctx.ip += 2
                     return 2
             klassObj = klassObj.superClass
             
@@ -525,7 +525,7 @@ class Interp(object):
         
         # push variable to stack
         ctx.push(var[1])
-        return 2
+        ctx.ip += 2
         
     def b_push_temp_var(self, ctx, arg):
         """
@@ -533,7 +533,7 @@ class Interp(object):
         Push a method or block temporary variable onto the stack.
         """
         ctx.push(ctx[7 + arg])
-        return 2
+        ctx.ip += 2
         
     def b_push_outer_var(self, ctx, arg):
         """
@@ -551,7 +551,7 @@ class Interp(object):
 
         # return temp variable
         ctx.push(outer[7 + arg])
-        return 4
+        ctx.ip += 4
         
     def b_push_recv_var(self, ctx, arg):
         """
@@ -559,7 +559,7 @@ class Interp(object):
         Push the current receiver instance variable onto the stack.
         """
         ctx.push(ctx.receiver[arg])
-        return 2
+        ctx.ip += 2
         
     def b_push_int(self, ctx, arg):
         """
@@ -567,7 +567,7 @@ class Interp(object):
         Push a literal integer 0 - 255 onto the stack.
         """
         ctx.push(arg)
-        return 2
+        ctx.ip += 2
         
     def b_push_special(self, ctx, arg):
         """
@@ -575,7 +575,7 @@ class Interp(object):
         Push the current method or block context onto the stack.
         """
         ctx.push(ctx)
-        return 2
+        ctx.ip += 2
         
     def b_dup_top(self, ctx, arg):
         """
@@ -583,7 +583,7 @@ class Interp(object):
         Push the last stack value onto the stack again.
         """
         ctx.push(ctx[-1])
-        return 2
+        ctx.ip += 2
         
     def b_pop_top(self, ctx, arg):
         """
@@ -591,7 +591,7 @@ class Interp(object):
         Pop the last value from the stack and discard.
         """
         ctx.pop()
-        return 2
+        ctx.ip += 2
         
     def b_store_temp_var(self, ctx, arg):
         """
@@ -599,7 +599,7 @@ class Interp(object):
         Pop from the stack and store a method or block temporary variable.
         """
         ctx[7 + arg] = ctx.pop()
-        return 2
+        ctx.ip += 2
         
     def b_store_outer_var(self, ctx, arg):
         """
@@ -616,7 +616,7 @@ class Interp(object):
             level -= 1
         # store temp variable
         outer[7 + arg] = ctx.pop()
-        return 4
+        ctx.ip += 4
         
     def b_store_lit_var(self, ctx, arg):
         """
@@ -645,6 +645,7 @@ class Interp(object):
                 if not var.is_nil():
                     # pop variable from stack and store in dict assoc
                     var[1] = ctx.pop()
+                    ctx.ip += 2
                     return 2
             klassObj = klassObj.superClass
             
@@ -655,7 +656,7 @@ class Interp(object):
         
         # pop variable from stack and store in dict assoc
         var[1] = ctx.pop()
-        return 2
+        ctx.ip += 2
         
     def b_store_recv_var(self, ctx, arg):
         """
@@ -663,7 +664,7 @@ class Interp(object):
         Pop from the stack and store the current receiver instance variable.
         """
         ctx.receiver[arg] = ctx.pop()
-        return 2
+        ctx.ip += 2
 
     def b_send(self, ctx, arg):
         """
@@ -672,7 +673,7 @@ class Interp(object):
         context stack.  The reply is pushed onto the stack.
         """
         self.send_message(arg, False, None)
-        return 2
+        ctx.ip += 2
         
     def b_send_super(self, ctx, arg):
         """
@@ -681,7 +682,7 @@ class Interp(object):
         has setup the context stack.  The reply is pushed onto the stack.
         """
         self.send_message(arg, True, None)
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_value(self, ctx, arg):
         """
@@ -689,7 +690,7 @@ class Interp(object):
         Handles value unary messages.
         """
         self.send_message(arg, False, self._sel_value())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_size(self, ctx, arg):
         """
@@ -697,7 +698,7 @@ class Interp(object):
         Handles size unary messages.
         """
         self.send_message(arg, False, self._sel_size())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_isnil(self, ctx, arg):
         """
@@ -705,7 +706,7 @@ class Interp(object):
         Handles isNil unary messages.
         """
         self.send_message(arg, False, self._sel_isnil())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_notnil(self, ctx, arg):
         """
@@ -713,7 +714,7 @@ class Interp(object):
         Handle notNil unary messages.
         """
         self.send_message(arg, False, self._sel_notnil())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_class(self, ctx, arg):
         """
@@ -721,7 +722,7 @@ class Interp(object):
         Handles class unary messages.
         """
         self.send_message(arg, False, self._sel_class())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_at(self, ctx, arg):
         """
@@ -729,7 +730,7 @@ class Interp(object):
         Handles at: keyword messages.
         """
         self.send_message(arg, False, self._sel_at())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_at_put(self, ctx, arg):
         """
@@ -737,7 +738,7 @@ class Interp(object):
         Handles at:put: keyword messages.
         """
         self.send_message(arg, False, self._sel_at_put())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_value_colon(self, ctx, arg):
         """
@@ -745,7 +746,7 @@ class Interp(object):
         Handles value: keyword messages.
         """
         self.send_message(arg, False, self._sel_value_colon())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_plus(self, ctx, arg):
         """
@@ -753,7 +754,7 @@ class Interp(object):
         Handles + binary messages.
         """
         self.send_message(arg, False, self._sel_plus())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_minus(self, ctx, arg):
         """
@@ -761,7 +762,7 @@ class Interp(object):
         Handles - binary messages.
         """
         self.send_message(arg, False, self._sel_minus())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_less_than(self, ctx, arg):
         """
@@ -769,7 +770,7 @@ class Interp(object):
         Handles < binary messages.
         """
         self.send_message(arg, False, self._sel_less_than())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_greater_than(self, ctx, arg):
         """
@@ -777,7 +778,7 @@ class Interp(object):
         Handles > binary messages.
         """
         self.send_message(arg, False, self._sel_greater_than())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_less_equ(self, ctx, arg):
         """
@@ -785,7 +786,7 @@ class Interp(object):
         Handles <= binary messages.
         """
         self.send_message(arg, False, self._sel_less_equ())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_greater_equ(self, ctx, arg):
         """
@@ -793,7 +794,7 @@ class Interp(object):
         Handles >= binary messages.
         """
         self.send_message(arg, False, self._sel_greater_equ())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_equal(self, ctx, arg):
         """
@@ -801,7 +802,7 @@ class Interp(object):
         Handles = binary messages.
         """
         self.send_message(arg, False, self._sel_equal())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_not_equal(self, ctx, arg):
         """
@@ -809,7 +810,7 @@ class Interp(object):
         Handles ~= binary messages.
         """
         self.send_message(arg, False, self._sel_not_equal())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_times(self, ctx, arg):
         """
@@ -817,7 +818,7 @@ class Interp(object):
         Handles * binary messages.
         """
         self.send_message(arg, False, self._sel_times())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_divide(self, ctx, arg):
         """
@@ -825,7 +826,7 @@ class Interp(object):
         Handles / binary messages.
         """
         self.send_message(arg, False, self._sel_divide())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_int_divide(self, ctx, arg):
         """
@@ -833,7 +834,7 @@ class Interp(object):
         Handles // binary messages.
         """
         self.send_message(arg, False, self._sel_int_divide())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_remainder(self, ctx, arg):
         """
@@ -841,7 +842,7 @@ class Interp(object):
         Handles \\ binary messages.
         """
         self.send_message(arg, False, self._sel_remainder())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_identity(self, ctx, arg):
         """
@@ -849,7 +850,7 @@ class Interp(object):
         Handles == binary messages.
         """
         self.send_message(arg, False, self._sel_identity())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_bit_and(self, ctx, arg):
         """
@@ -857,7 +858,7 @@ class Interp(object):
         Handles bitAnd: keyword messages.
         """
         self.send_message(arg, False, self._sel_bit_and())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_bit_or(self, ctx, arg):
         """
@@ -865,7 +866,7 @@ class Interp(object):
         Handles bitOr: keyword messages.
         """
         self.send_message(arg, False, self._sel_bit_or())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_bit_xor(self, ctx, arg):
         """
@@ -873,7 +874,7 @@ class Interp(object):
         Handles bitXor: keyword messages.
         """
         self.send_message(arg, False, self._sel_bit_xor())
-        return 2
+        ctx.ip += 2
         
     def b_send_spec_bit_shift(self, ctx, arg):
         """
@@ -881,7 +882,7 @@ class Interp(object):
         Handles bitShift: keyword messages.
         """
         self.send_message(arg, False, self._sel_bit_shift())
-        return 2
+        ctx.ip += 2
         
     def b_meth_ret(self, ctx, arg):
         """
@@ -912,7 +913,6 @@ class Interp(object):
         
         # return control to sender
         self.i_context = newCtx
-        return 0
         
     def b_blk_ret(self, ctx, arg):
         """
@@ -930,7 +930,6 @@ class Interp(object):
 
         # return control to sender
         self.i_context = newCtx
-        return 0
 
     def p_Object_basicSize(self, ctx, recv, argList):
         """
