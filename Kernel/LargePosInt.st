@@ -43,9 +43,10 @@ precision arithmetic.'>
     + aNumber [
 	"Sum the receiver and aNumber, answer the result"
 
+	<primitive: VMpr_LargeInteger_plus>
 	<category: 'arithmetic'>
 	| newBytes carry a b result |
-	<primitive: VMpr_LargeInteger_plus>
+	
 	aNumber sign = 0 ifTrue: [^self].
 	aNumber sign = -1 ifTrue: [^self - aNumber negated].
 	aNumber generality = self generality 
@@ -69,9 +70,10 @@ precision arithmetic.'>
     - aNumber [
 	"Subtract aNumber from the receiver, answer the result"
 
+	<primitive: VMpr_LargeInteger_minus>
 	<category: 'arithmetic'>
 	| newBytes carry a b result |
-	<primitive: VMpr_LargeInteger_minus>
+	
 	aNumber sign = 0 ifTrue: [^self].
 	aNumber sign = -1 ifTrue: [^self + aNumber negated].
 	aNumber generality = self generality 
@@ -99,9 +101,10 @@ precision arithmetic.'>
 	 It was adapted to remove the variable `r' and to only work with
 	 unsigned numbers"
 
+	<primitive: VMpr_LargeInteger_gcd>
 	<category: 'arithmetic'>
 	| adjust t tmp u v |
-	<primitive: VMpr_LargeInteger_gcd>
+	
 	(self sign bitAnd: anInteger sign) = 0 ifTrue: [^self + anInteger].
 	u := self bytes.
 	v := anInteger abs.
