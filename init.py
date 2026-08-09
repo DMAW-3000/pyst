@@ -210,6 +210,7 @@ Init_Kernel_Mod = (
 Init_Class_Init = (
     "Object",
     "Character",
+    "LargeInteger",
     "Fraction",
     "FileDescriptor",
     "FileStream",
