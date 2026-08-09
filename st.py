@@ -1670,13 +1670,13 @@ class LargeInteger(ByteArray):
         """
         Create a LargeInteger from a python int
         """
-        klass.from_seq(x.to_bytes())
+        klass.from_seq(x.to_bytes(byteorder = 'little'))
         
     def to_int(self):
         """
         Return LargeInteger value as a python int
         """
-        return int.from_bytes(self._refs)
+        return int.from_bytes(self._refs, 'little', True)
         
     def __str__(self):
         return "LARGEINT(" + str(self.to_int()) + ")"
