@@ -390,14 +390,8 @@ class Interp(object):
         Allocate a new MethodContext for use
         """
         try:
-            # get free context from slab and reset state
-            ctx = self.i_slab_mth.pop()
-            if ctx.size > 7:
-                ctx.resize(7)
-                ctx.sp = 6
-            ctx.flags = 0
-            ctx.ip = 0
-            return ctx
+            # get free context from slab
+            return self.i_slab_mth.pop()
         except IndexError:
             # slab is empty, refill
             #print("MTH FILL")
@@ -408,7 +402,14 @@ class Interp(object):
     def free_mth_context(self, ctx):
         """
         Release an unused MethodContext
-        """   
+        """
+        # reset context state
+        if ctx.size > 7:
+            ctx.resize(7)
+            ctx.sp = 6
+        ctx.flags = 0
+        ctx.ip = 0
+            
         # return to slab
         self.i_slab_mth.append(ctx)
                     
@@ -417,13 +418,8 @@ class Interp(object):
         Allocate a new BlockContext for use
         """
         try:
-            # get free context from slab and reset state
-            ctx = self.i_slab_blk.pop()
-            if ctx.size > 7:
-                ctx.resize(7)
-                ctx.sp = 6
-            ctx.ip = 0
-            return ctx
+            # get free context from slab
+            return self.i_slab_blk.pop()
         except IndexError:
             # slab is empty, refill
             #print("BLK FILL")
@@ -435,6 +431,12 @@ class Interp(object):
         """
         Release an unused BlockContext
         """
+        # reset context state
+        if ctx.size > 7:
+            ctx.resize(7)
+            ctx.sp = 6
+        ctx.ip = 0
+        
         # return to slab
         self.i_slab_blk.append(ctx)
         
@@ -904,11 +906,12 @@ class Interp(object):
         # free context objects including any 
         # skipped over to get to outer context
         while not outCtx.is_same(ctx):
+            parent = ctx.parent
             if is_int(ctx[6]):
                 self.free_mth_context(ctx)
             else:
                 self.free_blk_context(ctx)
-            ctx = ctx.parent
+            ctx = parent
         self.free_mth_context(outCtx)
         
         # return control to sender
