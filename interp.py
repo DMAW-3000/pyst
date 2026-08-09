@@ -1618,6 +1618,38 @@ class Interp(object):
         ctx.push(hsh_scram(recv))
         return True
         
+    def p_LargePositiveInteger_basicNewColon(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger basicNew:
+        """
+        
+        sz = argList[0]
+        if is_int(sz):
+            ctx.push(LargePositiveInteger(sz))
+            return True
+        return False  
+        
+    def p_LargeNegativeInteger_basicNewColon(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger basicNew:
+        """
+        sz = argList[0]
+        if is_int(sz):
+            ctx.push(LargeNegativeInteger(sz))
+            return True
+        return False
+        
+    def p_LargeZeroInteger_basicNewColon(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger basicNew:
+        """
+        
+        sz = argList[0]
+        if is_int(sz):
+            ctx.push(LargeZeroInteger(sz))
+            return True
+        return False  
+        
     def p_Float_primHash(self, ctx, recv, argList):
         """
         Primitive handler for Float hash

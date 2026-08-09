@@ -252,7 +252,8 @@
 	testLargeInteger [
 		"Test LargeInteger types"
 		| x |
-		x := SmallInteger largest + 10
+		x := SmallInteger largest + 10.
+		x := SmallInteger largest negated - 10.
 	]
 	
 	testObject [

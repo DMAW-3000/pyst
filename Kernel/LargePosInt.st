@@ -40,6 +40,15 @@ during its calculations.  For example, I know that I am larger than any
 LargeNegativeInteger.  In addition I implement the guts of arbitrary
 precision arithmetic.'>
 
+	LargePositiveInteger class >> basicNew: nBytes [
+	"Create a new instance of a class.  An optimization so that the
+	integer''s bytes are stored in a bytearray."
+	
+	<primitive: VMpr_LargePositiveInteger_basicNewColon>
+    <category: 'builtin'>
+	WrongClass signalOn: nBytes mustBe: SmallInteger
+	]
+
     + aNumber [
 	"Sum the receiver and aNumber, answer the result"
 

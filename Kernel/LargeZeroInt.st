@@ -41,6 +41,15 @@ LargeIntegers, and so on. That only instance is stored in the class
 variable Zero, and is used in arithmetical methods, when we have to
 coerce a parameter that is zero.'>
 
+	LargeZeroInteger class >> basicNew: nBytes [
+	"Create a new instance of a class.  An optimization so that the
+	integer''s bytes are stored in a bytearray."
+	
+	<primitive: VMpr_LargeZeroInteger_basicNewColon>
+    <category: 'builtin'>
+	WrongClass signalOn: nBytes mustBe: SmallInteger
+	]
+
     size [
 	<category: 'accessing'>
 	^0

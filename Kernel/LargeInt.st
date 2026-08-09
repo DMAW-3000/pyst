@@ -28,10 +28,10 @@
 | 330, Boston, MA 02110-1301, USA.  
 |
  ======================================================================"
-
-
+ 
+ 
 Integer subclass: LargeInteger [
-    
+
     <category: 'Language-Data types'>
     <comment: '
 I represent a large integer, which has to be stored as a long sequence
@@ -45,7 +45,7 @@ to speed them up a bit.'>
     OneBytes := nil.
     LeadingZeros := nil.
     TrailingZeros := nil.
-
+	
     LargeInteger class >> new [
 	<category: 'private'>
 	self shouldNotImplement
@@ -535,9 +535,9 @@ to speed them up a bit.'>
     bitAnd: aNumber [
 	"Answer the receiver ANDed with aNumber"
 
+	<primitive: VMpr_LargeInteger_bitAnd>
 	<category: 'bit operations'>
 	| newBytes |
-	<primitive: VMpr_LargeInteger_bitAnd>
 	aNumber isInteger 
 	    ifFalse: [^"SystemExceptions." WrongClass signalOn: aNumber mustBe: Integer].
 	aNumber generality = self generality 
@@ -560,9 +560,10 @@ to speed them up a bit.'>
     bitInvert [
 	"Answer the receiver's 1's complement"
 
+	<primitive: VMpr_LargeInteger_bitInvert>
 	<category: 'bit operations'>
 	| bytes |
-	<primitive: VMpr_LargeInteger_bitInvert>
+	
 	bytes := ByteArray new: self size + 1.
 	bytes at: bytes size put: (self mostSignificantByte bitXor: 255).
 	1 to: self size
@@ -573,9 +574,10 @@ to speed them up a bit.'>
     bitOr: aNumber [
 	"Answer the receiver ORed with aNumber"
 
+	<primitive: VMpr_LargeInteger_bitOr>
 	<category: 'bit operations'>
 	| newBytes |
-	<primitive: VMpr_LargeInteger_bitOr>
+	
 	aNumber isInteger 
 	    ifFalse: [^"SystemExceptions." WrongClass signalOn: aNumber mustBe: Integer].
 	aNumber generality = self generality 
@@ -589,9 +591,10 @@ to speed them up a bit.'>
     bitXor: aNumber [
 	"Answer the receiver XORed with aNumber"
 
+	<primitive: VMpr_LargeInteger_bitXor>
 	<category: 'bit operations'>
 	| newBytes |
-	<primitive: VMpr_LargeInteger_bitXor>
+	
 	aNumber isInteger 
 	    ifFalse: [^"SystemExceptions." WrongClass signalOn: aNumber mustBe: Integer].
 	aNumber generality = self generality 
@@ -699,44 +702,44 @@ to speed them up a bit.'>
 	<category: 'coercion'>
 	^Zero
     ]
-
+	
     unity [
 	"Coerce 1 to the receiver's class"
-
+	
 	<category: 'coercion'>
 	^One
     ]
-
+	
     coerce: aNumber [
 	"Truncate the number; if needed, convert it to LargeInteger
 	 representation."
-
+	 
 	<category: 'coercion'>
 	aNumber = 0 ifTrue: [^Zero].
 	^aNumber isInteger 
 	    ifTrue: [self species fromInteger: aNumber]
 	    ifFalse: [self species fromInteger: aNumber truncated]
     ]
-
+	
     generality [
 	"Answer the receiver's generality"
-
+	
 	<category: 'coercion'>
 	^200
     ]
-
+	
     mostSignificantByte [
 	"Private - Answer the value of the most significant byte"
-
+	
 	<category: 'private'>
 	self subclassResponsibility
     ]
-
+	
     species [
 	<category: 'private'>
 	^LargeInteger
     ]
-
+	
     bytes [
 	<category: 'private'>
 	| bytes |
@@ -749,7 +752,7 @@ to speed them up a bit.'>
 	bytes at: bytes size put: self mostSignificantByte.
 	^bytes
     ]
-
+	
     setBytes: aByteArray [
 	<category: 'private'>
 	self 
@@ -759,7 +762,3 @@ to speed them up a bit.'>
 	    startingAt: 1
     ]
 ]
-
-
-
-
