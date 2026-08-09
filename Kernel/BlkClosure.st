@@ -160,7 +160,8 @@ creation of Processes from blocks.'>
 	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
 	reset: BlockClosure exceptionHandlerResetBlock>"
 	active := 0.
-	^self valueAndResumeOnUnwind
+	^self valueAndResumeOnUnwind: BlockClosure exceptionHandlerSearchBlock
+				resetBlk: BlockClosure exceptionHandlerResetBlock
     ]
 
     on: e1 do: b1 on: e2 do: b2 [
@@ -173,7 +174,8 @@ creation of Processes from blocks.'>
 	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
 	reset: BlockClosure exceptionHandlerResetBlock>"
 	active := 0.
-	^self valueAndResumeOnUnwind
+	^self valueAndResumeOnUnwind: BlockClosure exceptionHandlerSearchBlock
+				resetBlk: BlockClosure exceptionHandlerResetBlock
     ]
 
     on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 [
@@ -187,7 +189,8 @@ creation of Processes from blocks.'>
 	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
 	reset: BlockClosure exceptionHandlerResetBlock>"
 	active := 0.
-	^self valueAndResumeOnUnwind
+	^self valueAndResumeOnUnwind: BlockClosure exceptionHandlerSearchBlock
+				resetBlk: BlockClosure exceptionHandlerResetBlock
     ]
 
     on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 on: e4 do: b4 [
@@ -201,21 +204,8 @@ creation of Processes from blocks.'>
 	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
 	reset: BlockClosure exceptionHandlerResetBlock>"
 	active := 0.
-	^self valueAndResumeOnUnwind
-    ]
-
-    on: e1 do: b1 on: e2 do: b2 on: e3 do: b3 on: e4 do: b4 on: e5 do: b5 [
-	"Evaluate the receiver; when e1, e2, e3, e4 or e5 are signaled, evaluate
-	 respectively b1, b2, b3, b4 or b5, passing a Signal describing the exception.
-	 Answer either the result of evaluating the receiver or the parameter of a
-	 Signal>>#return:"
-
-	<category: 'exception handling'>
-	| active |
-	"<exceptionHandlerSearch: BlockClosure exceptionHandlerSearchBlock
-	reset: BlockClosure exceptionHandlerResetBlock>"
-	active := 0.
-	^self valueAndResumeOnUnwind
+	^self valueAndResumeOnUnwind: BlockClosure exceptionHandlerSearchBlock
+				resetBlk: BlockClosure exceptionHandlerResetBlock
     ]
 	
 	ifError: aBlock [
@@ -235,7 +225,8 @@ creation of Processes from blocks.'>
 
 	<category: 'unwind protection'>
 	| result |
-	result := self valueAndResumeOnUnwind.
+	result := self valueAndResumeOnUnwind BlockClosure exceptionHandlerSearchBlock
+						resetBlk: BlockClosure exceptionHandlerResetBlock.
 	aBlock value.
 	^result
     ]
@@ -502,7 +493,7 @@ creation of Processes from blocks.'>
         block method: aCompiledCode
     ]
 
-    valueAndResumeOnUnwind [
+    valueAndResumeOnUnwind: searchBlock resetBlk: rstBlock [
 	"Private - For use by #ensure:"
 
 	<category: 'private'>

@@ -303,6 +303,7 @@
 		(1 arcCos closeTo: 0.0) ifFalse: self failBlk.
 		(0.0 arcTan closeTo: 0.0) ifFalse: self failBlk.
 		x := -233.23.
+		x printString ~= '-233.23' ifTrue: self failBlk.
 		x negative ifFalse: self failBlk.
 		x positive ifTrue: self failBlk.
 		x strictlyPositive ifTrue: self failBlk.

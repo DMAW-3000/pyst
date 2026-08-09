@@ -1261,6 +1261,31 @@ class Interp(object):
         self.i_context = newCtx
         return True
         
+    def p_BlockClosure_valueAndResumeOnUnwind(self, ctx, recv, argList):
+        """
+        Primitive handler for BlockClosure valueAndResumeOnUnwind:
+        """
+        # get block info and verify number of args
+        blkObj = recv.block
+        numHdrArgs, numTemp, depth = blkObj.get_hdr()
+        if numHdrArgs != 0:
+            return False
+
+        # allocate a new context and link to old
+        newCtx              = self.alloc_blk_context()
+        newCtx.parent       = ctx
+        newCtx.receiver     = recv.receiver
+        newCtx.method       = blkObj
+        newCtx.outerContext = recv.outerContext
+                
+        # mske room for any temporary variables
+        if numTemp:
+            newCtx.expand(numTemp)
+
+        # transfer control to new context
+        self.i_context = newCtx
+        return True
+        
     def p_ContextPart_continue(self, ctx, recv, argList):
         """
         Primitive handler for ContextPart continue:

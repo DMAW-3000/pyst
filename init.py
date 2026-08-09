@@ -230,6 +230,7 @@ Init_Primitive = (
     "BlockClosure_value",
     "BlockClosure_cull",
     "BlockClosure_valueWithArguments",
+    "BlockClosure_valueAndResumeOnUnwind",
     "ContextPart_continue",
     "Behavior_basicNew",
     "Behavior_basicNewColon",
