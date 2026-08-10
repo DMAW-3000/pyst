@@ -266,7 +266,10 @@
 		x negative ifTrue: self failBlk.
 		x := x * 100 // 10.
 		x ~= 922337203685477580700 ifTrue: self failBlk.
-		x \\ 10 ~= 0 ifTrue: self failBlk 
+		x \\ 10 ~= 0 ifTrue: self failBlk .
+		(x > 1000 and: [x - 1 < x]) ifFalse: self failBlk.
+		(x >= 2 and: [x >= x]) ifFalse: self failBlk.
+		x = 922337203685477580700 ifFalse: self failBlk
 	]
 	
 	testObject [

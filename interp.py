@@ -1618,6 +1618,84 @@ class Interp(object):
         ctx.push(hsh_scram(recv))
         return True
         
+    def p_LargeInteger_lt(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger <
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            if recv.to_int() < send.to_int():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_LargeInteger_gt(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger >
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            if recv.to_int() > send.to_int():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_LargeInteger_le(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger <=
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            if recv.to_int() <= send.to_int():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_LargeInteger_ge(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger >=
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            if recv.to_int() >= send.to_int():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_LargeInteger_eq(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger =
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            if recv.to_int() == send.to_int():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_LargeInteger_ne(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger ~=
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            if recv.to_int() != send.to_int():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
     def p_LargeInteger_plus(self, ctx, recv, argList):
         """
         Primirive handler for LargeInteger +
