@@ -1693,7 +1693,7 @@ class LargePositiveInteger(LargeInteger):
         """
         Return LargeInteger value as a python int
         """
-        return int.from_bytes(self._refs, 'little')
+        return int.from_bytes(self._refs, 'little', signed = False)
     
     
 class LargeNegativeInteger(LargeInteger):
