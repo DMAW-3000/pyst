@@ -1640,6 +1640,53 @@ class Interp(object):
             return True
         return False
         
+    def p_LargeInteger_times(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger *
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() * send.to_int() 
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+        
+    def p_LargeInteger_intDiv(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger //
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() // send.to_int() 
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+        
+    def p_LargeInteger_modulo(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger \\
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() % send.to_int() 
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+       
+    def p_LargeInteger_negated(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger negated
+        """
+        ctx.push(LargeInteger.from_int(0 - recv.to_int()))
+        return True
+        
+    def p_LargeInteger_asFloatD(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger asFloatD
+        """
+        ctx.push(float(recv.to_int()))
+        return True
+        
     def p_LargePositiveInteger_basicNewColon(self, ctx, recv, argList):
         """
         Primirive handler for LargeInteger basicNew:

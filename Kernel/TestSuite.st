@@ -252,10 +252,21 @@
 	testLargeInteger [
 		"Test LargeInteger types"
 		| x |
+		x := 123454578652891329324 negated.
+		(x asFloat closeTo: -1.2345457865289133e20) ifFalse: self failBlk.
 		x := SmallInteger largest + 10.
 		x negative ifTrue: self failBlk.
+		x printString ~= '9223372036854775817' ifTrue: self failBlk.
 		x := SmallInteger largest negated - 10.
 		x negative ifFalse: self failBlk.
+		x := SmallInteger largest * 10.
+		x negative ifTrue: self failBlk.
+		x ~= 92233720368547758070 ifTrue: self failBlk.
+		x := SmallInteger largest negated * -10.
+		x negative ifTrue: self failBlk.
+		x := x * 100 // 10.
+		x ~= 922337203685477580700 ifTrue: self failBlk.
+		x \\ 10 ~= 0 ifTrue: self failBlk 
 	]
 	
 	testObject [
