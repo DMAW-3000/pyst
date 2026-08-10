@@ -227,13 +227,6 @@ to speed them up a bit.'>
 	self checkIndexableBounds: anIndex put: aNumber
     ]
 
-    asCNumber [
-	"Convert the receiver to a kind of number that is understood by
-	 the C call-out mechanism."
-	<category: 'coercion'>
-	^self
-    ]
-
     asObject [
 	"This method always fails. The number of OOPs is far less than
 	 the minimum number represented with a LargeInteger."
