@@ -371,10 +371,11 @@ to speed them up a bit.'>
 
     * aNumber [
 	"Multiply aNumber and the receiver, answer the result"
-
+	
+	<primitive: VMpr_LargeInteger_times>
 	<category: 'arithmetic'>
 	| result |
-	<primitive: VMpr_LargeInteger_times>
+	
 	aNumber sign = 0 ifTrue: [^0].
 	aNumber generality = self generality 
 	    ifFalse: [^self retryMultiplicationCoercing: aNumber].
