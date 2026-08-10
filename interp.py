@@ -1618,6 +1618,28 @@ class Interp(object):
         ctx.push(hsh_scram(recv))
         return True
         
+    def p_LargeInteger_plus(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger +
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() + send.to_int() 
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+
+    def p_LargeInteger_minus(self, ctx, recv, argList):
+        """
+        Primirive handler for LargeInteger -
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() - send.to_int() 
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+        
     def p_LargePositiveInteger_basicNewColon(self, ctx, recv, argList):
         """
         Primirive handler for LargeInteger basicNew:
@@ -2323,6 +2345,19 @@ class Interp(object):
                 return op(ctx, recv, argList)
             except OSError as ex:
                 return False
+        return False
+        
+    def _is_large_int(self, x):
+        """
+        Returns True if a descenent of LargeInteger, 
+        False otherwise.
+        """
+        if is_obj(x):
+            klass = x.get_class()
+            if (klass is self._sys.k_large_pos_int()) or \
+               (klass is self._sys.k_large_neg_int()) or \
+               (klass is self._sys.k_large_zero_int()):
+               return True
         return False
         
     def f_put_chars(self, ctx, recv, argList):

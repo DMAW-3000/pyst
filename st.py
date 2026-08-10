@@ -1671,16 +1671,12 @@ class LargeInteger(ByteArray):
         if abs(x) <= Int_Max:
             obj = x
         elif x > 0:
-            obj = LargePositiveInteger.from_seq(x.to_bytes(1, 'little'))
+            length = (x.bit_length() + 7) // 8
+            obj = LargePositiveInteger.from_seq(x.to_bytes(length, 'little'))
         else:
-            obj = LargeNegativeInteger.from_seq(x.to_bytes(1, 'little'))
-        return obj            
-        
-    def to_int(self):
-        """
-        Return LargeInteger value as a python int
-        """
-        return int.from_bytes(self._refs, 'little', signed = True)
+            length = (x.bit_length() + 8) // 8
+            obj = LargeNegativeInteger.from_seq(x.to_bytes(length, 'little', signed = True))
+        return obj
         
     def __str__(self):
         return "LARGEINT(" + str(self.to_int()) + ")"
@@ -1693,6 +1689,12 @@ class LargePositiveInteger(LargeInteger):
     
     _Cover = None
     
+    def to_int(self):
+        """
+        Return LargeInteger value as a python int
+        """
+        return int.from_bytes(self._refs, 'little')
+    
     
 class LargeNegativeInteger(LargeInteger):
     """
@@ -1700,6 +1702,12 @@ class LargeNegativeInteger(LargeInteger):
     """
     
     _Cover = None
+    
+    def to_int(self):
+        """
+        Return LargeInteger value as a python int
+        """
+        return int.from_bytes(self._refs, 'little', signed = True)
     
     
 class LargeZeroInteger(LargePositiveInteger):

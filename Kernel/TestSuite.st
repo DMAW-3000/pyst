@@ -253,7 +253,9 @@
 		"Test LargeInteger types"
 		| x |
 		x := SmallInteger largest + 10.
+		x negative ifTrue: self failBlk.
 		x := SmallInteger largest negated - 10.
+		x negative ifFalse: self failBlk.
 	]
 	
 	testObject [

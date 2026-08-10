@@ -266,6 +266,8 @@ Init_Primitive = (
     "SmallInteger_bitShift",
     "SmallInteger_asFloatD",
     "SmallInteger_scramble",
+    "LargeInteger_plus",
+    "LargeInteger_minus",
     "LargePositiveInteger_basicNewColon",
     "LargeNegativeInteger_basicNewColon",
     "LargeZeroInteger_basicNewColon",
