@@ -752,14 +752,17 @@ class Compile(object):
             else:
                 self.compile_push_var(x)
                     
-        # small integer
+        # integers
         elif isinstance(x, int):
             if abs(x) > Int_Max:
-                raise CompileError("integer value %d too large" % x)
-            # optimize with push direct if value is small enough
-            if (x >= 0) and (x < 256):
+                # LargeInteger required
+                idx = self.add_literal(LargeInteger.from_int(x))
+                self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
+            elif (x >= 0) and (x < 256):
+                # optimize with push direct if value is small enough
                 self.emit_bytes(1, B_PUSH_INTEGER, x)
             else:
+                # regular SmallInteger
                 idx = self.add_literal(x)
                 self.emit_bytes(1, B_PUSH_LIT_CONSTANT, idx)
             
