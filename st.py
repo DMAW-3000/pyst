@@ -1662,8 +1662,6 @@ class LargeInteger(ByteArray):
     """
     Internal representation of Smalltalk LargeInteger
     """
-    
-    _Cover = None
 
     @classmethod
     def from_int(klass, x):

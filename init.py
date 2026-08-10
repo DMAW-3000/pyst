@@ -77,7 +77,7 @@ Init_Class = (
     ("Number", False, "number", "magnitude", True, (), (), ()),
     ("Integer", False, "integer", "number", True, (), (), ("PySymbols",)),
     ("SmallInteger", False, "small_int", "integer", True, (), (), ()),
-    ("LargeInteger", True, "large_int", "integer", False, (), ("Zero", "One", "ZeroBytes", "OneBytes", "LeadingZeros", "TrailingZeros"), ()),
+    ("LargeInteger", False, "large_int", "integer", False, (), ("Zero", "One", "ZeroBytes", "OneBytes", "LeadingZeros", "TrailingZeros"), ()),
     ("LargePositiveInteger", True, "large_pos_int", "large_int", False, (), (), ()),
     ("LargeNegativeInteger", True, "large_neg_int", "large_int", False, (), (), ()),
     ("LargeZeroInteger", True, "large_zero_int", "large_pos_int", False, (), (), ()),
