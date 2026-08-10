@@ -163,7 +163,7 @@ to speed them up a bit.'>
 	"Answer an hash value for the receiver"
 
 	<category: 'built-ins'>
-	<primitive: VMpr_String_hash>
+	<primitive: VMpr_LargeInteger_hash>
 	^0
     ]
 
@@ -429,9 +429,9 @@ to speed them up a bit.'>
 	"Divide aNumber and the receiver, answer the result truncated
 	 towards 0"
 
+	<primitive: VMpr_LargeInteger_quo>
 	<category: 'arithmetic'>
 	| result |
-	<primitive: VMpr_LargeInteger_quo>
 	aNumber sign = 0 ifTrue: [^self zeroDivide].
 	self sign = 0 ifTrue: [^self].
 	aNumber generality = self generality 
@@ -445,9 +445,9 @@ to speed them up a bit.'>
 	"Dividing receiver by arg assuming that the remainder is zero, and answer
 	 the result"
 
+	<primitive: VMpr_LargeInteger_divExact>
 	<category: 'arithmetic'>
 	| result |
-	<primitive: VMpr_LargeInteger_divExact>
 	aNumber sign = 0 
 	    ifTrue: 
 		["Same as quo:, not worthwhile to implement it in Smalltalk."
@@ -557,7 +557,6 @@ to speed them up a bit.'>
 	<primitive: VMpr_LargeInteger_bitInvert>
 	<category: 'bit operations'>
 	| bytes |
-	
 	bytes := ByteArray new: self size + 1.
 	bytes at: bytes size put: (self mostSignificantByte bitXor: 255).
 	1 to: self size
@@ -571,7 +570,6 @@ to speed them up a bit.'>
 	<primitive: VMpr_LargeInteger_bitOr>
 	<category: 'bit operations'>
 	| newBytes |
-	
 	aNumber isInteger 
 	    ifFalse: [^"SystemExceptions." WrongClass signalOn: aNumber mustBe: Integer].
 	aNumber generality = self generality 
@@ -588,7 +586,6 @@ to speed them up a bit.'>
 	<primitive: VMpr_LargeInteger_bitXor>
 	<category: 'bit operations'>
 	| newBytes |
-	
 	aNumber isInteger 
 	    ifFalse: [^"SystemExceptions." WrongClass signalOn: aNumber mustBe: Integer].
 	aNumber generality = self generality 
