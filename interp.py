@@ -1758,11 +1758,72 @@ class Interp(object):
         ctx.push(LargeInteger.from_int(0 - recv.to_int()))
         return True
         
+    def p_LargeInteger_bitAnd(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger bitAnd:
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() & send.to_int()
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+        
+    def p_LargeInteger_bitOr(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger bitOr:
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() | send.to_int()
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+        
+    def p_LargeInteger_bitXor(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger bitXor:
+        """
+        send = argList[0]
+        if self._is_large_int(send):
+            x = recv.to_int() ^ send.to_int()
+            ctx.push(LargeInteger.from_int(x))
+            return True
+        return False
+        
+    def p_LargeInteger_bitShift(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger bitShift:
+        """
+        send = argList[0]
+        if is_int(send):
+            if send <= 0:
+                x = recv >> abs(send)
+            else:
+                x = recv << send
+            ctx.push(x)
+            return True
+        return False
+        
+    def p_LargeInteger_bitInvert(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger bitInvert
+        """
+        ctx.push(LargeInteger.from_int(~recv.to_int()))
+        return True
+        
     def p_LargeInteger_asFloatD(self, ctx, recv, argList):
         """
         Primirive handler for LargeInteger asFloatD
         """
         ctx.push(float(recv.to_int()))
+        return True
+        
+    def p_LargeInteger_hash(self, ctx, recv, argList):
+        """
+        Primitive handler for LargeInteger hash
+        """
+        ctx.push(hsh_seq(recv))
         return True
         
     def p_LargePositiveInteger_basicNewColon(self, ctx, recv, argList):

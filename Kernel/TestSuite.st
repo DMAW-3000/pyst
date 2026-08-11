@@ -253,6 +253,7 @@
 		"Test LargeInteger types"
 		| x |
 		x := 123454578652891329324 negated.
+		x hash ~= 2375325300 ifTrue: self failBlk.
 		(x asFloat closeTo: -1.2345457865289133e20) ifFalse: self failBlk.
 		x := SmallInteger largest + 10.
 		x negative ifTrue: self failBlk.
@@ -269,7 +270,12 @@
 		x \\ 10 ~= 0 ifTrue: self failBlk .
 		(x > 1000 and: [x - 1 < x]) ifFalse: self failBlk.
 		(x >= 2 and: [x >= x]) ifFalse: self failBlk.
-		x = 922337203685477580700 ifFalse: self failBlk
+		x = 922337203685477580700 ifFalse: self failBlk.
+		(x bitAnd: 1) ~= 0 ifTrue: self failBlk.
+		(x bitOr: 1) ~= 922337203685477580701 ifTrue: self failBlk.
+		(x bitXor: 1) ~= 922337203685477580701 ifTrue: self failBlk.
+		(x bitShift: -1) ~= (922337203685477580700 // 2) ifTrue: self failBlk.
+		(x bitShift: 1) ~= (922337203685477580700 * 2) ifTrue: self failBlk
 	]
 	
 	testObject [
