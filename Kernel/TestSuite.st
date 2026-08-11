@@ -370,7 +370,10 @@
 		(0.0 = 0.0 and: [x ~= 0.0]) ifFalse: self failBlk.
 		Float e + 10.23 - 3.4d-5 * 5.74d3 / 8.43d9.
 		FloatD fmax / 20.0d20 * 100000.0 * FloatD fminNormalized.
-		FloatD nan; emax; emin; precision; decimalDigits.
+		FloatD nan; decimalDigits.
+		FloatD precision ~= 53 ifTrue: self failBlk.
+		FloatD emin ~= -1022 ifTrue: self failBlk.
+		FloatD emax ~= 1023 ifTrue: self failBlk.
 		1.0d200 * 1.0d200 ~= FloatD infinity ifTrue: self failBlk.
 		-1.0d200 * 1.0d200 ~= FloatD negativeInfinity ifTrue: self failBlk.
 		FloatD infinity printString ~= 'Inf' ifTrue: self failBlk.
@@ -388,7 +391,10 @@
 		x asBytes size ~= 4 ifTrue: self failBlk.
 		FloatE signByte ~= 1 ifTrue: self failBlk.
 		FloatE fromBytes: (ByteArray new: 4).
-		FloatE infinity; negativeInfinity; nan; emax; emin; precision; decimalDigits
+		FloatE infinity; negativeInfinity; nan; decimalDigits.
+		FloatE emin ~= -126 ifTrue: self failBlk.
+		FloatE emax ~= 127 ifTrue: self failBlk.
+		FloatE precision ~= 24 ifTrue: self failBlk
 	]
 	
 	testFloatQ [
