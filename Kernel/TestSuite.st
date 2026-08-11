@@ -127,6 +127,8 @@
 	
 	testClass [
 		"Test class behavior"
+		(Character indexOfInstVar: 'codePoint') ~= 1 ifTrue: self failBlk.
+		(Character allInstVarNames at: 1) ~= 'codePoint' ifTrue: self failBlk.
 		('hello' respondsTo: #indexOf:startingAt:) ifFalse: self failBlk.
 		(Object lookupSelector: #isString) notNil ifFalse: self failBlk.
 		(Object >> #isString isMemberOf: CompiledMethod) ifFalse: self failBlk.
