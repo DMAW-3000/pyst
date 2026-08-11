@@ -1798,10 +1798,10 @@ class Interp(object):
         send = argList[0]
         if is_int(send):
             if send <= 0:
-                x = recv >> abs(send)
+                x = recv.to_int() >> abs(send)
             else:
-                x = recv << send
-            ctx.push(x)
+                x = recv.to_int() << send
+            ctx.push(LargeInteger.from_int(x))
             return True
         return False
         

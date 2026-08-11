@@ -281,6 +281,8 @@ Init_Primitive = (
     "LargeInteger_bitAnd",
     "LargeInteger_bitOr",
     "LargeInteger_bitXor",
+    "LargeInteger_bitShift",
+    "LargeInteger_bitInvert",
     "LargeInteger_asFloatD",
     "LargeInteger_hash",
     "LargePositiveInteger_basicNewColon",
