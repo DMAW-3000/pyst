@@ -39,17 +39,17 @@ def t_CHARACTER(t):
     return t
     
 def t_SINGNUMBER(t):
-    r'-?\d+\.\d+(e-?\d+)?f'
+    r'-?\d+\.\d+(e[+-]?\d+)?f'
     t.value = float(t.value.rstrip('f'))
     return t
     
 def t_QUADNUMBER(t):
-    r'-?\d+\.\d+(e-?\d+)?q'
+    r'-?\d+\.\d+(e[+-]?\d+)?q'
     t.value = float(t.value.rstrip('q'))
     return t
 
 def t_FLTNUMBER(t):
-    r'-?\d+\.\d+(e-?\d+)?d?'
+    r'-?\d+\.\d+(e[+-]?\d+)?d?'
     t.value = float(t.value.rstrip('d'))
     return t
     
