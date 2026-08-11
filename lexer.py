@@ -9,10 +9,10 @@ states = ( ('dstring', 'exclusive'),
 
 tokens = [
     'CHARACTER',
-    'BASENUMBER',
     'SINGNUMBER',
     'QUADNUMBER',
     'FLTNUMBER',
+    'BASENUMBER',
     'DECNUMBER',
     'DSTRING',
     'SSTRING',
@@ -37,13 +37,6 @@ def t_CHARACTER(t):
     r'\$(\S|\x20)'
     t.value = t.value[1]
     return t
-
-def t_BASENUMBER(t):
-    r'\d+r[\dA-F]+'
-    tstr = t.value.split('r')
-    base = int(tstr[0])
-    t.value = int(tstr[1], base)
-    return t
     
 def t_SINGNUMBER(t):
     r'-?\d+\.\d+(e-?\d+)?f'
@@ -58,6 +51,13 @@ def t_QUADNUMBER(t):
 def t_FLTNUMBER(t):
     r'-?\d+\.\d+(e-?\d+)?d?'
     t.value = float(t.value.rstrip('d'))
+    return t
+    
+def t_BASENUMBER(t):
+    r'\d+r[\dA-F]+'
+    tstr = t.value.split('r')
+    base = int(tstr[0])
+    t.value = int(tstr[1], base)
     return t
 
 def t_DECNUMBER(t):
