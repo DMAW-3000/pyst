@@ -601,8 +601,8 @@ to speed them up a bit.'>
 
 	<category: 'bit operations'>
 	<primitive: VMpr_LargeInteger_bitShift>
-	aNumber isInteger 
-	    ifFalse: [^"SystemExceptions." WrongClass signalOn: aNumber mustBe: Integer].
+	aNumber isSmallInteger 
+	    ifFalse: [^"SystemExceptions." WrongClass signalOn: aNumber mustBe: SmallInteger].
 	^aNumber > 0 
 	    ifTrue: [self basicLeftShift: aNumber]
 	    ifFalse: [self basicRightShift: aNumber negated]
