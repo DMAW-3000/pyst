@@ -46,6 +46,7 @@ class Smalltalk(object):
         self.k_invalid_arg              = None
         self.k_arg_range                = None
         self.k_index_range              = None
+        self.k_not_found                = None
         self.k_zero_divide              = None
         self.k_primitive_fail           = None
         self.k_wrong_arg_count          = None
