@@ -254,7 +254,7 @@
 		| x |
 		x := 123454578652891329324 negated.
 		x hash ~= 2375325300 ifTrue: self failBlk.
-		(x asFloat closeTo: -1.2345457865289133e20) ifFalse: self failBlk.
+		(x asFloat closeTo: -1.2345457865289133d20) ifFalse: self failBlk.
 		x := SmallInteger largest + 10.
 		x negative ifTrue: self failBlk.
 		x printString ~= '9223372036854775817' ifTrue: self failBlk.
@@ -357,7 +357,7 @@
 		| x |
 		(FloatD fromBytes: (ByteArray new: 8)) ~= 0.0 ifTrue: self failBlk.
 		FloatD signByte ~= 1 ifTrue: self failBlk.
-		x := 12.4e0d.
+		x := 12.4d0.
 		x asBytes size ~= 8 ifTrue: self failBlk.
 		x exponent ~= 4 ifTrue: self failBlk.
 		(x fractionPart closeTo: 0.4) ifFalse: self failBlk.
@@ -368,17 +368,20 @@
 		(x < 3043.24 and: [432.423 > x]) ifFalse: self failBlk.
 		(x <= 12.4 and: [x >= 0.332]) ifFalse: self failBlk.
 		(0.0 = 0.0 and: [x ~= 0.0]) ifFalse: self failBlk.
-		Float e + 10.23 - 3.4e-5 * 5.74e3 / 8.43e9.
-		FloatD fmax / 20.0e20 * 100000.0 * FloatD fminNormalized.
+		Float e + 10.23 - 3.4d-5 * 5.74d3 / 8.43d9.
+		FloatD fmax / 20.0d20 * 100000.0 * FloatD fminNormalized.
 		FloatD nan; emax; emin; precision; decimalDigits.
-		1.0e200 * 1.0e200 ~= FloatD infinity ifTrue: self failBlk.
-		-1.0e200 * 1.0e200 ~= FloatD negativeInfinity ifTrue: self failBlk
+		1.0d200 * 1.0d200 ~= FloatD infinity ifTrue: self failBlk.
+		-1.0d200 * 1.0d200 ~= FloatD negativeInfinity ifTrue: self failBlk.
+		FloatD infinity printString ~= 'Inf' ifTrue: self failBlk.
+		FloatD negativeInfinity printString ~= '-Inf' ifTrue: self failBlk.
+		FloatD nan printString ~= 'NaN' ifTrue: self failBlk
 	]
 	
 	testFloatE [
 		"Test single precision floating point types"
 		| x |
-		x := 3.53e-2f.
+		x := 3.53e-2.
 		FloatE fmax; fminNormalized.
 		x fractionPart.
 		x exponent ~= 122 ifTrue: self failBlk.
@@ -391,7 +394,7 @@
 	testFloatQ [
 		"Test quad precision floating point types"
 		| x |
-		x := 3.5347301894e20q
+		x := 3.5347301894q20
 	]
 	
 	testIterable [

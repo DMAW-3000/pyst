@@ -359,6 +359,10 @@ class Compile(object):
                 stmtText = ""
             elif tok.type == "SYMBOL":
                 stmtText = "#" + tok.value
+            elif tok.type == "FLTNUMBER":
+                stmtText = str(tok.value).replace('e', 'd')
+            elif tok.type == "QUADNUMBER":
+                stmtText = str(tok.value).replace('e', 'q')
             else:
                 stmtText = str(tok.value)
             if (tok.type == "LBRACK") or (tok.type == "LBYTEARRAY"):

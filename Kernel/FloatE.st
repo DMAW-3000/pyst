@@ -48,7 +48,7 @@ accuracy as C''s "float" numbers.'>
 
 	<category: 'byte-order dependancies'>
 	| n k |
-	n := -2.0f asBytes.
+	n := -2.0e0 asBytes.
 	1 to: n size do: [:i | (n at: i) >= 128 ifTrue: [k := i]].
 	^k
     ]
@@ -66,7 +66,7 @@ accuracy as C''s "float" numbers.'>
 	"Returns the value of e. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^2.718282f
+	^2.718282e0
     ]
 
     FloatE class >> precision [
@@ -80,14 +80,14 @@ accuracy as C''s "float" numbers.'>
 	"Return the smallest normalized FloatE that is > 0"
 
 	<category: 'characterization'>
-	^1.18e-38f
+	^1.18e-38
     ]
 
     FloatE class >> fmax [
 	"Return the largest normalized FloatE that is not infinite."
 
 	<category: 'characterization'>
-	^3.402823e38f
+	^3.402823e38
     ]
 
     FloatE class >> emax [
@@ -120,14 +120,14 @@ accuracy as C''s "float" numbers.'>
 	"Returns the value of log2 10. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^3.321928f
+	^3.321928e0
     ]
 
     FloatE class >> ln10 [
 	"Returns the value of ln 10. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^2.302585f
+	^2.302585e0
     ]
 
     FloatE class >> infinity [
@@ -156,7 +156,7 @@ accuracy as C''s "float" numbers.'>
 	"Returns the value of pi. Hope is that it is precise enough"
 
 	<category: 'characterization'>
-	^3.141593f
+	^3.141593e0
     ]
 	
 	asBytes [
@@ -170,21 +170,21 @@ accuracy as C''s "float" numbers.'>
 	"Coerce 0 to the receiver's class"
 
 	<category: 'coercing'>
-	^0.0f
+	^0.0e0
     ]
 
     half [
         "Coerce 0.5 to the receiver's class"
 
         <category: 'converting'>
-	^0.5f
+	^0.5e0
     ]
 
     unity [
 	"Coerce 1 to the receiver's class"
 
 	<category: 'coercing'>
-	^1.0f
+	^1.0e0
     ]
 
     coerce: aNumber [
@@ -212,14 +212,14 @@ accuracy as C''s "float" numbers.'>
 	"Private - Return 10, converted to the receiver's class."
 
 	<category: 'private'>
-	^10.0f
+	^10.0e0
     ]
 
     exponentLetter [
 	"Private - Return the letter to be printed just before the exponent"
 
 	<category: 'private'>
-	^$f
+	^$e
     ]
 
     + arg [
