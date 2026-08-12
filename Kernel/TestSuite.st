@@ -44,6 +44,7 @@
 				testString;
 				testSymbol;
 				testOrdCollection;
+				testSortCollection;
 				testSet;
 				testDictionary;
 				testLookupTable;
@@ -504,6 +505,22 @@
 		c size ~= 2 ifTrue: self failBlk.
 		c addAll: #(3 4 5 6 6 8 9 2 3 2 3).
 		c size ~= 13 ifTrue: self failBlk
+	]
+	
+	testSortCollection [
+		"Test SortedCollection"
+		| c |
+		c := SortedCollection new.
+		c size ~= 0 ifTrue: self failBlk.
+		c := #(2 4 1 0 4 9 3) asSortedCollection.
+		(c at: 1) ~= 0 ifTrue: self failBlk.
+		(c at: 2) ~= 1 ifTrue: self failBlk.
+		c last ~= 9 ifTrue: self failBlk.
+		(c occurrencesOf: 4) ~= 2 ifTrue: self failBlk.
+		(c includes: 1) ifFalse: self failBlk.
+		(c includes: 10) ifTrue: self failBlk.
+		c := #(4 2 0) sorted.
+		c ~= #(0 2 4) ifFalse: self failBlk
 	]
 	
 	testSet [
