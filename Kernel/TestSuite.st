@@ -494,7 +494,16 @@
 		c last ~= 4 ifTrue: self failBlk.
 		c size ~= 2 ifTrue: self failBlk.
 		c add: 1 before: 3.
-		c first ~= 1 ifTrue: self failBlk
+		c first ~= 1 ifTrue: self failBlk.
+		c addFirst: 0.
+		c first ~= 0 ifTrue: self failBlk.
+		c removeLast.
+		c last ~= 3 ifTrue: self failBlk.
+		(c indexOf: 1) ~= 2 ifTrue: self failBlk.
+		c removeFirst.
+		c size ~= 2 ifTrue: self failBlk.
+		c addAll: #(3 4 5 6 6 8 9 2 3 2 3).
+		c size ~= 13 ifTrue: self failBlk
 	]
 	
 	testSet [
