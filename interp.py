@@ -2308,11 +2308,13 @@ class Interp(object):
         replaceArr      = argList[2]
         replaceStart    = argList[3]
         if is_int(start) and is_int(stop) and is_int(replaceStart) and \
-                (start > 0) and (replaceStart > 0):
+                (start > 0) and (replaceStart > 0) and is_obj(replaceArr):
             n = stop - start + 1
+            start += recv.get_class().get_num_inst() - 2
+            replaceStart += replaceArr.get_class().get_num_inst() - 2
             try:
                 while n > 0:
-                    recv[start + n - 2] = replaceArr[replaceStart + n - 2]
+                    recv[start + n] = replaceArr[replaceStart + n]
                     n -= 1
             except IndexError:
                 return False
@@ -2328,8 +2330,9 @@ class Interp(object):
         start   = argList[1]
         if is_int(start) and (start > 0):
             stop = recv.size
+            numRecv = recv.get_class().get_num_inst()
             while start <= stop:
-                if recv[start - 1].is_same(item):
+                if recv[numRecv + start - 1].is_same(item):
                     break
                 start += 1
             if start > stop:
@@ -2426,12 +2429,14 @@ class Interp(object):
            (start > 0) and (replaceStart > 0) and \
            is_obj(replaceArr) and (replaceArr.get_class() is self._sys.k_string()):
                 n = stop - start + 1
+                start -= 2
+                replaceStart -= 2 
                 try:
                     while n > 0:
-                        c = replaceArr[replaceStart + n - 2]
+                        c = replaceArr[replaceStart + n]
                         if c.is_nil():
                             return False
-                        recv[start + n - 2] = c[0]
+                        recv[start + n] = c[0]
                         n -= 1
                 except IndexError:
                     return False
@@ -2480,9 +2485,11 @@ class Interp(object):
            (start > 0) and (replaceStart > 0) and \
            is_obj(replaceArr) and (replaceArr.get_class() is self._sys.k_bytearray()):
                 n = stop - start + 1
+                start -= 2
+                replaceStart -= 2
                 try:
                     while n > 0:
-                        recv[start + n - 2] = self._sys.o_char[replaceArr[replaceStart + n - 2]]
+                        recv[start + n] = self._sys.o_char[replaceArr[replaceStart + n]]
                         n -= 1
                 except IndexError:
                     return False
