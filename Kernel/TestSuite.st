@@ -43,6 +43,7 @@
 				testCharArray;
 				testString;
 				testSymbol;
+				testOrdCollection;
 				testSet;
 				testDictionary;
 				testLookupTable;
@@ -334,6 +335,9 @@
 		(0.0 arcCos closeTo: x) ifFalse: self failBlk.
 		(1 arcCos closeTo: 0.0) ifFalse: self failBlk.
 		(0.0 arcTan closeTo: 0.0) ifFalse: self failBlk.
+		(0.0 sinh closeTo: 0.0) ifFalse: self failBlk.
+		(0.0 cosh closeTo: 1.0) ifFalse: self failBlk.
+		(0.0 tanh closeTo: 0.0) ifFalse: self failBlk.
 		x := -233.23.
 		x printString ~= '-233.23' ifTrue: self failBlk.
 		x negative ifFalse: self failBlk.
@@ -479,6 +483,18 @@
 		s ~~ #testSymbol ifTrue: self failBlk.
 		s numArgs ~= 0 ifTrue: self failBlk.
 		s hash = 'testSymbol' hash ifTrue: self failBlk
+	]
+	
+	testOrdCollection [
+		"Test OrderedCollection"
+		| c |
+		c := OrderedCollection new.
+		c add: 3; add: 4.
+		c first ~= 3 ifTrue: self failBlk.
+		c last ~= 4 ifTrue: self failBlk.
+		c size ~= 2 ifTrue: self failBlk.
+		c add: 1 before: 3.
+		c first ~= 1 ifTrue: self failBlk
 	]
 	
 	testSet [
