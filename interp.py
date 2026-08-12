@@ -1871,8 +1871,7 @@ class Interp(object):
         """
         Primitive handler for Float exp
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.exp(recv))
@@ -1883,8 +1882,7 @@ class Interp(object):
         """
         Primitive handler for Float ln
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.log(recv))
@@ -1895,8 +1893,7 @@ class Interp(object):
         """
         Primitive handler for Float sqrt
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.sqrt(recv))
@@ -1908,7 +1905,11 @@ class Interp(object):
         Primitive handler for Float raisedTo:
         """
         send = argList[0]
-        if is_flt(recv) and is_flt(send):
+        if self._is_flt_type(recv) and self._is_flt_type(send):
+            if is_obj(recv):
+                recv = recv.to_flt()
+            if is_obj(send):
+                send = send.to_flt()
             ctx.push(math.pow(recv, send))
             return True
         return False
@@ -1917,8 +1918,7 @@ class Interp(object):
         """
         Primitive handler for Float ceiling
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.ceil(recv))
@@ -1929,8 +1929,7 @@ class Interp(object):
         """
         Primitive handler for Float ceiling
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.floor(recv))
@@ -1941,8 +1940,7 @@ class Interp(object):
         """
         Primitive handler for Float sin
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.sin(recv))
@@ -1953,8 +1951,7 @@ class Interp(object):
         """
         Primitive handler for Float cos
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.cos(recv))
@@ -1965,8 +1962,7 @@ class Interp(object):
         """
         Primitive handler for Float tan
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.tan(recv))
@@ -1977,8 +1973,7 @@ class Interp(object):
         """
         Primitive handler for Float arcSin
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             try:
@@ -1993,8 +1988,7 @@ class Interp(object):
         """
         Primitive handler for Float arcCos
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             try:
@@ -2009,8 +2003,7 @@ class Interp(object):
         """
         Primitive handler for Float arcTan
         """
-        if is_flt(recv) or \
-          (is_obj(recv) and (obj.get_class() == self._sys.k_float_e())):
+        if self._is_flt_type(recv):
             if is_obj(recv):
                 recv = recv.to_flt()
             ctx.push(math.atan(recv))
@@ -2503,7 +2496,9 @@ class Interp(object):
         """
         stop = recv.size
         arr = bytearray(stop)
-        self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, stop, recv, 1))
+        status = self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, stop, recv, 1))
+        if not status:
+            return status
         ctx.pop()
         ctx.push(hsh_seq(arr))
         return True
@@ -2551,6 +2546,18 @@ class Interp(object):
                (klass is self._sys.k_large_neg_int()) or \
                (klass is self._sys.k_large_zero_int()):
                return True
+        return False
+        
+    def _is_flt_type(self, x):
+        """
+        Returns True if a descenent of Float, 
+        False otherwise.
+        """
+        if is_flt(x):
+            return True
+        if is_obj(x):
+            if x.get_class() is self._sys.k_float_e():
+                return True
         return False
         
     def f_put_chars(self, ctx, recv, argList):
