@@ -730,11 +730,11 @@ implicit type coercing code for binary operations.'>
 
 		^self generality < x generality 
 		    ifTrue: 
-			[x generality < 0.0e generality 
+			[x generality < 0.0e0 generality 
 			    ifTrue: [FloatD pi * self sign / 2]
 			    ifFalse: [x class pi * self sign / 2]]
 		    ifFalse: 
-			[self generality < 0.0e generality 
+			[self generality < 0.0e0 generality 
 			    ifTrue: [FloatD pi * self sign / 2]
 			    ifFalse: [self class pi * self sign / 2]]].
 	result := (self / x) arcTan.
