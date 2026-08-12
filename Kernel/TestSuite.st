@@ -230,6 +230,7 @@
 	testInteger [
 		"Test integer types"
 		| x y z |
+		'-1234' asInteger ~= -1234 ifTrue: self failBlk.
 		(1240 printString ~= '1240') ifTrue: self failBlk.
 		5 hash ~= 5 ifTrue: self failBlk.
 		5 scramble ~= 3423425485 ifTrue: self failBlk.
@@ -315,6 +316,8 @@
 	testFloat [
 		"Test generic floating point types"
 		| x |
+		x := Number readFrom: '1.4324' readStream.
+		(x closeTo: 1.4324) ifFalse: self failBlk.
 		((2.0 raisedTo: 3.0) closeTo: 8.0) ifFalse: self failBlk.
 		x := Float e.
 		(0.0 exp closeTo: 1.0) ifFalse: self failBlk.
