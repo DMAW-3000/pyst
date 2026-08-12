@@ -30,7 +30,7 @@
  ======================================================================"
  
  
- InvalidArgument subclass: NotFound [
+InvalidArgument subclass: NotFound [
     
     <category: 'Language-Exceptions'>
     <comment: 'I am raised when something is searched without success.'>
