@@ -303,9 +303,11 @@
 		x at: 1 put: y.
 		(y allOwners size ~= 2) ifTrue: self failBlk.
 		x := Association key: 1 value: 2.
-		((x instVarAt: 2) ~= 2) ifTrue: self failBlk.
-		x instVarAt: 2 put: 3.
-		x value ~= 3 ifTrue: self failBlk
+		(x instVarAt: 2) ~= 2 ifTrue: self failBlk.
+		(x instVarNamed: 'key') ~= 1 ifTrue: self failBlk.
+		x instVarAt: 1 put: 10; instVarNamed: 'value' put: 20.
+		x key ~= 10 ifTrue: self failBlk.
+		x value ~= 20 ifTrue: self failBlk.
 	]
 	
 	testObject1 [
