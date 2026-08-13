@@ -104,6 +104,9 @@ class Smalltalk(object):
         self.k_float_e                  = None
         self.k_character                = None
         self.k_time                     = None
+        self.k_duration                 = None
+        self.k_date                     = None
+        self.k_date_time                = None
         self.k_context_part             = None
         self.k_blk_context              = None
         self.k_meth_context             = None
