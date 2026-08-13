@@ -2296,10 +2296,17 @@ class Interp(object):
     def p_Time_secondClock(self, ctx, recv, argList):
         """
         Primitive handler for Time primSecondClock
-        Adjust epoch from unix 1970 to 2000.
         """
         utcOffset = int(datetime.datetime.now().astimezone().utcoffset().total_seconds())
         ctx.push(int(time.time()) - 946684800 + utcOffset)
+        return True
+        
+    def p_Time_nanosecondClock(self, ctx, recv, argList):
+        """
+        Primitive handler for Time primNanosecondClock
+        """
+        utcOffset = int(datetime.datetime.now().astimezone().utcoffset().total_seconds())
+        ctx.push(int((time.time() - 946684800 + utcOffset) * 100000000))
         return True
         
     def p_Time_timezoneBias(self, ctx, recv, argList):
@@ -2307,6 +2314,13 @@ class Interp(object):
         Primitive handler for Time timezoneBias
         """
         ctx.push(int(datetime.datetime.now().astimezone().utcoffset().total_seconds()))
+        return True
+        
+    def p_Time_timezone(self, ctx, recv, argList):
+        """
+        Primitive handler for Time timezone
+        """
+        ctx.push(String.from_str(datetime.datetime.now().astimezone().tzname()))
         return True
         
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
