@@ -1069,10 +1069,10 @@ class Interp(object):
         Primtive handler for Object allOwners.
         Return Array of other Objects that reference this one.
         """
+        refList = []
         if is_obj(recv):
             # get references to this object stored in
             # other objects
-            refList = []
             for obj in Object.get_all_obj():
                 for ref in obj:
                     if is_obj(ref) and ref.is_same(recv):
