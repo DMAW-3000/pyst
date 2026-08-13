@@ -1100,8 +1100,7 @@ class Interp(object):
         if is_obj(send) and is_obj(argArr) and \
            (argArr.get_class() is self._sys.k_array()) and \
            (send.get_class() is self._sys.k_symbol()):
-                argList = [arg for arg in argArr]
-                ctx.push(self.send_message_intern(recv, send, argList))
+                ctx.push(self.send_message_intern(recv, send, argArr))
                 return True
         return False
     
