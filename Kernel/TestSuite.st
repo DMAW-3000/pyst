@@ -26,6 +26,7 @@
 				testMessage;
 				testClass;
 				testCharacter;
+				testTime;
 				testBlock;
 				testSuper;
 				testLink;
@@ -157,6 +158,13 @@
 		$N = $r ifTrue: [self fail]. ($X = $X) ifFalse: self failBlk.
 		$J asString ~= 'J' ifTrue: self failBlk.
 		$2 copy ~~ $2 ifTrue: self failBlk
+	]
+	
+	testTime [
+		"Test time and duration types"
+		| t |
+		t := Time now.
+		Time utcNow > t ifFalse: self failBlk
 	]
 		
 	testBlock [

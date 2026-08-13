@@ -5,6 +5,8 @@ Bytecode interpreter
 from st import *
 import math
 import stat
+import time
+import datetime
 
 
 class Interp(object):
@@ -2289,6 +2291,22 @@ class Interp(object):
         """
         i = unpack(">I", recv._refs)[0]
         ctx.push((i >> 23) & 0xff)
+        return True
+        
+    def p_Time_secondClock(self, ctx, recv, argList):
+        """
+        Primitive handler for Time primSecondClock
+        Adjust epoch from unix 1970 to 2000.
+        """
+        utcOffset = int(datetime.datetime.now().astimezone().utcoffset().total_seconds())
+        ctx.push(int(time.time()) - 946684800 + utcOffset)
+        return True
+        
+    def p_Time_timezoneBias(self, ctx, recv, argList):
+        """
+        Primitive handler for Time timezoneBias
+        """
+        ctx.push(int(datetime.datetime.now().astimezone().utcoffset().total_seconds()))
         return True
         
     def p_ArrayedCollection_replaceFromToWithStartingAt(self, ctx, recv, argList):
