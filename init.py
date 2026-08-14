@@ -197,6 +197,7 @@ Init_Kernel_Mod = (
     "IdentitySet.st",
     "Dictionary.st",
     "LookupTable.st",
+    "IdentDict.st",
     "BindingDict.st",
     "AbstNamespc.st",
     "Namespace.st",
