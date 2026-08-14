@@ -66,8 +66,8 @@ All classes in the system are subclasses of me.'>
 
 	<category: 'initialization'>
 	self == Object ifFalse: [^self].
-	self dependencies: WeakKeyIdentityDictionary new
-	"ObjectMemory addDependent: self"
+	self dependencies: WeakKeyIdentityDictionary new.
+	ObjectMemory addDependent: self
     ]
 
 	initialize [

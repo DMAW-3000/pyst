@@ -151,8 +151,8 @@ time value, and a block execution timing facility.'>
 	<category: 'initialization'>
 	SecondClockAdjustment := 86400 * 36159.
 		ClockOnStartup := 0.
-        ClockOnImageSave := 0
-	"ObjectMemory addDependent: self"
+        ClockOnImageSave := 0.
+	ObjectMemory addDependent: self
     ]
 
     Time class >> update: aspect [
