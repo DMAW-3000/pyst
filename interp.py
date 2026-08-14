@@ -2430,6 +2430,13 @@ class Interp(object):
         ctx.push(FloatE.from_flt(rem))
         return True
         
+    def p_FloatE_truncated(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE truncated
+        """
+        ctx.push(int(recv.to_flt()))
+        return True
+        
     def p_FloatE_exponent(self, ctx, recv, argList):
         """
         Primitive handler for FloatE exponent

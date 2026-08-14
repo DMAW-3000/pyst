@@ -432,7 +432,8 @@
 		(x > 1) ifTrue: self failBlk.
 		x + 1.0d0 > 0.0 ifFalse: self failBlk.
 		FloatE fmax; fminNormalized.
-		x fractionPart.
+		x fractionPart ~= x ifTrue: self failBlk.
+		x truncated ~= 0 ifTrue: self failBlk.
 		x exponent ~= 122 ifTrue: self failBlk.
 		x asBytes size ~= 4 ifTrue: self failBlk.
 		FloatE signByte ~= 1 ifTrue: self failBlk.

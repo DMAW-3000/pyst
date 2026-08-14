@@ -365,6 +365,7 @@ Init_Primitive = (
     "FloatE_ne",
     "FloatE_asFloatD",
     "FloatE_fractionPart",
+    "FloatE_truncated",
     "FloatE_exponent",
     "Time_secondClock",
     "Time_nanosecondClock",
