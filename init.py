@@ -230,6 +230,7 @@ Init_Class_Init = (
     "Fraction",
     "Time",
     "Duration",
+    "DateTime",
     "FileDescriptor",
     "FileStream",
 )
