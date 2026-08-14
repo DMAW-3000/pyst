@@ -345,7 +345,7 @@ Date subclass: DateTime [
 	<category: 'splitting in dates & times'>
 	anIndex = 1 ifTrue: [^self asDate].
 	anIndex = 2 ifTrue: [^self asTime].
-	SystemExceptions.IndexOutOfRange signalOn: self withIndex: anIndex
+	"SystemExceptions." IndexOutOfRange signalOn: self withIndex: anIndex
     ]
 
     asDate [
