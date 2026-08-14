@@ -66,31 +66,6 @@ state.'>
 	^self new update
     ]
 
-    ObjectMemory class >> addressOfOOP: anObject [
-	"Returns the address of the OOP (object table slot) for anObject.
-	 The address is an Integer and will not change over time (i.e. is
-	 immune from garbage collector action) except if the virtual machine
-	 is stopped and restarted."
-
-	<category: 'builtins'>
-	<primitive: VMpr_Memory_addressOfOOP>
-	SystemExceptions InvalidArgument signalOn: anObject
-	    reason: 'Cannot extract address of an immediate OOP'
-    ]
-
-    ObjectMemory class >> addressOf: anObject [
-	"Returns the address of the actual object that anObject
-	 references.  Note that, with the exception of fixed objects
-	 this address is only valid until the next garbage collection;
-	 thus it's pretty risky to count on the address returned by
-	 this method for very long."
-
-	<category: 'builtins'>
-	<primitive: VMpr_Memory_addressOf>
-	SystemExceptions InvalidArgument signalOn: anObject
-	    reason: 'Cannot extract address of an immediate OOP'
-    ]
-
     ObjectMemory class >> compact [
 	"Force a full garbage collection"
 
