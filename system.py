@@ -535,6 +535,9 @@ class Smalltalk(object):
         # fixup Object parent nil link
         self.k_object.superClass = self.o_nil
         
+        # class/meta instance var names
+        metaVars = [String.from_str(var) for var in init.Init_Meta_Vars]
+        
         # class initialization pass 3
         # after this all of the Class objects are
         # correctly initialized
@@ -554,7 +557,7 @@ class Smalltalk(object):
             else:
                 metaObj.superClass = superObj.get_class()
             self.subclass_add(metaObj.superClass, metaObj)
-            metaObj.instanceVariables = self.create_inst_vars(self.o_nil, init.Init_Meta_Vars)
+            metaObj.instanceVariables = self.create_inst_vars(self.o_nil, metaVars)
             if not superObj.is_nil():
                 self.subclass_add(superObj, klassObj)
             metaObj.methodDictioary = self.o_nil
@@ -911,7 +914,9 @@ class Smalltalk(object):
         for n in range(numSuper):
             arrObj[n] = superObj.instanceVariables[n]
         for n,s in enumerate(varNames):
-            arrObj[numSuper + n] = String.from_str(s)
+            if isinstance(s, str):
+                s = String.from_str(s)
+            arrObj[numSuper + n] = s
         return arrObj
         
     def create_class_vars(self, klassObj, varNames):
