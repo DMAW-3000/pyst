@@ -1672,7 +1672,7 @@ class LargeInteger(ByteArray):
             obj = x
         elif x > 0:
             length = (x.bit_length() + 7) // 8
-            obj = LargePositiveInteger.from_seq(x.to_bytes(length, 'little'))
+            obj = LargePositiveInteger.from_seq(x.to_bytes(length, 'little', signed = False))
         else:
             length = (x.bit_length() + 8) // 8
             obj = LargeNegativeInteger.from_seq(x.to_bytes(length, 'little', signed = True))
