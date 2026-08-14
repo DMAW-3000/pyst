@@ -427,12 +427,18 @@
 		"Test single precision floating point types"
 		| x |
 		x := 3.53e-2.
+		x + 3.4e2 * 10.0e0 / 124.3345e0.
+		(x > 1) ifTrue: self failBlk.
 		FloatE fmax; fminNormalized.
 		x fractionPart.
 		x exponent ~= 122 ifTrue: self failBlk.
 		x asBytes size ~= 4 ifTrue: self failBlk.
 		FloatE signByte ~= 1 ifTrue: self failBlk.
-		FloatE fromBytes: (ByteArray new: 4).
+		(x < 3043.24e0 and: [432.423e0 > x]) ifFalse: self failBlk.
+		(x <= 3.55e-2 and: [x >= 3.32e-3]) ifFalse: self failBlk.
+		x ~= 0.0e0 ifFalse: self failBlk.
+		x := FloatE fromBytes: (ByteArray new: 4).
+		x = 0.0e0 ifFalse: self failBlk.
 		FloatE infinity; negativeInfinity; nan; decimalDigits.
 		FloatE emin ~= -126 ifTrue: self failBlk.
 		FloatE emax ~= 127 ifTrue: self failBlk.

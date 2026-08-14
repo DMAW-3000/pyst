@@ -1612,6 +1612,13 @@ class Interp(object):
         ctx.push(float(recv))
         return True
         
+    def p_SmallInteger_asFloatE(self, ctx, recv, argList):
+        """
+        Primitive handler for SmallInteger asFloatE
+        """
+        ctx.push(FloatE.from_flt(float(recv)))
+        return True
+        
     def p_SmallInteger_scramble(self, ctx, recv, argList):
         """
         Primirive handler for SmallInteger scramble
@@ -2274,6 +2281,130 @@ class Interp(object):
         """
         ctx.push(FloatE.from_flt(float("nan")))
         return True
+    
+    def p_FloatE_plus(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE +
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            x = recv.to_flt() + send.to_flt()
+            ctx.push(FloatE.from_flt(x))
+            return True
+        return False
+    
+    def p_FloatE_minus(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE -
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            x = recv.to_flt() - send.to_flt()
+            ctx.push(FloatE.from_flt(x))
+            return True
+        return False
+        
+    def p_FloatE_times(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE *
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            x = recv.to_flt() * send.to_flt()
+            ctx.push(FloatE.from_flt(x))
+            return True
+        return False
+        
+    def p_FloatE_divide(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE /
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            if send.to_flt() == 0.0:
+                return False
+            x = recv.to_flt() / send.to_flt()
+            ctx.push(FloatE.from_flt(x))
+            return True
+        return False
+        
+    def p_FloatE_lt(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE <
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            if recv.to_flt() < send.to_flt():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatE_gt(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE >
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            if recv.to_flt() > send.to_flt():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatE_le(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE <=
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            if recv.to_flt() <= send.to_flt():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatE_ge(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE >=
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            if recv.to_flt() >= send.to_flt():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatE_eq(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE =
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            if recv.to_flt() == send.to_flt():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_FloatE_ne(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatE ~=
+        """
+        send = argList[0]
+        if is_obj(send) and (send.get_class() is self._sys.k_float_e()):
+            if recv.to_flt() != send.to_flt():
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
         
     def p_FloatE_fractionPart(self, ctx, recv, argList):
         """
