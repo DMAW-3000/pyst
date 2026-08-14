@@ -115,6 +115,12 @@ class _ObjTableBase(object):
         """
         return list(self._obj_map.values())
         
+    def size(self):
+        """
+        Return the number of Objects
+        """
+        return len(self._obj_map)
+        
     def get_obj_map(self):
         """
         Return a dictionary of all Objects, keyed by Object ID.
@@ -231,6 +237,13 @@ class Object(object):
         Set the Object dictionary
         """
         klass._Obj_Table.set_obj_map(x)
+        
+    @classmethod
+    def num_obj(klass):
+        """
+        Return the total number of Objects
+        """
+        return klass._Obj_Table.size()
     
     @classmethod
     def set_cover(klass, x):

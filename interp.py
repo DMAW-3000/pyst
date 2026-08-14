@@ -2566,6 +2566,18 @@ class Interp(object):
                 return False
         return False
         
+    def p_ObjectMemory_update(self, ctx, recv, argList):
+        """
+        Primitve handler for ObjectMemory update
+        """
+        if is_obj(recv) and (recv.get_class() is self._sys.k_object_memory()):
+            recv[0] = Object.num_obj()          # numObj
+            recv[1] = len(self.i_slab_mth)      # numMethodSlab
+            recv[2] = len(self.i_slab_blk)      # numBlockSlab
+            ctx.push(recv)
+            return True
+        return False        
+        
     def _is_large_int(self, x):
         """
         Returns True if a descenent of LargeInteger, 

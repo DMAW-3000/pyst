@@ -371,4 +371,5 @@ Init_Primitive = (
     "String_hash",
     "Symbol_intern",
     "FileDescriptor_fileOp",
+    "ObjectMemory_update",
 )

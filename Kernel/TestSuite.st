@@ -314,6 +314,8 @@
 	testObject [
 		"Test advanced features of Objects"
 		| x y |
+		x := ObjectMemory current.
+		x numObject > 0 ifFalse: self failBlk.
 		x := Object new.
 		x dependents size ~= 0 ifTrue: self failBlk.
 		y := 'xyz'. x addDependent: y.
