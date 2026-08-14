@@ -27,6 +27,7 @@
 				testClass;
 				testCharacter;
 				testTime;
+				testDate;
 				testBlock;
 				testSuper;
 				testLink;
@@ -176,8 +177,14 @@
 		t := Time millisecondClock.
 		Time millisecondClock - t >= 0 ifFalse: self failBlk.
 		t := Time millisecondsToRun: [ 20 timesRepeat: [ 1 + 1 ]].
-		t >= 0 ifFalse: self failBlk.
-		Time millisecondClock displayNl
+		t >= 0 ifFalse: self failBlk
+	]
+	
+	testDate [
+		"Test date types"
+		| d |
+		d := Date today.
+		d := DateTime now
 	]
 		
 	testBlock [
