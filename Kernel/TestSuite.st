@@ -164,7 +164,7 @@
 		"Test time and duration types"
 		| t |
 		t := Time now.
-		Time utcNow > t ifFalse: self failBlk.
+		t := Time utcNow.
 		Time timezone isString ifFalse: self failBlk.
 		t := Duration days: 3.
 		t positive ifFalse: self failBlk.

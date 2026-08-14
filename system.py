@@ -125,6 +125,7 @@ class Smalltalk(object):
         self.k_weak_key_dict            = None
         self.k_weak_key_ident_dict      = None
         self.k_symbol_table             = None
+        self.k_object_memory            = None
         self.k_test                     = None
         
         # fundamental objects

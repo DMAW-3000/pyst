@@ -111,6 +111,7 @@ Init_Class = (
     ("WeakKeyDictionary", False, "weak_key_dict", "dictionary", False, ("keys",), (), ()),
     ("WeakKeyIdentityDictionary", False, "weak_key_ident_dict", "weak_key_dict", False, (), (), ()),
     ("SymbolTableArray", True, "symbol_table", "array", False, (), (), ()),
+    ("ObjectMemory", False, "object_memory", "object", True, ("numObject", "numMethodSlab", "numBlockSlab"), (), ()),
     ("TestSuite", False, "test", "object", True, ("testInst1", "testInst2"), ("TestClassVar",), ()),
 )
 
@@ -216,6 +217,7 @@ Init_Kernel_Mod = (
     "CompiledBlk.st",
     "CompildMeth.st",
     "MethodInfo.st",
+    "ObjMemory.st",
     "TestSuite.st",
 )
 
