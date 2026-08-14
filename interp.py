@@ -2219,6 +2219,13 @@ class Interp(object):
             return True
         return False
         
+    def p_FloatD_asFloatE(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD asFloatE
+        """
+        ctx.push(FloatE.from_flt(recv))
+        return True
+        
     def p_FloatD_truncated(self, ctx, recv, argList):
         """
         Primitive handler for FloatD truncated
@@ -2405,6 +2412,13 @@ class Interp(object):
                 ctx.push(self._false())
             return True
         return False
+        
+    def p_FloatE_asFloatD(self, ctx, recv, argList):
+        """
+        Primitive handler for FloatD asFloatD
+        """
+        ctx.push(recv.to_flt())
+        return True
         
     def p_FloatE_fractionPart(self, ctx, recv, argList):
         """

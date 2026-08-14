@@ -400,6 +400,7 @@
 		(FloatD fromBytes: (ByteArray new: 8)) ~= 0.0 ifTrue: self failBlk.
 		FloatD signByte ~= 1 ifTrue: self failBlk.
 		x := 12.4d0.
+		x asFloatE.
 		x asBytes size ~= 8 ifTrue: self failBlk.
 		x exponent ~= 4 ifTrue: self failBlk.
 		(x fractionPart closeTo: 0.4) ifFalse: self failBlk.
@@ -429,6 +430,7 @@
 		x := 3.53e-2.
 		x + 3.4e2 * 10.0e0 / 124.3345e0.
 		(x > 1) ifTrue: self failBlk.
+		x + 1.0d0 > 0.0 ifFalse: self failBlk.
 		FloatE fmax; fminNormalized.
 		x fractionPart.
 		x exponent ~= 122 ifTrue: self failBlk.
