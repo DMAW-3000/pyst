@@ -170,7 +170,14 @@
 		t positive ifFalse: self failBlk.
 		t days ~= 3 ifTrue: self failBlk.
 		t := t + (Duration days: 2).
-		t days ~= 5 ifTrue: self failBlk
+		t days ~= 5 ifTrue: self failBlk.
+		t := Time nanosecondClock.
+		t < Time nanosecondClock ifFalse: self failBlk.
+		t := Time millisecondClock.
+		Time millisecondClock - t >= 0 ifFalse: self failBlk.
+		t := Time millisecondsToRun: [ 20 timesRepeat: [ 1 + 1 ]].
+		t >= 0 ifFalse: self failBlk.
+		Time millisecondClock displayNl
 	]
 		
 	testBlock [

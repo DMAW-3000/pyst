@@ -330,10 +330,17 @@ class Smalltalk(object):
         Start execution of Smalltalk
         """
         inst = klass._SmalltalkInstance
+        
+        # send ObjectMemory initialize
+        initSym = inst.symbol_find("initialize")
+        inst.exec(inst.k_object_memory(), initSym, ())
+        
+        # create TestSuite object and run
         newSym = inst.symbol_find("new")
         runSym = inst.symbol_find("runAll")
         testObj = inst.exec(inst.k_test(), newSym, ())
         result = inst.exec(testObj, runSym, ())
+        
         print()
         print(result)
         inst.stop()
