@@ -1112,6 +1112,8 @@ class Smalltalk(object):
         for st, py in self.g_cover_map.items():
             print(st, py)
         print()
+        self.object_print_all()
+        print()
     
     @staticmethod
     def context_print_state(ctx):
@@ -1153,6 +1155,14 @@ class Smalltalk(object):
             print("Weak:  ", obj._weak_obj)
         if obj.size > 0:
             self.arr_print(obj)
+            
+    def object_print_all(self):
+        """
+        Print all of the objects
+        """
+        objList = Object.get_all_obj()
+        for obj in objList:
+            print(obj.get_id(), str(obj))
         
     def fatal_err(self, *s):
         """
