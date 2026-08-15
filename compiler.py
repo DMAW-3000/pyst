@@ -75,6 +75,10 @@ class Compile(object):
         self._true      = weakref.ref(system.o_true)
         self._false     = weakref.ref(system.o_false)
         
+        # cached objects
+        self._zero_arr = Array(0)
+        self._zero_arr.make_readonly()
+        
         # get primitives dictionary
         bind = system.find_global("VMPrimitives")
         if bind is None:
@@ -904,8 +908,11 @@ class Compile(object):
         Construct a literal array
         """
         # create empty array
-        arrObj = Array(len(alist))
-        arrObj.make_readonly()
+        if not len(alist):
+            arrObj = self._zero_arr
+        else:
+            arrObj = Array(len(alist))
+            arrObj.make_readonly()
         
         # create array items and store references in array
         for n,item in enumerate(alist):
