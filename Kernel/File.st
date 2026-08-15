@@ -461,7 +461,7 @@ FilePath subclass: File [
 	"Refresh the statistics for the receiver"
 
 	<category: 'accessing'>
-	stat isNil ifTrue: [stat := Kernel.Stat new].
+	stat isNil ifTrue: [stat := "Kernel." Stat new].
 	(self lstatOn: self asString into: stat) < 0
             ifTrue: [File checkError].
 	isSymbolicLink := (stat stMode bitAnd: 61440) = 40960.	"S_IFLNK"
@@ -475,7 +475,7 @@ FilePath subclass: File [
 	"Answer whether a file with the name contained in the receiver does exist."
 
 	<category: 'testing'>
-	stat isNil ifTrue: [stat := Kernel.Stat new].
+	stat isNil ifTrue: [stat := "Kernel." Stat new].
 	(self lstatOn: self asString into: stat) < 0
 	    ifTrue: [^false].
 	isSymbolicLink := (stat stMode bitAnd: 61440) = 40960.	"S_IFLNK"
