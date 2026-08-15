@@ -95,6 +95,7 @@ class Compile(object):
         self._cur_depth     = None
         self._max_depth     = None
         self._ctx_stack     = []
+        self._cat_cache     = weakref.WeakValueDictionary()
         
     def parse_file(self, fileName):
         """
@@ -242,7 +243,12 @@ class Compile(object):
             self._cur_klass.comment = String.from_str(attrValue.value)
             self._cur_klass.comment.make_readonly()
         elif attrName.value == "category":
-            self._cur_klass.category = String.from_str(attrValue.value)
+            try:
+                s = self._cat_cache[attrValue.value]
+            except KeyError:
+                s = String.from_str(attrValue.value)
+                self._cat_cache[attrValue.value] = s
+            self._cur_klass.category = s
             self._cur_klass.category.make_readonly()
             
     def parse_inst_vars(self):
@@ -445,7 +451,12 @@ class Compile(object):
         if (tok.type != "OPERATOR") or (tok.value != '>'):
             raise CompileError("missing > " + str(self._cur_meth))
         if attrName.value == "category":
-            self._cur_meth.descriptor.category = String.from_str(attrValue.value)
+            try:
+                s = self._cat_cache[attrValue.value]
+            except KeyError:
+                s = String.from_str(attrValue.value)
+                self._cat_cache[attrValue.value] = s
+            self._cur_meth.descriptor.category = s
             self._cur_meth.descriptor.category.make_readonly()
         elif attrName.value == "primitive":
             sym = self._sys.symbol_find(attrValue.value)
