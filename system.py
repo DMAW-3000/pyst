@@ -158,7 +158,7 @@ class Smalltalk(object):
         Create a fresh Smalltalk enviroment from scratch
         """
         inst = klass._SmalltalkInstance
-        inst.g_img_file = args.img_file
+        inst.g_img_file = os.path.abspath(args.img_file)
             
         # Class initialization pass 1
         # this establishes the Class tree.
@@ -203,6 +203,10 @@ class Smalltalk(object):
         inst.name_add_sym(stDict, "Features", Array(1))
         inst.name_add_sym(stDict, "Undeclared", Namespace.new_n(32))
         inst.name_add_sym(stDict, "SytemExceptions", stDict)
+        inst.name_add_sym(stDict, "ExecutableFileName", 
+                            String.from_str(sys.modules['__main__'].__file__))
+        inst.name_add_sym(stDict, "ImageFileName", 
+                            String.from_str(inst.g_img_file))
         
         # finalize class build
         # after this point, the class cache attributes are weakrefs
@@ -259,7 +263,7 @@ class Smalltalk(object):
         """
         Load a saved Smalltalk image
         """
-        print("Loading image", args.img_file)
+        print("Loading image", os.path.abspath(args.img_file))
         inst = klass._SmalltalkInstance
         
         # create Smalltalk Nil singleton

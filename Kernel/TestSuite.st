@@ -691,7 +691,8 @@
 	
 	testFile [
 		"Test File class"
-		
+		File executable.
+		File image
 	]
 	
 	testFileStream [
