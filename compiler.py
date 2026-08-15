@@ -862,8 +862,9 @@ class Compile(object):
         blkObj = CompiledBlock()
         blkObj.set_hdr(len(args), len(temps), self._max_depth)
         blkObj.set_code(self._cur_bytes)
-        blkObj.literals = Array.from_seq(self._cur_literal)
-        blkObj.literals.make_readonly()
+        if len(self._cur_literal):
+            blkObj.literals = Array.from_seq(self._cur_literal)
+            blkObj.literals.make_readonly()
         blkObj.method = self._cur_meth
         
         if self._verbose:
@@ -871,7 +872,11 @@ class Compile(object):
             print("Args:", args)
             print("Temps:", temps)
             print("Depth: ", self._max_depth)
-            print("Block Literals", blkObj.literals.size)
+            if blkObj.literals.is_nil:
+                sz = 0
+            else:
+                sz = blkObj.literals.size
+            print("Block Literals:", sz)
             self._sys.arr_print(blkObj.literals)
             print("Block Bytecodes:", len(blkObj.get_code()))
             self._sys.dis_bytecode(blkObj.get_code())
