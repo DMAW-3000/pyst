@@ -88,6 +88,8 @@ class Smalltalk(object):
         self.k_read_stream              = None
         self.k_write_stream             = None
         self.k_rw_stream                = None
+        self.k_file_path                = None
+        self.k_file                     = None
         self.k_file_desc                = None
         self.k_file_stream              = None
         self.k_text_collect             = None

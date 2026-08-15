@@ -54,6 +54,7 @@
 				testWeakSet;
 				testWeakKeyDict;
 				testStream;
+				testFile;
 				testFileStream;
 				testException
 	]
@@ -686,6 +687,11 @@
 		x next: 2.
 		x peek ~= $i ifTrue: self failBlk.
 		10 timesRepeat: [x next].
+	]
+	
+	testFile [
+		"Test File class"
+		
 	]
 	
 	testFileStream [
