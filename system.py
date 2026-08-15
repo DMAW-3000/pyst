@@ -243,14 +243,14 @@ class Smalltalk(object):
         inst.name_add_sym(inst.e_st_dict, "stdout", FileStream(sys.stdout.fileno(), "stdout", 2))
         inst.name_add_sym(inst.e_st_dict, "stderr", FileStream(sys.stderr.fileno(), "stderr", 2))
         inst.exec(inst.k_text_collect(), inst.symbol_find("installTranscript"), ())
-        
-        # dump information
-        if args.verbose:
-            inst.global_state_print()
             
         # save image file
         if args.save:
             inst.save()
+            
+        # dump information
+        if args.verbose:
+            inst.global_state_print()
             
     @classmethod
     def load(klass, args, brkpoint):
@@ -316,13 +316,13 @@ class Smalltalk(object):
         for obj in objMap.values():
             inst.exec(obj, postSym, ())
             
-        # dump information    
-        if args.verbose:
-            inst.global_state_print()
-            
         # save image file
         if args.save:
             inst.save()
+            
+        # dump information    
+        if args.verbose:
+            inst.global_state_print()
         
     @classmethod
     def run(klass):
