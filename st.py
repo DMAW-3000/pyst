@@ -1493,11 +1493,10 @@ class CompiledMethod(_Code):
         """
         Print state
         """
-        if (not self.descriptor.is_nil()) and \
-           (not self.descriptor.selector.is_nil()):
+        if not self.descriptor.is_nil():
             s = str(self.descriptor.selector)
         else:
-            s = '????'
+            s = str(self.descriptor)
         return "METHOD(" + s + ")"
         
 
