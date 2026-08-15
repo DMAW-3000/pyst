@@ -726,6 +726,9 @@ class Association(Object):
     def value(self, x):
         self[1] = x
         
+    def __str__(self):
+        return "ASSOC(" + str(self.key) + ")"
+        
         
 class VariableBinding(Object):
     """
@@ -770,6 +773,9 @@ class VariableBinding(Object):
     @environment.setter
     def environment(self, x):
         self[2] = x
+        
+    def __str__(self):
+        return "VARBIND(" + str(self.key) + ")"
         
         
 class _Dict(Object):
