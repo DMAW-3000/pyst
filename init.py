@@ -76,6 +76,7 @@ Init_Class = (
     ("ReadWriteStream", False, "rw_stream", "write_stream", True, (), (), ()),
     ("FilePath", False, "file_path", "object", True, (), (), ()),
     ("File", False, "file", "file_path", True, ("path", "stat", "isSymbolicLink"), ("Epoch",), ()),
+    ("Stat", False, "stat", "object", True, ("stMode", "stSize", "stAtime", "stMtime", "stCtime"), (), ()),
     ("FileDescriptor", False, "file_desc", "stream", True, ("access", "fd", "file", "isPipe", "atEnd", "peek"), ("AllOpenFiles",), ()),
     ("FileStream", True, "file_stream", "file_desc", True, ("collection", "ptr", "endPtr", "writePtr", "writeEnd"), ("Verbose", "Record", "Includes"), ()),
     ("TextCollector", False, "text_collect", "stream", True, ("receiver", "selector"), (), ()),
@@ -215,6 +216,7 @@ Init_Kernel_Mod = (
     "RWStream.st",
     "FilePath.st",
     "File.st",
+    "Stat.st",
     "FileDescr.st",
     "FileStream.st",
     "Transcript.st",
@@ -389,6 +391,7 @@ Init_Primitive = (
     "String_replaceFromToWithByteArrayStartingAt",
     "String_hash",
     "Symbol_intern",
+    "File_lstat",
     "FileDescriptor_fileOp",
     "ObjectMemory_update",
 )

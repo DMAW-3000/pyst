@@ -691,8 +691,8 @@
 	
 	testFile [
 		"Test File class"
-		File executable.
-		File image
+		File executable exists ifFalse: self failBlk.
+		File image size > 0 ifFalse: self failBlk
 	]
 	
 	testFileStream [

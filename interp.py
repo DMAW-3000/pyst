@@ -2702,6 +2702,24 @@ class Interp(object):
             return True
         return False
         
+    def p_File_lstat(self, ctx, recv, argList):
+        """
+        Primitve handler for File lstat
+        """
+        filePath    = argList[0]
+        statObj     = argList[1]
+        if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()) and \
+                is_obj(statObj) and (statObj.get_class() is self._sys.k_stat()):
+            try:
+                pyStat = os.lstat(filePath.to_str())
+            except FileNotFoundError:
+                return False
+            statObj[0] = pyStat.st_mode
+            statObj[1] = pyStat.st_size
+            ctx.push(0)
+            return True
+        return False
+        
     def p_FileDescriptor_fileOp(self, ctx, recv, argList):
         """
         Primitve handler for FileDescriptor fileOp:

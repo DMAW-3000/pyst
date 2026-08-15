@@ -90,6 +90,7 @@ class Smalltalk(object):
         self.k_rw_stream                = None
         self.k_file_path                = None
         self.k_file                     = None
+        self.k_stat                     = None
         self.k_file_desc                = None
         self.k_file_stream              = None
         self.k_text_collect             = None
@@ -518,7 +519,10 @@ class Smalltalk(object):
             instVars    = klassInfo[5]
             klassObj = getattr(self, cacheName)
             if hasCover and (klassObj is not self.k_class):
-                coverKlass = globals()[klassName]
+                try:
+                    coverKlass = globals()[klassName]
+                except KeyError:
+                    self.fatal_err("missing class definition for %s" % klassName)
                 self.g_cover_map[klassObj] = coverKlass
                 coverKlass.set_cover(klassObj)
             if klassObj is self.k_class:
