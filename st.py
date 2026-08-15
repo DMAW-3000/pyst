@@ -1621,6 +1621,9 @@ class MethodInfo(Object):
     def debugInfo(self, x):
         self[4] = x
         
+    def __str__(self):
+        return "METHODINFO(" + str(self.selector) + ")"
+        
         
 class BlockClosure(Object):
     """
