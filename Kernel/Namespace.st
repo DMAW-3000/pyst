@@ -77,9 +77,9 @@ AbstractNamespace subclass: Namespace [
 
 	"The primitive call is needed to inform the compiler"
 
+	<primitive: VMpr_Namespace_setCurrent>
 	<category: 'accessing'>
 	| namespace |
-	<primitive: VMpr_Namespace_setCurrent>
 	namespace := aNamespaceOrClass isClass 
 		    ifTrue: [aNamespaceOrClass classPool]
 		    ifFalse: [aNamespaceOrClass].
@@ -87,9 +87,9 @@ AbstractNamespace subclass: Namespace [
 	    ifTrue: [Current := namespace]
 	    ifFalse: 
 		["SystemExceptions." WrongClass signalOn: aNamespaceOrClass
-		    mustBe: 
-			{Dictionary.
-			Class}]
+		    mustBe: (Array
+			with: Dictionary
+			with: Class)]
     ]
 
     inheritedKeys [
