@@ -648,6 +648,9 @@ class SymLink(Object):
     def symbol(self, x):
         self[1] = x
         
+    def __str__(self):
+        return "SYMLINK(" + str(self.symbol) + ")"
+        
 
 class SymbolTableArray(Array):
     """
