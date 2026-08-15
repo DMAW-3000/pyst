@@ -414,9 +414,9 @@ to speed them up a bit.'>
 	"Divide aNumber and the receiver, answer the remainder truncated
 	 towards 0"
 
+	<primitive: VMpr_LargeInteger_rem>
 	<category: 'arithmetic'>
 	| result |
-	<primitive: VMpr_LargeInteger_rem>
 	aNumber sign = 0 ifTrue: [^self zeroDivide].
 	self sign = 0 ifTrue: [^self].
 	aNumber generality = self generality 
