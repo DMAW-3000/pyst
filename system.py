@@ -310,15 +310,15 @@ class Smalltalk(object):
         # setup compiler
         inst.g_compile = Compile(inst, args.verbose)
         
-        # dump information    
-        if args.verbose:
-            inst.global_state_print()
-        
         # send postLoad message to all Objects
         print("Sending postLoad")
         postSym = inst.symbol_find("postLoad")
         for obj in objMap.values():
             inst.exec(obj, postSym, ())
+            
+        # dump information    
+        if args.verbose:
+            inst.global_state_print()
             
         # save image file
         if args.save:
