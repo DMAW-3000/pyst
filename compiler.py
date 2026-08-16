@@ -379,22 +379,41 @@ class Compile(object):
                 brackCount = 2
             else:
                 brackCount = 1
-            comment = False
+            comment = char = False
             c = remainder[pos]
             while brackCount > 0:
-                if c == '\"':
-                    comment = not comment
+                if c == '$':
+                    if char:
+                        char = False
+                    else:
+                        char = True
+                    stmtText += c
+                elif c == '\"':
+                    if char:
+                        stmtText += c
+                        char = False
+                    else:
+                        comment = not comment
                 elif c == ']':
-                    brackCount -= 1
-                    if (brackCount > 0) and (not comment):
+                    if char:
                         stmtText += c
+                        char = False
+                    else:
+                        brackCount -= 1
+                        if (brackCount > 0) and (not comment):
+                            stmtText += c
                 elif c == '[':
-                    brackCount += 1
-                    if not comment:
+                    if char:
                         stmtText += c
+                        char = False
+                    else:
+                        brackCount += 1
+                        if not comment:
+                            stmtText += c
                 else:
                     if not comment:
                         stmtText += c
+                        char = False
                 pos += 1
                 c = remainder[pos]
             #methObj.descriptor.sourceCode = String.from_str(stmtText)

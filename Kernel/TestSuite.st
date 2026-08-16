@@ -150,6 +150,7 @@
 	
 	testCharacter [
 		"Test Character objects"
+		| a |
 		($A isDigit: 16) ifFalse: self failBlk. $E isVowel ifFalse: self failBlk.
 		Character space isSeparator ifFalse: self failBlk. 
 		$! isPunctuation ifFalse: self failBlk.
@@ -159,7 +160,12 @@
 		$b asUppercase isUppercase ifFalse: self failBlk.
 		$N = $r ifTrue: [self fail]. ($X = $X) ifFalse: self failBlk.
 		$J asString ~= 'J' ifTrue: self failBlk.
-		$2 copy ~~ $2 ifTrue: self failBlk
+		$2 copy ~~ $2 ifTrue: self failBlk.
+		a := #( $" $] $[ $$ ).
+		(a at: 1) ~= $" ifTrue: self failBlk.
+		(a at: 2) ~= $] ifTrue: self failBlk.
+		(a at: 3) ~= $[ ifTrue: self failBlk.
+		(a at: 4) ~= $$ ifTrue: self failBlk
 	]
 	
 	testTime [
@@ -664,7 +670,6 @@
 		(s includes: key1) ifFalse: self failBlk
 	]
 		
-	
 	testWeakKeyDict [
 		"Test weak key dictionaries"
 		| d key1 key2 |
