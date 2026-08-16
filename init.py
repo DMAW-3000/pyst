@@ -392,6 +392,9 @@ Init_Primitive = (
     "String_hash",
     "Symbol_intern",
     "File_lstat",
+    "File_isRead",
+    "File_isWrite",
+    "File_isExe",
     "FileDescriptor_fileOp",
     "ObjectMemory_update",
 )

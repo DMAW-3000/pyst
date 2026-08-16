@@ -2449,23 +2449,21 @@ class Interp(object):
         """
         Primitive handler for Time primSecondClock
         """
-        utcOffset = int(datetime.datetime.now().astimezone().utcoffset().total_seconds())
-        ctx.push(int(time.time()) - 946684800 + utcOffset)
+        ctx.push(int(time.time()) - 946684800 + self._utc_offset())
         return True
         
     def p_Time_nanosecondClock(self, ctx, recv, argList):
         """
         Primitive handler for Time primNanosecondClock
-        """
-        utcOffset = int(datetime.datetime.now().astimezone().utcoffset().total_seconds())
-        ctx.push(int((time.time() - 946684800 + utcOffset) * 100000000))
+        """ 
+        ctx.push(int((time.time() - 946684800 + self._utc_offset()) * 100000000))
         return True
         
     def p_Time_timezoneBias(self, ctx, recv, argList):
         """
         Primitive handler for Time timezoneBias
         """
-        ctx.push(int(datetime.datetime.now().astimezone().utcoffset().total_seconds()))
+        ctx.push(self._utc_offset())
         return True
         
     def p_Time_timezone(self, ctx, recv, argList):
@@ -2712,11 +2710,54 @@ class Interp(object):
                 is_obj(statObj) and (statObj.get_class() is self._sys.k_stat()):
             try:
                 pyStat = os.lstat(filePath.to_str())
-            except FileNotFoundError:
-                return False
+            except OSError:
+                ctx.push(-1)
+                return True
             statObj[0] = pyStat.st_mode
             statObj[1] = pyStat.st_size
+            statObj[2] = pyStat.st_atime - 946684800 + self._utc_offset()
+            statObj[3] = pyStat.st_mtime - 946684800 + self._utc_offset()
+            statObj[4] = pyStat.st_ctime - 946684800 + self._utc_offset()
             ctx.push(0)
+            return True
+        return False
+        
+    def p_File_isRead(self, ctx, recv, argList):
+        """
+        Primitve handler for File isReadable
+        """
+        filePath    = argList[0]
+        if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
+            if os.access(filePath.to_str(), os.R_OK):
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_File_isWrite(self, ctx, recv, argList):
+        """
+        Primitve handler for File isWriteable
+        """
+        filePath    = argList[0]
+        if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
+            if os.access(filePath.to_str(), os.W_OK):
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
+            return True
+        return False
+        
+    def p_File_isExe(self, ctx, recv, argList):
+        """
+        Primitve handler for File isExecutable
+        """
+        filePath    = argList[0]
+        if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
+            if os.access(filePath.to_str(), os.X_OK):
+                ctx.push(self._true())
+            else:
+                ctx.push(self._false())
             return True
         return False
         
@@ -2732,7 +2773,7 @@ class Interp(object):
                 return False
             try:
                 return op(ctx, recv, argList)
-            except OSError as ex:
+            except OSError:
                 return False
         return False
         
@@ -2772,6 +2813,13 @@ class Interp(object):
             if x.get_class() is self._sys.k_float_e():
                 return True
         return False
+    
+    @staticmethod
+    def _utc_offset():
+        """
+        Get the current local time offset from UTC
+        """
+        return int(datetime.datetime.now().astimezone().utcoffset().total_seconds())
         
     def f_put_chars(self, ctx, recv, argList):
         """

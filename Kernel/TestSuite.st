@@ -691,8 +691,14 @@
 	
 	testFile [
 		"Test File class"
+		| f |
 		File executable exists ifFalse: self failBlk.
-		File image size > 0 ifFalse: self failBlk
+		f := File image.
+		f size > 0 ifFalse: self failBlk.
+		f isReadable ifFalse: self failBlk.
+		f isWriteable ifFalse: self failBlk.
+		f isExecutable ifFalse: self failBlk.
+		f hash ~= 2404636655 ifTrue: self failBlk
 	]
 	
 	testFileStream [
