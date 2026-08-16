@@ -936,6 +936,8 @@ class Compile(object):
                 itemObj = self.build_bytearray(x.value)
             elif isinstance(x, ParseLiteralArray):
                 itemObj = self.build_array(x.value)
+            elif isinstance(x, ParseLiteralChar):
+                itemObj = self._sys.o_char[ord(x.value)]
             else:
                 raise CompileError("illegal array member: %s" % x)
             arrObj[n] = itemObj
