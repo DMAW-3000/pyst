@@ -91,6 +91,7 @@ class Smalltalk(object):
         self.k_file_path                = None
         self.k_file                     = None
         self.k_stat                     = None
+        self.k_directory                = None
         self.k_file_desc                = None
         self.k_file_stream              = None
         self.k_text_collect             = None
@@ -208,6 +209,8 @@ class Smalltalk(object):
                             String.from_str(sys.modules['__main__'].__file__))
         inst.name_add_sym(stDict, "ImageFileName", 
                             String.from_str(inst.g_img_file))
+        inst.name_add_sym(stDict, "SystemKernelPath", 
+                            String.from_str(os.path.abspath("Kernel")))
         
         # finalize class build
         # after this point, the class cache attributes are weakrefs
