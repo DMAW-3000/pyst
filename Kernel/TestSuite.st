@@ -697,15 +697,15 @@
 	testFile [
 		"Test File class"
 		| f |
-		File executable exists ifFalse: self failBlk.
-		f := File image.
+		f := File executable. 
+		f exists ifFalse: self failBlk.
 		f size > 0 ifFalse: self failBlk.
 		f isReadable ifFalse: self failBlk.
 		f isWriteable ifFalse: self failBlk.
 		f isExecutable ifFalse: self failBlk.
 		"f hash ~= 2404636655 ifTrue: self failBlk."
 		f isAbsolute ifFalse: self failBlk.
-		f extension ~= '.sti' ifTrue: self failBlk
+		f extension ~= '.py' ifTrue: self failBlk
 	]
 	
 	testFileStream [

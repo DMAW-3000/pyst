@@ -273,7 +273,9 @@ class Smalltalk(object):
         inst = klass._SmalltalkInstance
         
         # setup image file location
-        inst.g_img_file = os.path.abspath(args.img_file)
+        if not os.path.isfile(args.img_file):
+            inst.fatal_err("image file %s not found" % args.img_file)
+        inst.g_img_file = os.path.abspath(args.img_file)    
         print("Loading image", inst.g_img_file)
         
         # create Smalltalk Nil singleton
