@@ -85,6 +85,9 @@ class Interp(object):
         # index 0 is reserved
         self.i_primitive = [None]
         
+        # capture of os errno value
+        self.i_errno = 0
+        
         # context slab caches
         self.i_slab_blk     = []
         self.i_slab_mth     = []
@@ -2700,6 +2703,24 @@ class Interp(object):
             return True
         return False
         
+    def p_File_errno(self, ctx, recv, argList):
+        """
+        Primitve handler for File errno
+        """
+        ctx.push(self.i_errno)
+        self.i_errno = 0
+        return True
+        
+    def p_File_strerror(self, ctx, recv, argList):
+        """
+        Primitve handler for File strerror
+        """
+        err = argList[0]
+        if is_int(err):
+            ctx.push(String.from_str(os.strerror(err)))
+            return True
+        return False
+        
     def p_File_lstat(self, ctx, recv, argList):
         """
         Primitve handler for File lstat
@@ -2709,8 +2730,9 @@ class Interp(object):
         if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()) and \
                 is_obj(statObj) and (statObj.get_class() is self._sys.k_stat()):
             try:
-                pyStat = os.lstat(filePath.to_str())
-            except OSError:
+                pyStat = os.lstat(self._py_str(filePath))
+            except OSError as ex:
+                self.i_errno = ex.errno
                 ctx.push(-1)
                 return True
             statObj[0] = pyStat.st_mode
@@ -2728,7 +2750,7 @@ class Interp(object):
         """
         filePath    = argList[0]
         if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
-            if os.access(filePath.to_str(), os.R_OK):
+            if os.access(self._py_str(filePath), os.R_OK):
                 ctx.push(self._true())
             else:
                 ctx.push(self._false())
@@ -2741,7 +2763,7 @@ class Interp(object):
         """
         filePath    = argList[0]
         if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
-            if os.access(filePath.to_str(), os.W_OK):
+            if os.access(self._py_str(filePath), os.W_OK):
                 ctx.push(self._true())
             else:
                 ctx.push(self._false())
@@ -2754,12 +2776,19 @@ class Interp(object):
         """
         filePath    = argList[0]
         if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
-            if os.access(filePath.to_str(), os.X_OK):
+            if os.access(self._py_str(filePath), os.X_OK):
                 ctx.push(self._true())
             else:
                 ctx.push(self._false())
             return True
         return False
+        
+    def p_Direcotry_getcwd(self, ctx, recv, argList):
+        """
+        Primitve handler for File getcwd
+        """
+        ctx.push(String.from_str(os.getcwd()))
+        return True
         
     def p_FileDescriptor_fileOp(self, ctx, recv, argList):
         """
@@ -2773,7 +2802,8 @@ class Interp(object):
                 return False
             try:
                 return op(ctx, recv, argList)
-            except OSError:
+            except OSError as ex:
+                self.i_errno = ex.errno
                 return False
         return False
         
@@ -2813,6 +2843,17 @@ class Interp(object):
             if x.get_class() is self._sys.k_float_e():
                 return True
         return False
+     
+    @staticmethod
+    def _py_str(strObj):
+        """
+        Convert String to python str
+        """
+        s = ""
+        for c in strObj:
+            if not c.is_nil():
+                s += chr(c[0])
+        return s
     
     @staticmethod
     def _utc_offset():

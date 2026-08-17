@@ -51,6 +51,7 @@ class Smalltalk(object):
         self.k_zero_divide              = None
         self.k_primitive_fail           = None
         self.k_wrong_arg_count          = None
+        self.k_file_error               = None
         self.k_end_of_stream            = None
         self.k_message                  = None
         self.k_behavior                 = None
