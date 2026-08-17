@@ -225,7 +225,7 @@ creation of Processes from blocks.'>
 
 	<category: 'unwind protection'>
 	| result |
-	result := self valueAndResumeOnUnwind BlockClosure exceptionHandlerSearchBlock
+	result := self valueAndResumeOnUnwind: BlockClosure exceptionHandlerSearchBlock
 						resetBlk: BlockClosure exceptionHandlerResetBlock.
 	aBlock value.
 	^result
