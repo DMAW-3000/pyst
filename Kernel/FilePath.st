@@ -612,7 +612,7 @@ size and timestamps.'>
 
 	<category: 'file operations'>
 	^self open: mode
-	    ifFail: [SystemExceptions.FileError signal: 'could not open ' , self name]
+	    ifFail: ["SystemExceptions." FileError signal: 'could not open ' , self name]
     ]
 
     openDescriptor: mode [
