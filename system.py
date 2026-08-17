@@ -333,6 +333,11 @@ class Smalltalk(object):
         for obj in objMap.values():
             inst.exec(obj, postSym, ())
             
+        # update globals
+        inst.update_global("ExecutableFileName", 
+                           String.from_str(os.path.join(baseDir, sys.modules['__main__'].__file__)))
+        inst.update_global("ImageFileName", String.from_str(inst.g_img_file))
+            
         # save image file
         if args.save:
             inst.save()
@@ -751,6 +756,21 @@ class Smalltalk(object):
         if assoc.is_nil():
             return None
         return assoc.value
+        
+    def update_global(self, itemName, itemValue):
+        """
+        Find a global symbol value in the Smalltalk namespace and update 
+        its value. Add to namespace if not present.
+        """
+        symObj = self.symbol_find(itemName)
+        if symObj.is_nil():
+            self.name_add_sym(self.e_st_dict, itemName, itemValue)
+            return
+        assoc = self.dict_find(self.e_st_dict, symObj)
+        if assoc.is_nil():
+            self.name_add_sym(self.e_st_dict, itemName, itemValue)
+            return
+        assoc.value = itemValue
         
     def dict_add(self, dictObj, keyObj, itemObj):
         """
