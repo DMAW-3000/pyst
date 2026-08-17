@@ -270,13 +270,7 @@ class Interp(object):
     
         # get class type for receiver
         # handle primitive types specially
-        if is_int(recvObj):
-            klassObj = self._sys.k_small_int()
-        elif is_flt(recvObj):
-            klassObj = self._sys.k_float_d()
-        else:
-            klassObj = recvObj.get_class()
-        origKlass = klassObj
+        origKlass = klassObj = self._obj_class(recvObj)
             
         # lookup method object from selector symbol
         # search from receiver's class through its
@@ -349,6 +343,18 @@ class Interp(object):
         if methObj.is_nil():
             raise SmalltalkException("doesNotUnderstand: not found")
         return methObj
+     
+    def _obj_class(self, obj):
+        """
+        Return the Class for an object, accounting for primitive types.
+        """
+        if is_int(obj):
+            klassObj = self._sys.k_small_int()
+        elif is_flt(obj):
+            klassObj = self._sys.k_float_d()
+        else:
+            klassObj = obj.get_class()
+        return klassObj
         
     def set_debug(self, preHook, postHook):
         """
@@ -503,16 +509,10 @@ class Interp(object):
         sym = ctx.method.literals[arg]
         
         # look in all class variables (including superclasses)
-        recv = ctx.receiver
-        if is_int(recv):
-            klassObj = self._sys.k_small_int()
-        elif is_flt(recv):
-            klassObj = self._sys.k_float_d()
-        else:
-            klassObj = recv.get_class()
+        klassObj = self._obj_class(ctx.receiver)
         if klassObj.get_class() is self._sys.k_metaclass():
             # handle special case of access from inside class method
-            klassObj = recv
+            klassObj = ctx.receiver
         while not klassObj.is_nil():
             #print("var lookup", klassObj)
             varDict = klassObj.classVariables
@@ -634,16 +634,10 @@ class Interp(object):
         sym = ctx.method.literals[arg]
         
         # look in all class variables (including superclasses)
-        recv = ctx.receiver
-        if is_int(recv):
-            klassObj = self._sys.k_small_int()
-        elif is_flt(recv):
-            klassObj = self._sys.k_float_d()
-        else:
-            klassObj = recv.get_class()
+        klassObj = self._obj_class(ctx.receiver)
         if klassObj.get_class() is self._sys.k_metaclass():
             # handle special case of access from inside class method
-            klassObj = recv
+            klassObj = ctx.receiver
         while not klassObj.is_nil():
             #print("var lookup", klassObj)
             varDict = klassObj.classVariables
@@ -971,13 +965,7 @@ class Interp(object):
         Primitive handler for Object class
         Get a reference to an object's class.
         """
-        if is_int(recv):
-            klass = self._sys.k_small_int()
-        elif is_flt(recv):
-            klass = self._sys.k_float_d()
-        else:
-            klass = recv.get_class()
-        ctx.push(klass)
+        ctx.push(self._obj_class(recv))
         return True
         
     def p_Object_basicAt(self, ctx, recv, argList):
