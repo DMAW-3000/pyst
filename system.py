@@ -156,11 +156,13 @@ class Smalltalk(object):
         self.build_disassembly()
     
     @classmethod
-    def rebuild(klass, args, brkpoint):
+    def rebuild(klass, args, baseDir, brkpoint):
         """
         Create a fresh Smalltalk enviroment from scratch
         """
         inst = klass._SmalltalkInstance
+        
+        # setup image file location
         inst.g_img_file = os.path.abspath(args.img_file)
             
         # Class initialization pass 1
@@ -207,11 +209,11 @@ class Smalltalk(object):
         inst.name_add_sym(stDict, "Undeclared",             Namespace.new_n(32))
         inst.name_add_sym(stDict, "SytemExceptions",        stDict)
         inst.name_add_sym(stDict, "ExecutableFileName", 
-                            String.from_str(sys.modules['__main__'].__file__))
+                            String.from_str(os.path.join(baseDir, sys.modules['__main__'].__file__)))
         inst.name_add_sym(stDict, "ImageFileName", 
                             String.from_str(inst.g_img_file))
         inst.name_add_sym(stDict, "SystemKernelPath", 
-                            String.from_str(os.path.abspath("Kernel")))
+                            String.from_str(os.path.join(baseDir, "Kernel")))
         
         # finalize class build
         # after this point, the class cache attributes are weakrefs
@@ -239,7 +241,7 @@ class Smalltalk(object):
         inst.g_compile = Compile(inst, args.verbose)
         for mod in init.Init_Kernel_Mod:
             print("Compiling module", mod)
-            inst.g_compile.parse_file(os.path.join("Kernel", mod))
+            inst.g_compile.parse_file(os.path.join(baseDir, "Kernel", mod))
             
         # static class initialization
         initSym = inst.symbol_find("initialize")
@@ -264,12 +266,15 @@ class Smalltalk(object):
             inst.global_state_print()
             
     @classmethod
-    def load(klass, args, brkpoint):
+    def load(klass, args, baseDir, brkpoint):
         """
         Load a saved Smalltalk image
         """
-        print("Loading image", os.path.abspath(args.img_file))
         inst = klass._SmalltalkInstance
+        
+        # setup image file location
+        inst.g_img_file = os.path.abspath(args.img_file)
+        print("Loading image", inst.g_img_file)
         
         # create Smalltalk Nil singleton
         inst.o_nil = UndefinedObject()
@@ -284,10 +289,9 @@ class Smalltalk(object):
         inst.o_true     = CTrue()
         
         # read in saved data
-        imgFile = open(args.img_file, "rb")
+        imgFile = open(inst.g_img_file, "rb")
         objMap = dill.load(imgFile)
         imgFile.close()
-        inst.g_img_file = args.img_file
         
         # get class objects
         # after this point Class objects should be fully constructed

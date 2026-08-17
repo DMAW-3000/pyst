@@ -2,8 +2,9 @@
 A Smalltalk environment implemented in Python
 """
 
-import sys
+PYST_DIR = "C:\\Users\\Daniel Wood\\Documents\\pyst"
 
+import sys
 
 def parse_break(argIn):
     """
@@ -55,9 +56,9 @@ if __name__ == '__main__':
 
     # run the system
     if args.rebuild:
-        Smalltalk.rebuild(args, parse_break(args.breakpoint))
+        Smalltalk.rebuild(args, PYST_DIR, parse_break(args.breakpoint))
     else:
-        Smalltalk.load(args, parse_break(args.breakpoint))
+        Smalltalk.load(args, PYST_DIR, parse_break(args.breakpoint))
     Smalltalk.run()
     
     
