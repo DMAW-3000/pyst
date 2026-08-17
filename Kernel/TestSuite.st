@@ -630,13 +630,13 @@
 		"Test lookup table types"
 		| d b |
 		d := LookupTable new.
-		d at: 1 put: 1000.
-		d at: 2 put: 2000.
-		d at: 3 put: 3000.
-		d at: 4 put: 4000.
-		d at: 5 put: 5000.
-		d at: 6 put: 6000.
-		d at: 7 put: 7000.
+		d 	at: 1 put: 1000;
+			at: 2 put: 2000;
+			at: 3 put: 3000;
+			at: 4 put: 4000;
+			at: 5 put: 5000;
+			at: 6 put: 6000;
+			at: 7 put: 7000.
 		d size ~= 7 ifTrue: self failBlk.
 		(d at: 2) ~= 2000 ifTrue: self failBlk.
 		(d removeKey: 4) ~= 4000 ifTrue: self failBlk.
