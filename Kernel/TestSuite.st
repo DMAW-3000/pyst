@@ -704,7 +704,8 @@
 		f isWriteable ifFalse: self failBlk.
 		f isExecutable ifFalse: self failBlk.
 		f hash ~= 2404636655 ifTrue: self failBlk.
-		f isAbsolute ifFalse: self failBlk
+		f isAbsolute ifFalse: self failBlk.
+		f extension ~= '.sti' ifTrue: self failBlk
 	]
 	
 	testFileStream [

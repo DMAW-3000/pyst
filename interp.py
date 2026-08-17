@@ -2671,8 +2671,7 @@ class Interp(object):
         status = self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, stop, recv, 1))
         if not status:
             return status
-        ctx.pop()
-        ctx.push(hsh_seq(arr))
+        ctx.push(hsh_seq(ctx.pop()))
         return True
         
     def p_Symbol_intern(self, ctx, recv, argList):
@@ -2771,9 +2770,16 @@ class Interp(object):
             return True
         return False
         
+    def p_Direcotry_pathSep(self, ctx, recv, argList):
+        """
+        Primitve handler for Directory pathSep
+        """
+        ctx.push(self._sys.o_char[ord(os.path.sep)])
+        return True
+        
     def p_Direcotry_getcwd(self, ctx, recv, argList):
         """
-        Primitve handler for File getcwd
+        Primitve handler for Directory getcwd
         """
         ctx.push(String.from_str(os.getcwd()))
         return True
@@ -2862,8 +2868,7 @@ class Interp(object):
         status = self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, num, data, start))
         if not status:
             return status
-        ctx.pop()
-        ctx.push(os.write(recv[1], arr))
+        ctx.push(os.write(recv[1], ctx.pop()))
         return True
         
     def f_is_pipe(self, ctx, recv, argList):

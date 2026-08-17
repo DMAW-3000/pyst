@@ -174,7 +174,8 @@ how to use the instances returned by my class methods.'>
 	"Answer (as a Character) the character used to separate directory names"
 
 	<category: 'file name management'>
-	^$\
+	<primitive: VMpr_Direcotry_pathSep>
+	^$/
     ]
 
     Directory class >> pathSeparatorString [
