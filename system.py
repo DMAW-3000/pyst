@@ -199,12 +199,12 @@ class Smalltalk(object):
         stDict.name = inst.name_add_sym(stDict, "Smalltalk", stDict)
         
         # add global objects
-        inst.name_add_sym(stDict, "SymbolTable", inst.e_sym_table)
-        inst.name_add_sym(stDict, "KernelInitialized", inst.o_false)
-        inst.name_add_sym(stDict, "Version", String.from_str("0.1"))
-        inst.name_add_sym(stDict, "Features", Array(1))
-        inst.name_add_sym(stDict, "Undeclared", Namespace.new_n(32))
-        inst.name_add_sym(stDict, "SytemExceptions", stDict)
+        inst.name_add_sym(stDict, "SymbolTable",            stArr)
+        inst.name_add_sym(stDict, "KernelInitialized",      inst.o_false)
+        inst.name_add_sym(stDict, "Version",                String.from_str("0.1"))
+        inst.name_add_sym(stDict, "Features",               Array(1))
+        inst.name_add_sym(stDict, "Undeclared",             Namespace.new_n(32))
+        inst.name_add_sym(stDict, "SytemExceptions",        stDict)
         inst.name_add_sym(stDict, "ExecutableFileName", 
                             String.from_str(sys.modules['__main__'].__file__))
         inst.name_add_sym(stDict, "ImageFileName", 
@@ -252,7 +252,7 @@ class Smalltalk(object):
         inst.name_add_sym(inst.e_st_dict, "stdin",  FileStream(sys.stdin.fileno(),  "stdin",  1))
         inst.name_add_sym(inst.e_st_dict, "stdout", FileStream(sys.stdout.fileno(), "stdout", 2))
         inst.name_add_sym(inst.e_st_dict, "stderr", FileStream(sys.stderr.fileno(), "stderr", 2))
-        inst.exec(inst.k_text_collect(), inst.symbol_find("installTranscript"), ())
+        inst.exec(inst.k_text_collect(), inst.symbol_find("install"), ())
             
         # save image file
         if args.save:

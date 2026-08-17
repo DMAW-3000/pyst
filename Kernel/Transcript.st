@@ -40,8 +40,8 @@ a single message to another object (its selector is pluggable and should
 roughly correspond to #nextPutAll:).  I am, in fact, the class that
 implements the global Transcript object.'>
 
-	TexCollector class >> installTranscript [
-		"Create 'Transcript' global for text output"
+	TexCollector class >> install [
+		"Create 'Transcript' global for text output attached to stdout"
 		
 		<category: 'set up'>
 		Smalltalk at: #Transcript
