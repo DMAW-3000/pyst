@@ -621,7 +621,7 @@ size and timestamps.'>
 
 	<category: 'file operations'>
 	^self openDescriptor: mode
-	    ifFail: [SystemExceptions.FileError signal: 'could not open ' , self name]
+	    ifFail: ["SystemExceptions." FileError signal: 'could not open ' , self name]
     ]
 
     open: mode ifFail: aBlock [
@@ -775,7 +775,7 @@ size and timestamps.'>
 	 via '.')."
 
 	<category: 'decoration'>
-	^Kernel.RecursiveFileWrapper on: self
+	^"Kernel." RecursiveFileWrapper on: self
     ]
 
     allFilesMatching: aPattern do: aBlock [
