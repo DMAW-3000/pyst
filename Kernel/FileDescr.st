@@ -212,7 +212,7 @@ do arbitrary processing on the files.'>
 		with: commandName
 		with: direction
 		ifFail: 
-		    [SystemExceptions.FileError signal: 'could not open pipe on' , commandName];
+		    ["SystemExceptions." FileError signal: 'could not open pipe on' , commandName];
 	    initialize;
 	    yourself
     ]
