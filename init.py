@@ -401,6 +401,8 @@ Init_Primitive = (
     "File_isRead",
     "File_isWrite",
     "File_isExe",
+    "File_mkdir",
+    "File_rmdir",
     "Direcotry_pathSep",
     "Direcotry_getcwd",
     "FileDescriptor_fileOp",

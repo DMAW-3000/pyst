@@ -2770,6 +2770,37 @@ class Interp(object):
             return True
         return False
         
+    def p_File_mkdir(self, ctx, recv, argList):
+        """
+        Primitve handler for File mkdir
+        """
+        dirPath = argList[0]
+        mode    = argList[1]
+        if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()) and is_int(mode):
+            try:
+                os.mkdir(self._py_str(dirPath), mode)
+                ctx.push(0)
+            except OSError as ex:
+                self.i_errno = ex.errno
+                ctx.push(-1)
+            return True
+        return False
+        
+    def p_File_rmdir(self, ctx, recv, argList):
+        """
+        Primitve handler for File rmdir
+        """
+        dirPath = argList[0]
+        if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()):
+            try:
+                os.rmdir(self._py_str(dirPath))
+                ctx.push(0)
+            except OSError as ex:
+                self.i_errno = ex.errno
+                ctx.push(-1)
+            return True
+        return False
+        
     def p_Direcotry_pathSep(self, ctx, recv, argList):
         """
         Primitve handler for Directory pathSep
