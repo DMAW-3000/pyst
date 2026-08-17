@@ -382,16 +382,27 @@ class Smalltalk(object):
         self.g_interp.clear_slabs()
         
         # get a copy of the object table
-        objMap = Object.get_obj_map()        
+        objMap = Object.get_obj_map()
+        refCache = {}
         for obj in objMap.values():
             # delete weak obj list
             if hasattr(obj, "_weak_obj"):
                 delattr(obj, "_weak_obj")
             # break references and replace with IDs
-            obj.set_class(ObjectReference(obj.get_class()))
+            try:
+                ref = refCache[obj.get_class().get_id()]
+            except KeyError:
+                ref = ObjectReference(obj.get_class())
+                refCache[ref.get_id()] = ref
+            obj.set_class(ref)
             for n,r in enumerate(obj):
                 if is_obj(r):
-                    obj[n] = ObjectReference(r)
+                    try:
+                        ref = refCache[r.get_id()]
+                    except KeyError:
+                        ref = ObjectReference(r)
+                        refCache[ref.get_id()] = ref
+                    obj[n] = ref
                     
         # save image to file
         imgFile = open(self.g_img_file, "wb")
