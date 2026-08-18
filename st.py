@@ -2041,6 +2041,22 @@ class EphemObject(WeakObject):
         return "EPHEMOBJ{" + str(self._klass) + "[" + str(self.size) + "]}"
 
 
+class DirIter(Object):
+    """
+    Represent opaque iterator over a directory listing
+    """
+    
+    def __init__(self, dirList):
+        """
+        Initialize directory entry iterator
+        """
+        super().__init__(1)
+        self[0] = iter(dirList)
+        
+    def __str__(self):
+        return "<DirIter>"
+
+
 class ObjectReference(object):
     """
     Repreent a reference to another object by ID.

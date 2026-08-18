@@ -697,6 +697,7 @@
 	testFile [
 		"Test File class"
 		| f |
+		(File name: '.') namesDo: [:name | ].
 		f := File executable. 
 		f exists ifFalse: self failBlk.
 		f size > 0 ifFalse: self failBlk.

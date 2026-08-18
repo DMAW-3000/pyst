@@ -329,12 +329,6 @@ FilePath subclass: File [
 	^self primitiveFailed
     ]
 
-    extractDirentName: dirent [
-	<category: 'private-C call-outs'>
-	<primitive: VMpr_File_dirent>
-	^self primitiveFailed
-    ]
-
     readDir: dirObject [
 	<category: 'private-C call-outs'>
 	<primitive: VMpr_File_readdir>
@@ -634,7 +628,7 @@ FilePath subclass: File [
 	dir isNil ifTrue: [^File checkError].
 	
 	[[(entry := self readDir: dir) notNil] 
-	    whileTrue: [aBlock value: (self extractDirentName: entry)]]
+	    whileTrue: [aBlock value: entry]]
 		    ensure: [self closeDir: dir].
 
 	File checkError.

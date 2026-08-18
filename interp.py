@@ -85,8 +85,9 @@ class Interp(object):
         # index 0 is reserved
         self.i_primitive = [None]
         
-        # capture of os errno value
-        self.i_errno = 0
+        # capture of os values
+        self.s_errno    = 0
+        self.s_dirlist  = iter(())
         
         # context slab caches
         self.i_slab_blk     = []
@@ -2694,8 +2695,7 @@ class Interp(object):
         """
         Primitve handler for File errno
         """
-        ctx.push(self.i_errno)
-        self.i_errno = 0
+        ctx.push(self.s_errno)
         return True
         
     def p_File_strerror(self, ctx, recv, argList):
@@ -2719,7 +2719,7 @@ class Interp(object):
             try:
                 pyStat = os.lstat(self._py_str(filePath))
             except OSError as ex:
-                self.i_errno = ex.errno
+                self.s_errno = ex.errno
                 ctx.push(-1)
                 return True
             statObj[0] = pyStat.st_mode
@@ -2770,6 +2770,38 @@ class Interp(object):
             return True
         return False
         
+    def p_File_unlink(self, ctx, recv, argList):
+        """
+        Primitve handler for File unlink
+        """
+        filePath    = argList[0]
+        if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
+            try:
+                os.remove(self._py_str(filePath))
+                ctx.push(0)
+            except OSError as ex:
+                self.s_errno = ex.errno
+                ctx.push(-1)
+            return True
+        return False
+        
+    def p_File_rename(self, ctx, recv, argList):
+        """
+        Primitve handler for File rename
+        """
+        oldPath    = argList[0]
+        newPath    = argList[1]
+        if is_obj(oldPath) and (oldPath.get_class() is self._sys.k_string()) and \
+                is_obj(newPath) and (newPath.get_class() is self._sys.k_string()):
+            try:
+                os.rename(self._py_str(oldPath), self._py_str(newPath))
+                ctx.push(0)
+            except OSError as ex:
+                self.s_errno = ex.errno
+                ctx.push(-1)
+            return True
+        return False
+        
     def p_File_mkdir(self, ctx, recv, argList):
         """
         Primitve handler for File mkdir
@@ -2781,7 +2813,7 @@ class Interp(object):
                 os.mkdir(self._py_str(dirPath), mode)
                 ctx.push(0)
             except OSError as ex:
-                self.i_errno = ex.errno
+                self.s_errno = ex.errno
                 ctx.push(-1)
             return True
         return False
@@ -2796,11 +2828,50 @@ class Interp(object):
                 os.rmdir(self._py_str(dirPath))
                 ctx.push(0)
             except OSError as ex:
-                self.i_errno = ex.errno
+                self.s_errno = ex.errno
                 ctx.push(-1)
             return True
         return False
         
+    def p_File_opendir(self, ctx, recv, argList):
+        """
+        Primitve handler for File opendir
+        """
+        dirPath = argList[0]
+        if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()):
+            try:
+                ctx.push(DirIter(os.listdir(self._py_str(dirPath))))
+            except OSError as ex:
+                self.s_errno = ex.errno
+                ctx.push(self._nil())
+            return True
+        return False
+        
+    def p_File_readdir(self, ctx, recv, argList):
+        """
+        Primitve handler for File readdir
+        """
+        dirList = argList[0]
+        if isinstance(dirList, DirIter):
+            try:
+                entry = String.from_str(next(dirList[0]))
+            except StopIteration:
+                entry = self._nil()
+            ctx.push(entry)
+            return True
+        return False
+        
+    def p_File_closedir(self, ctx, recv, argList):
+        """
+        Primitve handler for File closedir
+        """
+        dirList = argList[0]
+        if isinstance(dirList, DirIter):
+            dirList[0] = iter(())
+            ctx.push(self._nil())
+            return True
+        return False
+                
     def p_Direcotry_pathSep(self, ctx, recv, argList):
         """
         Primitve handler for Directory pathSep
@@ -2828,7 +2899,7 @@ class Interp(object):
             try:
                 return op(ctx, recv, argList)
             except OSError as ex:
-                self.i_errno = ex.errno
+                self.s_errno = ex.errno
                 return False
         return False
         
