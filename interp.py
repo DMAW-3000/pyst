@@ -275,12 +275,15 @@ class Interp(object):
     
         # get class type for receiver
         # handle primitive types specially
+        # start one class up in hierarchy if send super
         origKlass = klassObj = self._obj_class(recvObj)
+        if isSuper:
+            klassObj = klassObj.superClass
             
         # lookup method object from selector symbol
         # search from receiver's class through its
         # superclasses until Object's nil superclass
-        # if send super, start one class up in hierarchy
+        # if send super, skip the current method if encountered
         methObj = self._nil()
         while not klassObj.is_nil():
             #print("meth lookup", klassObj)
@@ -289,6 +292,8 @@ class Interp(object):
                 methObj = self._sys.identdict_find(methDict, selObj)
                 if not methObj.is_nil():
                     if isSuper:
+                        if not oldCtx.method.is_same(methObj):
+                            break
                         isSuper = False
                     else:
                         break
