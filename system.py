@@ -212,6 +212,8 @@ class Smalltalk(object):
                             String.from_str(os.path.join(baseDir, sys.modules['__main__'].__file__)))
         inst.name_add_sym(stDict, "ImageFileName", 
                             String.from_str(inst.g_img_file))
+        inst.name_add_sym(stDict, "ImageFilePath",
+                            String.from_str(os.path.dirname(inst.g_img_file)))
         inst.name_add_sym(stDict, "SystemKernelPath", 
                             String.from_str(os.path.join(baseDir, "Kernel")))
         
@@ -337,6 +339,7 @@ class Smalltalk(object):
         inst.update_global("ExecutableFileName", 
                            String.from_str(os.path.join(baseDir, sys.modules['__main__'].__file__)))
         inst.update_global("ImageFileName", String.from_str(inst.g_img_file))
+        inst.update_global("ImageFilePath", String.from_str(os.path.dirname(inst.g_img_file)))
             
         # save image file
         if args.save:
