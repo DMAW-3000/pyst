@@ -1631,7 +1631,7 @@ class MethodInfo(Object):
         self[4] = x
         
     def __str__(self):
-        return "METHODINFO(" + str(self.selector) + ")"
+        return "METHINFO(" + str(self.selector) + ")"
         
         
 class BlockClosure(Object):
