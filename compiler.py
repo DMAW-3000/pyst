@@ -22,6 +22,9 @@ class Compile(object):
     # the default code for pushing self and returning from method
     _Ret_Self_Bytes = bytearray((B_PUSH_SELF, 0, B_RETURN_METHOD_STACK_TOP, 0))
     
+    # code for pushing literal 0 and returning
+    _Ret_Lit0_Bytes = bytearray((B_PUSH_LIT_CONSTANT, 0, B_RETURN_METHOD_STACK_TOP, 0))
+    
     # reserved keywords
     _Keyword_Names = frozenset(("self", "nil", "true", "false", "super", "thisContext"))
     
@@ -1065,10 +1068,15 @@ class Compile(object):
         code = methObj.get_code()
         
         # consolidate code buffers for all ^self messages
-        if (code is not self._Ret_Self_Bytes) and \
-                (len(code) == 4) and \
+        if (code is not self._Ret_Self_Bytes) and (len(code) == 4) and \
                 (code[0] == B_PUSH_SELF) and (code[2] == B_RETURN_METHOD_STACK_TOP):
             methObj.set_code(self._Ret_Self_Bytes)
+            return methObj
+            
+        # consolidate code buffers for all ^lit_0 messages
+        if (len(code) == 4) and (code[0] == B_PUSH_LIT_CONSTANT) and \
+                (code[1] == 0) and (code[2] == B_RETURN_METHOD_STACK_TOP):
+            methObj.set_code(self._Ret_Lit0_Bytes)
             return methObj
             
         return methObj
