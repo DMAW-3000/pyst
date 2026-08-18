@@ -401,10 +401,9 @@ class Interp(object):
         # look for weak references
         # only Objects with weak references need to be finalized
         if hasattr(obj, "_weak_obj"):
-            print("DEL:", str(obj), obj._weak_obj)
             # send mourn: message to weak owners
-            for owner in obj._weak_obj:
-                print("MOURN: ", str(owner), str(obj))
+            for owner in copy(obj._weak_obj):
+                #print("MOURN: ", str(owner), str(obj))
                 if isinstance(owner, EphemObject):
                     self.send_message_intern(owner, self._sel_mourn(), ())
                 else:
@@ -3018,7 +3017,6 @@ class Interp(object):
         """
         Primitve handler for file operation FILE_CLOSE_FILE.
         """
-        print("close")
         os.close(recv[1])
         ctx.push(0)
         return True
