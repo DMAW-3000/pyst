@@ -96,6 +96,7 @@ class Interp(object):
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
         fTbl[self.FILE_OPEN_FILE]       = self.f_open
+        fTbl[self.FILE_CLOSE_FILE]      = self.f_close
         fTbl[self.FILE_PUT_CHARS]       = self.f_put_chars
         fTbl[self.FILE_GET_CHARS]       = self.f_get_chars
         fTbl[self.FILE_FEOF]            = self.f_eof
@@ -3003,6 +3004,14 @@ class Interp(object):
             ctx.push(recv)
             return True
         return False
+        
+    def f_close(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_CLOSE_FILE.
+        """
+        os.close(recv[1])
+        ctx.push(0)
+        return True
         
     def f_put_chars(self, ctx, recv, argList):
         """
