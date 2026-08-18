@@ -99,7 +99,10 @@ class Interp(object):
         fTbl[self.FILE_CLOSE_FILE]      = self.f_close
         fTbl[self.FILE_PUT_CHARS]       = self.f_put_chars
         fTbl[self.FILE_GET_CHARS]       = self.f_get_chars
+        fTbl[self.FILE_FTELL]           = self.f_tell
+        fTbl[self.FILE_FSEEK_SET]       = self.f_seek_set
         fTbl[self.FILE_FEOF]            = self.f_eof
+        fTbl[self.FILE_FSIZE]           = self.f_size
         fTbl[self.FILE_IS_PIPE]         = self.f_is_pipe
         fTbl[self.FILE_SYNC_POLL]       = self.f_poll
         fTbl[self.FILE_ASYNC_POLL]      = self.f_poll
@@ -398,9 +401,10 @@ class Interp(object):
         # look for weak references
         # only Objects with weak references need to be finalized
         if hasattr(obj, "_weak_obj"):
+            print("DEL:", str(obj), obj._weak_obj)
             # send mourn: message to weak owners
             for owner in obj._weak_obj:
-                #print("MOURN: ", str(owner), str(obj))
+                print("MOURN: ", str(owner), str(obj))
                 if isinstance(owner, EphemObject):
                     self.send_message_intern(owner, self._sel_mourn(), ())
                 else:
@@ -3014,6 +3018,7 @@ class Interp(object):
         """
         Primitve handler for file operation FILE_CLOSE_FILE.
         """
+        print("close")
         os.close(recv[1])
         ctx.push(0)
         return True
@@ -3053,6 +3058,21 @@ class Interp(object):
         ctx.push(num)
         return True
         
+    def f_tell(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_FTELL.
+        """
+        ctx.push(os.lseek(recv[1], 0, os.SEEK_CUR))
+        return True
+        
+    def f_seek_set(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_FSEEK_SET.
+        """
+        os.lseek(recv[1], argList[1], os.SEEK_SET)
+        ctx.push(0)
+        return True
+        
     def f_eof(self, ctx, recv, argList):
         """
         Primitve handler for file operation FILE_FEOF.
@@ -3065,6 +3085,17 @@ class Interp(object):
             ctx.push(self._true())
         else:
             ctx.push(self._false())
+        return True
+        
+    def f_size(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_FSIZE.
+        """
+        fd = recv[1]
+        curPos = os.lseek(fd, 0, os.SEEK_CUR)
+        endPos = os.lseek(fd, 0, os.SEEK_END)
+        os.lseek(fd, curPos, os.SEEK_SET)
+        ctx.push(endPos)
         return True
         
     def f_is_pipe(self, ctx, recv, argList):
