@@ -410,6 +410,7 @@ Init_Primitive = (
     "File_closedir",
     "Direcotry_pathSep",
     "Direcotry_getcwd",
+    "Directory_chdir",
     "FileDescriptor_fileOp",
     "ObjectMemory_update",
 )

@@ -2886,6 +2886,21 @@ class Interp(object):
         ctx.push(String.from_str(os.getcwd()))
         return True
         
+    def p_Directory_chdir(self, ctx, recv, argList):
+        """
+        Primitve handler for Directory chdir
+        """
+        dirPath = argList[0]
+        if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()):
+            try:
+                os.chdir(self._py_str(dirPath))
+                ctx.push(0)
+            except OSError as ex:
+                self.i_errno = ex.errno
+                ctx.push(-1)
+            return True
+        return False
+        
     def p_FileDescriptor_fileOp(self, ctx, recv, argList):
         """
         Primitve handler for FileDescriptor fileOp:

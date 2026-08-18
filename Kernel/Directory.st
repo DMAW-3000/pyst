@@ -50,7 +50,7 @@ how to use the instances returned by my class methods.'>
 
     Directory class >> primWorking: dirName [
 	<category: 'private-C call-outs'>
-	<primitive: VMpr_Direcotry_chdir>
+	<primitive: VMpr_Directory_chdir>
 	
     ]
 
