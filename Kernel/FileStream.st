@@ -397,7 +397,7 @@ file object, such as /dev/rmt0 on UNIX or MTA0: on VMS).'>
         super initialize.
         collection := self newBuffer.
         ptr := 1.
-        endPtr := 0.
+        endPtr := 0
     ]
 
     newBuffer [
