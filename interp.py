@@ -95,7 +95,10 @@ class Interp(object):
         
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
+        fTbl[self.FILE_OPEN_FILE]       = self.f_open
         fTbl[self.FILE_PUT_CHARS]       = self.f_put_chars
+        fTbl[self.FILE_GET_CHARS]       = self.f_get_chars
+        fTbl[self.FILE_FEOF]            = self.f_eof
         fTbl[self.FILE_IS_PIPE]         = self.f_is_pipe
         fTbl[self.FILE_SYNC_POLL]       = self.f_poll
         fTbl[self.FILE_ASYNC_POLL]      = self.f_poll
@@ -2973,6 +2976,34 @@ class Interp(object):
         """
         return int(datetime.datetime.now().astimezone().utcoffset().total_seconds())
         
+    def f_open(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_OPEN_FILE.
+        """
+        name    = argList[1]
+        mode    = argList[2]
+        if is_obj(name) and (name.get_class() is self._sys.k_string()) and \
+                is_obj(mode) and (mode.get_class() is self._sys.k_string()):
+            mode = self._py_str(mode)
+            if mode == "r":
+                intMode = os.O_RDONLY
+            elif mode == "w":
+                intMode = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+            elif mode == "a":
+                intMode = os.O_WRONLY | os.O_CREAT | os.O_APPEND
+            elif mode == "r+":
+                intMode = os.O_RDWR
+            elif mode == "w+":
+                intMode = os.O_RDWR | os.O_CREAT | os.O_TRUNC
+            elif mode == "a+":
+                intMode = os.O_RDWR | os.O_CREAT | os.O_APPEND
+            else:
+                return False
+            recv[1] = os.open(self._py_str(name), intMode)
+            ctx.push(recv)
+            return True
+        return False
+        
     def f_put_chars(self, ctx, recv, argList):
         """
         Primitve handler for file operation FILE_PUT_CHARS.
@@ -2982,10 +3013,44 @@ class Interp(object):
         stop  = argList[3]
         num   = stop - start + 1
         arr = bytearray(num)
-        status = self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, arr, (1, num, data, start))
+        status = self.p_ByteArray_replaceFromToWithStringStartingAt(ctx, 
+                                                                    arr, 
+                                                                    (1, num, data, start))
         if not status:
             return status
         ctx.push(os.write(recv[1], ctx.pop()))
+        return True
+        
+    def f_get_chars(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_GET_CHARS.
+        """
+        data  = argList[1]
+        start = argList[2]
+        stop  = argList[3] 
+        arr = ByteArray(stop - start + 1)
+        num = os.readinto(recv[1], arr._refs)
+        status = self.p_String_replaceFromToWithByteArrayStartingAt(ctx, 
+                                                                    data, 
+                                                                    (start, start + num, arr, 1))
+        if not status:
+            return status
+        ctx.pop()
+        ctx.push(num)
+        return True
+        
+    def f_eof(self, ctx, recv, argList):
+        """
+        Primitve handler for file operation FILE_FEOF.
+        """
+        fd = recv[1]
+        curPos = os.lseek(fd, 0, os.SEEK_CUR)
+        endPos = os.lseek(fd, 0, os.SEEK_END)
+        os.lseek(fd, curPos, os.SEEK_SET)
+        if curPos == endPos:
+            ctx.push(self._true())
+        else:
+            ctx.push(self._false())
         return True
         
     def f_is_pipe(self, ctx, recv, argList):
