@@ -439,6 +439,9 @@ class Compile(object):
                 print()
                 print("Method Literals:", len(self._cur_literal))
                 self._sys.arr_print(methObj.literals)
+                
+        # optimize method
+        methObj = self.optimize(methObj)
             
         # add method to class dictionary
         # or metaclass dictionary if class method
@@ -1055,6 +1058,20 @@ class Compile(object):
         # name is not local
         return (None, scope)
 
+    def optimize(self, methObj):
+        """
+        Optimize a compiled method
+        """
+        code = methObj.get_code()
+        
+        # consolidate code buffers for all ^self messages
+        if (code is not self._Ret_Self_Bytes) and \
+                (len(code) == 4) and \
+                (code[0] == B_PUSH_SELF) and (code[2] == B_RETURN_METHOD_STACK_TOP):
+            methObj.set_code(self._Ret_Self_Bytes)
+            return methObj
+            
+        return methObj
             
 
         
