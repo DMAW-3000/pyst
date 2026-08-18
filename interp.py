@@ -87,7 +87,6 @@ class Interp(object):
         
         # capture of os values
         self.s_errno    = 0
-        self.s_dirlist  = iter(())
         
         # context slab caches
         self.i_slab_blk     = []
