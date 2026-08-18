@@ -2730,6 +2730,7 @@ class Interp(object):
                 is_obj(statObj) and (statObj.get_class() is self._sys.k_stat()):
             try:
                 pyStat = os.lstat(self._py_str(filePath))
+                self.s_errno = 0
             except OSError as ex:
                 self.s_errno = ex.errno
                 ctx.push(-1)
@@ -2790,6 +2791,7 @@ class Interp(object):
         if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
             try:
                 os.remove(self._py_str(filePath))
+                self.s_errno = 0
                 ctx.push(0)
             except OSError as ex:
                 self.s_errno = ex.errno
@@ -2807,6 +2809,7 @@ class Interp(object):
                 is_obj(newPath) and (newPath.get_class() is self._sys.k_string()):
             try:
                 os.rename(self._py_str(oldPath), self._py_str(newPath))
+                self.s_errno = 0
                 ctx.push(0)
             except OSError as ex:
                 self.s_errno = ex.errno
@@ -2823,6 +2826,7 @@ class Interp(object):
         if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()) and is_int(mode):
             try:
                 os.mkdir(self._py_str(dirPath), mode)
+                self.s_errno = 0
                 ctx.push(0)
             except OSError as ex:
                 self.s_errno = ex.errno
@@ -2838,6 +2842,7 @@ class Interp(object):
         if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()):
             try:
                 os.rmdir(self._py_str(dirPath))
+                self.s_errno = 0
                 ctx.push(0)
             except OSError as ex:
                 self.s_errno = ex.errno
@@ -2853,6 +2858,7 @@ class Interp(object):
         if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()):
             try:
                 ctx.push(DirIter(os.listdir(self._py_str(dirPath))))
+                self.s_errno = 0
             except OSError as ex:
                 self.s_errno = ex.errno
                 ctx.push(self._nil())
@@ -2906,9 +2912,10 @@ class Interp(object):
         if is_obj(dirPath) and (dirPath.get_class() is self._sys.k_string()):
             try:
                 os.chdir(self._py_str(dirPath))
+                self.s_errno = 0
                 ctx.push(0)
             except OSError as ex:
-                self.i_errno = ex.errno
+                self.s_errno = ex.errno
                 ctx.push(-1)
             return True
         return False
@@ -2923,6 +2930,7 @@ class Interp(object):
                 op = self.i_fileop[op]
             except IndexError:
                 return False
+            self.s_errno = 0
             try:
                 return op(ctx, recv, argList)
             except OSError as ex:
