@@ -435,9 +435,9 @@ class Interp(object):
         """
         # reset context state
         ctx.resize(7)
-        ctx.flags = 0
-        ctx.sp = 6
-        ctx.ip = 0
+        ctx.flags   = 0
+        ctx.sp      = 6
+        ctx.ip      = 0
             
         # return to slab
         self.i_slab_mth.append(ctx)
