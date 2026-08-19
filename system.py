@@ -7,6 +7,7 @@ from compiler import Compile
 from interp import Interp
 import init
 import dill
+import gc
 
 
 class Smalltalk(object):
@@ -395,12 +396,12 @@ class Smalltalk(object):
             imgName = self.g_img_file
         print("Saving image", imgName)
         
-        # clear caches
-        self.g_interp.clear_slabs()
+        # clean objects
+        self.collect()
         
         # get a copy of the object table
-        objMap = Object.get_obj_map()
         refCache = {}
+        objMap = Object.get_obj_map()
         for obj in objMap.values():
             # delete weak obj list
             if hasattr(obj, "_weak_obj"):
@@ -425,6 +426,16 @@ class Smalltalk(object):
         imgFile = open(imgName, "wb")
         dill.dump(objMap, imgFile)
         imgFile.close()
+        
+    def collect(self):
+        """
+        Try to release as many objects as possible
+        """
+        # clear caches
+        self.g_interp.clear_slabs()
+        
+        # run python collection
+        gc.collect()
         
     def load_classes(self, objMap):
         """

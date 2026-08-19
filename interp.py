@@ -189,8 +189,6 @@ class Interp(object):
         """
         # create the root context
         # leave the parent nil
-        if not self.i_context.is_nil():
-            self.free_mth_context(self.i_context)
         self.i_context = ctx = self._alloc_root_context()
         
         # push receiver and args onto current stack
@@ -204,7 +202,14 @@ class Interp(object):
         self.exec()
         
         # pop return value from stack
-        return ctx.pop()
+        ret = ctx.pop()
+        
+        # free root context
+        self.free_mth_context(self.i_context)
+        
+        # restore context and return value
+        self.i_context = self._nil()
+        return ret
         
     def send_message_intern(self, recvObj, selObj, argValues):
         """
@@ -427,10 +432,9 @@ class Interp(object):
         Release an unused MethodContext
         """
         # reset context state
-        if ctx.size > 7:
-            ctx.resize(7)
-            ctx.sp = 6
+        ctx.resize(7)
         ctx.flags = 0
+        ctx.sp = 6
         ctx.ip = 0
             
         # return to slab
@@ -455,9 +459,8 @@ class Interp(object):
         Release an unused BlockContext
         """
         # reset context state
-        if ctx.size > 7:
-            ctx.resize(7)
-            ctx.sp = 6
+        ctx.resize(7)
+        ctx.sp = 6
         ctx.ip = 0
         
         # return to slab
