@@ -271,6 +271,9 @@ class Smalltalk(object):
         if args.verbose:
             inst.global_state_print()
             
+        # signal fresh execution
+        return inst.o_nil
+            
     @classmethod
     def load(klass, args, baseDir, brkpoint):
         """
@@ -297,9 +300,15 @@ class Smalltalk(object):
         inst.o_true     = CTrue()
         
         # read in saved data
+        # save tuple: (version, context, obj_map)
+        # version = image format version number
+        # context = object ID of currently executing context
+        # obj_map = dictionary of objects with broken references
         imgFile = open(inst.g_img_file, "rb")
-        objMap = dill.load(imgFile)
+        version, context, objMap = dill.load(imgFile)
         imgFile.close()
+        print("Image file version", version)
+        print("Image file context", context)
         
         # get class objects
         # after this point Class objects should be fully constructed
@@ -352,9 +361,16 @@ class Smalltalk(object):
         # dump information    
         if args.verbose:
             inst.global_state_print()
+            
+        # return context to resume execution
+        if context == 0:
+            context = inst.o_nil
+        else:
+            context = objMap[context]
+        return context
         
     @classmethod
-    def run(klass):
+    def run(klass, context):
         """
         Start execution of Smalltalk
         """
@@ -426,8 +442,15 @@ class Smalltalk(object):
                     obj[n] = ref
                     
         # save image to file
+        # save tuple: (version, context, obj_map)
+        # version = image format version number
+        # context = object ID of currently executing context parent context
+        # obj_map = dictionary of objects with broken references
+        context = self.g_interp.cur_context()
+        if not context.is_nil():
+            context = context.parent
         imgFile = open(imgName, "wb")
-        dill.dump(objMap, imgFile)
+        dill.dump((1, context.get_id(), objMap), imgFile)
         imgFile.close()
         
     def collect(self):

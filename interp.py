@@ -183,6 +183,12 @@ class Interp(object):
         """
         return weakref.ref(self._sys.symbol_find_or_add(name))
         
+    def cur_context(self):
+        """
+        Return the current context (Block or Method) being executed
+        """
+        return self.i_context
+        
     def send_message_extern(self, recvObj, selObj, argValues):
         """
         Send a message from outside the interpreter.
@@ -207,7 +213,7 @@ class Interp(object):
         ret = ctx.pop()
         
         # free root context
-        self.free_mth_context(self.i_context)
+        self.free_mth_context(ctx)
         
         # restore context and return value
         self.i_context = self._nil()
@@ -310,7 +316,6 @@ class Interp(object):
             
         # if message is not found send doesNotUnderstand: to object
         if methObj.is_nil():
-            #raise SmalltalkException("%s not understood by %s" % (selObj, recvObj))
             methObj = self._does_not_understand(origKlass)
             numArgs = 1
             argList = (Message(selObj, Array.from_seq(argList)),)

@@ -56,10 +56,10 @@ if __name__ == '__main__':
 
     # run the system
     if args.rebuild:
-        Smalltalk.rebuild(args, PYST_DIR, parse_break(args.breakpoint))
+        context = Smalltalk.rebuild(args, PYST_DIR, parse_break(args.breakpoint))
     else:
-        Smalltalk.load(args, PYST_DIR, parse_break(args.breakpoint))
-    Smalltalk.run()
+        context = Smalltalk.load(args, PYST_DIR, parse_break(args.breakpoint))
+    Smalltalk.run(context)
     
     
     
