@@ -91,6 +91,8 @@ class Interp(object):
         # context slab caches
         self.i_slab_blk     = []
         self.i_slab_mth     = []
+        self.i_alloc_blk    = 0
+        self.i_alloc_mth    = 0
         
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
@@ -422,7 +424,7 @@ class Interp(object):
             return self.i_slab_mth.pop()
         except IndexError:
             # slab is empty, refill
-            #print("MTH FILL")
+            self.i_alloc_mth += 1
             for n in range(512):
                 self.i_slab_mth.append(MethodContext())
             return self.i_slab_mth.pop()    
@@ -449,7 +451,7 @@ class Interp(object):
             return self.i_slab_blk.pop()
         except IndexError:
             # slab is empty, refill
-            #print("BLK FILL")
+            self.i_alloc_blk += 1
             for n in range(512):
                 self.i_slab_blk.append(BlockContext())
             return self.i_slab_blk.pop()    
@@ -2947,7 +2949,10 @@ class Interp(object):
         if is_obj(recv) and (recv.get_class() is self._sys.k_object_memory()):
             recv[0] = Object.num_obj()          # numObj
             recv[1] = len(self.i_slab_mth)      # numMethodSlab
-            recv[2] = len(self.i_slab_blk)      # numBlockSlab
+            recv[2] = self.i_alloc_mth          # numMethodAlloc
+            recv[3] = len(self.i_slab_blk)      # numBlockSlab
+            recv[4] = self.i_alloc_blk          # numBlockAlloc
+            recv[5] = sys.getallocatedblocks()  # numPyBlock
             ctx.push(recv)
             return True
         return False

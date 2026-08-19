@@ -32,7 +32,7 @@
 
 
 Object subclass: ObjectMemory [
-    | numObject numMethodSlab numBlockSlab |
+    | numObject numMethodSlab numMethodAlloc numBlockSlab numBlockAlloc numPyBlock |
     
     <category: 'Language-Implementation'>
     <comment: 'I provide a few methods that enable one to tune the
@@ -181,11 +181,30 @@ state.'>
 	^numMethodSlab
 	]
 	
+	numMethodAlloc [
+	"Get the number of MethodContext slab allocations"
+	
+	<category: 'accessing'>
+	^numMethodAlloc
+	]
+	
 	numBlockSlab [
 	"Get the number of BlockContext objects available in the slab"
 	
 	<category: 'accessing'>
 	^numBlockSlab
+	]
+	
+	numBlockAlloc [
+	"Get the number of BlockContext slab allocations"
+	
+	<category: 'accessing'>
+	^numMethodAlloc
+	]
+	
+	numPyBlock [
+	"Get the number of Python memory blocks allocated by the system"
+	^numPyBlock
 	]
 
     update [
