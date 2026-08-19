@@ -269,7 +269,7 @@ class Smalltalk(object):
             
         # dump information
         if args.verbose:
-            inst.global_state_print()
+            inst.global_print_state()
             
         # signal fresh execution
         return inst.o_nil
@@ -360,7 +360,7 @@ class Smalltalk(object):
             
         # dump information    
         if args.verbose:
-            inst.global_state_print()
+            inst.global_print_state()
             
         # return context to resume execution
         if context == 0:
@@ -1073,7 +1073,7 @@ class Smalltalk(object):
         Check for breakpoints before execution
         """
         # get current context
-        ctx = self.g_interp.i_context
+        ctx = self.g_interp.cur_context()
         
         # check for method context and get name
         methObj = ctx.method
@@ -1102,7 +1102,7 @@ class Smalltalk(object):
         """
         Debug bytecode after execution
         """
-        self.context_print_state(self.g_interp.i_context)
+        self.context_print_state(self.g_interp.cur_context())
         print()
         
     def debug_user_input(self):
@@ -1120,6 +1120,7 @@ class Smalltalk(object):
                 continue
             self.d_last_cmd = line
             c = line.split()[0]
+            ctx = self.g_interp.cur_context()
             if c == 's':
                 break
             elif c == 'c':
@@ -1130,7 +1131,6 @@ class Smalltalk(object):
                 self.context_print_byte()
                 print()
             elif c == 'i':
-                ctx = self.g_interp.i_context
                 if ctx.size <= 7:
                     print("STACK EMPTY")
                 else:
@@ -1142,10 +1142,10 @@ class Smalltalk(object):
                     print()
             elif c == 'x':
                 print()
-                self.context_print_state(self.g_interp.i_context)
+                self.context_print_state(ctx)
                 print()
             elif c == 'p':
-                parent = self.g_interp.i_context.parent
+                parent = ctx.parent
                 print()
                 if not parent.is_nil():
                     self.context_print_state(parent)
@@ -1159,6 +1159,7 @@ class Smalltalk(object):
                 print("h = help")
                 print("i = inspect stack top object")
                 print("q = quit immediately")
+                print("p = examine parent context")
                 print("x = examine context")
                 print()
             elif c == 'q':
@@ -1173,7 +1174,7 @@ class Smalltalk(object):
         Display the next bytecode to be executed in the current
         context.
         """
-        ctx = self.g_interp.i_context
+        ctx = self.g_interp.cur_context()
         ip = ctx.ip
         code = ctx.method.get_code()
         if not is_int(ctx[6]):
@@ -1185,7 +1186,7 @@ class Smalltalk(object):
         klassName = desc.klass
         print("<%s> %s[%d]:" % (klassName, selName, ip), self.dis_byte(code[ip]))
      
-    def global_state_print(self):
+    def global_print_state(self):
         """
         Print info for debug
         """
