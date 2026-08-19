@@ -696,7 +696,7 @@
 	
 	testFile [
 		"Test File class"
-		| f |
+		| f d |
 		(File name: '.') namesDo: [:name | ].
 		f := File executable. 
 		f exists ifFalse: self failBlk.
@@ -706,7 +706,9 @@
 		f isExecutable ifFalse: self failBlk.
 		"f hash ~= 2404636655 ifTrue: self failBlk."
 		f isAbsolute ifFalse: self failBlk.
-		f extension ~= '.py' ifTrue: self failBlk
+		f extension ~= '.py' ifTrue: self failBlk.
+		d := f open: FileStream mode: 'r' ifFail: [].
+		d next: 20; close
 	]
 	
 	testFileStream [
