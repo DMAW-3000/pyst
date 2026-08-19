@@ -209,7 +209,7 @@ class Object(object):
     Smalltalk base Object definition.
     """
     
-    # this is dictionary of all exising Objects
+    # this is a dictionary of all exising Objects
     _Obj_Table = _ObjTableLinear()
     
     # this will point to the Smalltalk class representing
@@ -628,8 +628,8 @@ class SymLink(Object):
         Create an new SymLink
         """
         super().__init__(2)
-        self.nextLink = linkObj
-        self.symbol = symObj
+        self.nextLink   = linkObj
+        self.symbol     = symObj
         self.make_readonly()
         
     @property
@@ -1084,11 +1084,7 @@ class Class(Object):
         self[11] = x
         
     def __str__(self):
-        if not self.name.is_nil():
-            s = str(self.name)
-        else:
-            s = '????'
-        return "CLASS(" + s + ")"
+        return "CLASS(" + str(self.name) + ")"
         
 
 class Metaclass(Object):
@@ -1922,6 +1918,7 @@ class WeakObject(Object):
         """
         Set one of the Object's child references
         """
+        # remove references to self from removed item
         current = self[idx]
         if hasattr(current, "_weak_obj"):
             try:
@@ -1930,11 +1927,15 @@ class WeakObject(Object):
                 pass
             if not len(current._weak_obj):
                 delattr(current, "_weak_obj")
+                
+        # add reference to self in added item
         if hasattr(x, "_weak_obj"):
             if self not in x._weak_obj:
                 x._weak_obj.append(self)
         else:
             x._weak_obj = [self]
+            
+        # store new item reference
         self._refs[idx] = weakref.ref(x)
         
     def __str__(self):
