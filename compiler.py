@@ -167,9 +167,7 @@ class Compile(object):
             self.parse_class_attr()
             tok = self._lex.token()
             
-        parse1 = None
-        parse2 = None
-        parse3 = None
+        parse1 = parse2 = None
             
         # check for class variables
         if (tok.type != "IDENT") and (tok.type != "OPERATOR") and (tok.type != "MESSAGEARG"):
@@ -194,28 +192,24 @@ class Compile(object):
                 parse2 = self._lex.token()
             if (parse1 is None) or (parse2 is None):
                 break
-            if (parse2.type == "IDENT") and (parse2.value == "class"):
+            if (parse1.type == "IDENT") and (parse2.type == "IDENT") and (parse2.value == "class"):
                 tok = self._lex.token()     # >>
                 if (tok.type != "OPERATOR") or (tok.value != ">>"):
-                    CompileError("expected >>")
+                    raise CompileError("expected >>")
                 self.parse_method([], [], True, False, True)
-                parse1 = None
-                parse2 = None
+                parse1 = parse2 = None
                 continue
             elif (parse1.type == "OPERATOR") and (parse2.type == "IDENT"):
                 self.parse_method([parse1.value], [parse2.value], True, True, False)
-                parse1 = None
-                parse2 = None
+                parse1 = parse2 = None
                 continue
             elif (parse1.type == "MESSAGEARG") and (parse2.type == "IDENT"):
                 self.parse_method([parse1.value], [parse2.value], True, False, False)
-                parse1 = None
-                parse2 = None
+                parse1 = parse2 = None
                 continue
             elif (parse1.type == "IDENT") and (parse2.type == "LBRACK"):
                 self.parse_method([parse1.value], [], False, False, False)
-                parse1 = None
-                parse2 = None
+                parse1 = parse2 = None
             else:
                 raise CompileError("bad method syntax")
         
