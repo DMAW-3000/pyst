@@ -255,6 +255,9 @@ class Smalltalk(object):
             inst.exec(klassObj, initSym, ())
             
         # standard I/O streams
+        sys.stdin.flush()
+        sys.stdout.flush()
+        sys.stderr.flush()
         inst.name_add_sym(inst.e_st_dict, "stdin",  FileStream(sys.stdin.fileno(),  "stdin",  1))
         inst.name_add_sym(inst.e_st_dict, "stdout", FileStream(sys.stdout.fileno(), "stdout", 2))
         inst.name_add_sym(inst.e_st_dict, "stderr", FileStream(sys.stderr.fileno(), "stderr", 2))
