@@ -387,11 +387,13 @@ class Smalltalk(object):
         """
         set_obj_del(None)
         
-    def save(self):
+    def save(self, imgName = None):
         """
         Save Smalltalk image to file
         """
-        print("Saving image", self.g_img_file)
+        if imgName is None:
+            imgName = self.g_img_file
+        print("Saving image", imgName)
         
         # clear caches
         self.g_interp.clear_slabs()
@@ -420,7 +422,7 @@ class Smalltalk(object):
                     obj[n] = ref
                     
         # save image to file
-        imgFile = open(self.g_img_file, "wb")
+        imgFile = open(imgName, "wb")
         dill.dump(objMap, imgFile)
         imgFile.close()
         
@@ -495,7 +497,11 @@ class Smalltalk(object):
                         elif objId == 2:
                             obj[n] = self.o_true
                         else:
-                            obj[n] = objMap[objId]
+                            try:
+                                obj[n] = objMap[objId]
+                            except KeyError:
+                                print("warning: missing ref:", r)
+                                obj[n] = self.o_nil
                             
                 # look for special objects
                 klass = obj.get_class()
