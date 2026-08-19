@@ -413,4 +413,5 @@ Init_Primitive = (
     "Directory_chdir",
     "FileDescriptor_fileOp",
     "ObjectMemory_update",
+    "ObjectMemory_snapshot",
 )

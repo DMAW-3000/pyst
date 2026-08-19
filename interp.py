@@ -2947,7 +2947,18 @@ class Interp(object):
             recv[2] = len(self.i_slab_blk)      # numBlockSlab
             ctx.push(recv)
             return True
-        return False        
+        return False
+
+    def p_ObjectMemory_snapshot(self, ctx, recv, argList):
+        """
+        Primitve handler for ObjectMemory snapshot
+        """
+        filePath   = argList[0]
+        if is_obj(filePath) and (filePath.get_class() is self._sys.k_string()):
+            self._sys.save(self._py_str(filePath))
+            ctx.push(0)
+            return True
+        return False
         
     def _is_large_int(self, x):
         """
