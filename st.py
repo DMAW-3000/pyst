@@ -2076,7 +2076,7 @@ class ObjectReference(object):
         return self._obj_id
         
     def __str__(self):
-        return "OBJREF<" + str(self._obj_id) + ">"
+        return "<ObjRef(" + str(self._obj_id) + ")>"
         
 
 class SmalltalkException(Exception):
