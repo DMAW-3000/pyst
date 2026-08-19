@@ -796,6 +796,21 @@ class _Dict(Object):
     def size_n(n):
         raise NotImplementedError("_Dict subclass responsibility")
         
+    def __init__(self, sz):
+        """
+        Create a Dictionary object.
+        """
+        super().__init__(sz)
+        self.tally = 0
+        
+    @property
+    def tally(self):
+        return self[0]
+        
+    @tally.setter
+    def tally(self, x):
+        self[0] = x
+        
         
 class Dictionary(_Dict):
     """
@@ -813,21 +828,6 @@ class Dictionary(_Dict):
         This should be a power of 2.
         """
         return n + 1
-    
-    def __init__(self, sz):
-        """
-        Create a Dictionary object.
-        """
-        super().__init__(sz)
-        self.tally = 0
-        
-    @property
-    def tally(self):
-        return self[0]
-        
-    @tally.setter
-    def tally(self, x):
-        self[0] = x
         
     def __str__(self):
         return "DICT(%d)" % self.tally
@@ -850,21 +850,6 @@ class BindingDictionary(_Dict):
         This should be a power of 2.
         """
         return n + 2
-    
-    def __init__(self, sz):
-        """
-        Create a BindingDictionary object.
-        """
-        super().__init__(sz)
-        self.tally = 0
-        
-    @property
-    def tally(self):
-        return self[0]
-        
-    @tally.setter
-    def tally(self, x):
-        self[0] = x
         
     @property
     def environment(self):
@@ -895,21 +880,6 @@ class MethodDictionary(_Dict):
         This should be a power of 2.
         """
         return (n << 1) + 2
-    
-    def __init__(self, sz):
-        """
-        Create a MethodDictionary object.
-        """
-        super().__init__(sz)
-        self.tally = 0
-        
-    @property
-    def tally(self):
-        return self[0]
-        
-    @tally.setter
-    def tally(self, x):
-        self[0] = x
         
     @property
     def mutex(self):
@@ -943,22 +913,6 @@ class Namespace(_Dict):
         This should be a power of 2.
         """
         return n + 5
-    
-    def __init__(self, sz):
-        """
-        Create a Namespace object.  Size is the number
-        of initial storage slots and should be a power of 2.
-        """
-        super().__init__(sz)
-        self.tally = 0
-        
-    @property
-    def tally(self):
-        return self[0]
-        
-    @tally.setter
-    def tally(self, x):
-        self[0] = x
         
     @property
     def environment(self):
