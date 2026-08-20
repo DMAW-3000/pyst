@@ -267,6 +267,28 @@ class Interp(object):
         ctx.flags               = 4
         return ctx
         
+    def resume(self, ctx):
+        """
+        Resume execution of the interpreter at the given context
+        """
+        
+        # send message and run until control
+        # returns to a root context
+        self.i_context = ctx
+        ctx.push(0)
+        self.exec()
+        ctx = self.i_context
+        
+        # pop return value from stack
+        ret = ctx.pop()
+        
+        # free root context
+        self.free_mth_context(ctx)
+        
+        # restore context and return value
+        self.i_context = self._nil()
+        return ret
+        
     def send_message(self, numArgs, isSuper, selObj):
         """
         Send a message.  This assumes that the receiver,

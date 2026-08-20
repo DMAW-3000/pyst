@@ -380,11 +380,15 @@ class Smalltalk(object):
         initSym = inst.symbol_find("initialize")
         inst.exec(inst.k_object_memory(), initSym, ())
         
-        # create TestSuite object and run
-        newSym = inst.symbol_find("new")
-        runSym = inst.symbol_find("runAll")
-        testObj = inst.exec(inst.k_test(), newSym, ())
-        result = inst.exec(testObj, runSym, ())
+        if context.is_nil():
+            # create TestSuite object and run
+            newSym = inst.symbol_find("new")
+            runSym = inst.symbol_find("runAll")
+            testObj = inst.exec(inst.k_test(), newSym, ())
+            result = inst.exec(testObj, runSym, ())
+        else:
+            # resume execution at snapshot
+            result = inst.g_interp.resume(context)
         
         print()
         print(result)

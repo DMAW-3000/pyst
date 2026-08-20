@@ -56,7 +56,9 @@
 				testStream;
 				testFile;
 				testFileStream;
-				testException
+				testException.
+			ObjectMemory snapshot: 'snap.sti'.
+			'Finished' printNl
 	]
 	
 	initialize [
