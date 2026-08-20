@@ -274,10 +274,10 @@ class Interp(object):
         
         # send message and run until control
         # returns to a root context
-        self.i_context = ctx
-        ctx.push(0)
+        self.i_context = ctx    # snapshot: context
+        ctx.push(0)             # emulate return value from primSnapshot:
         self.exec()
-        ctx = self.i_context
+        ctx = self.i_context    # root context
         
         # pop return value from stack
         ret = ctx.pop()
@@ -461,7 +461,8 @@ class Interp(object):
             
     def free_mth_context(self, ctx):
         """
-        Release an unused MethodContext
+        Release an unused MethodContext. The MethodContext object
+        should not be referenced after this method returns.
         """
         # reset context state
         ctx.resize(7)
@@ -488,7 +489,8 @@ class Interp(object):
             
     def free_blk_context(self, ctx):
         """
-        Release an unused BlockContext
+        Release an unused BlockContext. The BlockContext object
+        should not be referenced after this method returns.
         """
         # reset context state
         ctx.resize(7)
@@ -2769,11 +2771,12 @@ class Interp(object):
                 self.s_errno = ex.errno
                 ctx.push(-1)
                 return True
+            utcOffset = self._utc_offset()
             statObj[0] = pyStat.st_mode
             statObj[1] = pyStat.st_size
-            statObj[2] = pyStat.st_atime - 946684800 + self._utc_offset()
-            statObj[3] = pyStat.st_mtime - 946684800 + self._utc_offset()
-            statObj[4] = pyStat.st_ctime - 946684800 + self._utc_offset()
+            statObj[2] = pyStat.st_atime - 946684800 + utcOffset
+            statObj[3] = pyStat.st_mtime - 946684800 + utcOffset
+            statObj[4] = pyStat.st_ctime - 946684800 + utcOffset
             ctx.push(0)
             return True
         return False

@@ -388,7 +388,7 @@ class Smalltalk(object):
             result = inst.exec(testObj, runSym, ())
         else:
             # resume execution at snapshot
-            result = inst.g_interp.resume(context)
+            result = inst.resume(context)
         
         print()
         print(result)
@@ -400,6 +400,17 @@ class Smalltalk(object):
         """
         try:
             reply = self.g_interp.send_message_extern(recv, sel, args)
+        except Exception:
+            self.stop()
+            raise
+        return reply
+        
+    def resume(self, ctx):
+        """
+        Resume execution of the interpreter at a given context
+        """
+        try:
+            reply = self.g_interp.resume(ctx)
         except Exception:
             self.stop()
             raise
@@ -451,8 +462,6 @@ class Smalltalk(object):
         # context = object ID of currently executing context parent context
         # obj_map = dictionary of objects with broken references
         context = self.g_interp.cur_context()
-        if not context.is_nil():
-            context = context.parent
         imgFile = open(imgName, "wb")
         dill.dump((1, context.get_id(), objMap), imgFile)
         imgFile.close()

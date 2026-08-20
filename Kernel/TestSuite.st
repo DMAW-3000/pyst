@@ -56,9 +56,9 @@
 				testStream;
 				testFile;
 				testFileStream;
-				testException.
-			ObjectMemory snapshot: 'snap.sti'.
-			'Finished' printNl
+				testException;
+				testObjMemory.
+		'Tests finished' displayNl
 	]
 	
 	initialize [
@@ -323,8 +323,6 @@
 	testObject [
 		"Test advanced features of Objects"
 		| x y |
-		x := ObjectMemory current.
-		x numObject > 0 ifFalse: self failBlk.
 		x := Object new.
 		x dependents size ~= 0 ifTrue: self failBlk.
 		y := 'xyz'. x addDependent: y.
@@ -726,5 +724,13 @@
 	testException [
 		"Test exception handling"
 		Exception new
+	]
+	
+	testObjMemory [
+		"Test system object memory manager"
+		| x |
+		"ObjectMemory snapshot: 'snap.sti'."
+		x := ObjectMemory current.
+		x numObject > 0 ifFalse: self failBlk
 	]
 ]
