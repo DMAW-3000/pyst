@@ -698,8 +698,8 @@ class Interp(object):
         Send a generic message.  This method assumes the sender has setup the
         context stack.  The reply is pushed onto the stack.
         """
-        self.send_message(arg, False, None)
         ctx.ip += 2
+        self.send_message(arg, False, None)
         
     def b_send_super(self, ctx, arg):
         """
@@ -707,208 +707,208 @@ class Interp(object):
         Send a generic message to the receiver's superclass.  This method assumes the sender 
         has setup the context stack.  The reply is pushed onto the stack.
         """
-        self.send_message(arg, True, None)
         ctx.ip += 2
+        self.send_message(arg, True, None)
         
     def b_send_spec_value(self, ctx, arg):
         """
         Execute the B_VALUE_SPECIAL bytecode.
         Handles value unary messages.
         """
-        self.send_message(arg, False, self._sel_value())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_value())
         
     def b_send_spec_size(self, ctx, arg):
         """
         Execute the B_SIZE_SPECIAL bytecode.
         Handles size unary messages.
         """
-        self.send_message(arg, False, self._sel_size())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_size())
         
     def b_send_spec_isnil(self, ctx, arg):
         """
         Execute the B_IS_NIL_SPECIAL bytecode.
         Handles isNil unary messages.
         """
-        self.send_message(arg, False, self._sel_isnil())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_isnil())
         
     def b_send_spec_notnil(self, ctx, arg):
         """
         Execute the B_NOT_NIL_SPECIAL bytecode.
         Handle notNil unary messages.
         """
-        self.send_message(arg, False, self._sel_notnil())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_notnil())
         
     def b_send_spec_class(self, ctx, arg):
         """
         Execute the B_CLASS_SPECIAL bytecode.
         Handles class unary messages.
         """
-        self.send_message(arg, False, self._sel_class())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_class())
         
     def b_send_spec_at(self, ctx, arg):
         """
         Execute the B_AT_SPECIAL bytecode.
         Handles at: keyword messages.
         """
-        self.send_message(arg, False, self._sel_at())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_at())
         
     def b_send_spec_at_put(self, ctx, arg):
         """
         Execute the B_AT_PUT_SPECIAL bytecode.
         Handles at:put: keyword messages.
         """
-        self.send_message(arg, False, self._sel_at_put())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_at_put())
         
     def b_send_spec_value_colon(self, ctx, arg):
         """
         Execute the B_VALUE_COLON_SPECI bytecode.
         Handles value: keyword messages.
         """
-        self.send_message(arg, False, self._sel_value_colon())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_value_colon())
         
     def b_send_spec_plus(self, ctx, arg):
         """
         Execute the B_PLUS_SPECIAL bytecode.
         Handles + binary messages.
         """
-        self.send_message(arg, False, self._sel_plus())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_plus())
         
     def b_send_spec_minus(self, ctx, arg):
         """
         Execute the B_MINUS_SPECIAL bytecode.
         Handles - binary messages.
         """
-        self.send_message(arg, False, self._sel_minus())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_minus())
         
     def b_send_spec_less_than(self, ctx, arg):
         """
         Execute the B_LESS_THAN_SPECIAL bytecode.
         Handles < binary messages.
         """
-        self.send_message(arg, False, self._sel_less_than())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_less_than())
         
     def b_send_spec_greater_than(self, ctx, arg):
         """
         Execute the B_GREATER_THAN_SPECIAL bytecode.
         Handles > binary messages.
         """
-        self.send_message(arg, False, self._sel_greater_than())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_greater_than())
         
     def b_send_spec_less_equ(self, ctx, arg):
         """
         Execute the B_LESS_EQUAL_SPECIAL bytecode.
         Handles <= binary messages.
         """
-        self.send_message(arg, False, self._sel_less_equ())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_less_equ())
         
     def b_send_spec_greater_equ(self, ctx, arg):
         """
         Execute the B_GREATER_EQUAL_SPECIAL bytecode.
         Handles >= binary messages.
         """
-        self.send_message(arg, False, self._sel_greater_equ())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_greater_equ())
         
     def b_send_spec_equal(self, ctx, arg):
         """
         Execute the B_EQUAL_SPECIAL bytecode.
         Handles = binary messages.
         """
-        self.send_message(arg, False, self._sel_equal())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_equal())
         
     def b_send_spec_not_equal(self, ctx, arg):
         """
         Execute the B_NOT_EQUAL_SPECIAL bytecode.
         Handles ~= binary messages.
         """
-        self.send_message(arg, False, self._sel_not_equal())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_not_equal())
         
     def b_send_spec_times(self, ctx, arg):
         """
         Execute the B_TIMES_SPECIAL bytecode.
         Handles * binary messages.
         """
-        self.send_message(arg, False, self._sel_times())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_times())
         
     def b_send_spec_divide(self, ctx, arg):
         """
         Execute the B_DIVIDE_SPECIAL bytecode.
         Handles / binary messages.
         """
-        self.send_message(arg, False, self._sel_divide())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_divide())
         
     def b_send_spec_int_divide(self, ctx, arg):
         """
         Execute the B_INTEGER_DIVIDE_SPECIAL bytecode.
         Handles // binary messages.
         """
-        self.send_message(arg, False, self._sel_int_divide())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_int_divide())
         
     def b_send_spec_remainder(self, ctx, arg):
         """
         Execute the B_REMAINDER_SPECIAL bytecode.
         Handles \\ binary messages.
         """
-        self.send_message(arg, False, self._sel_remainder())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_remainder())
         
     def b_send_spec_identity(self, ctx, arg):
         """
         Execute the B_SAME_OBJECT_SPECIAL bytecode.
         Handles == binary messages.
         """
-        self.send_message(arg, False, self._sel_identity())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_identity())
         
     def b_send_spec_bit_and(self, ctx, arg):
         """
         Execute the B_BIT_AND_SPECIAL bytecode.
         Handles bitAnd: keyword messages.
         """
-        self.send_message(arg, False, self._sel_bit_and())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_bit_and())
         
     def b_send_spec_bit_or(self, ctx, arg):
         """
         Execute the B_BIT_OR_SPECIAL bytecode.
         Handles bitOr: keyword messages.
         """
-        self.send_message(arg, False, self._sel_bit_or())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_bit_or())
         
     def b_send_spec_bit_xor(self, ctx, arg):
         """
         Execute the B_BIT_XOR_SPECIAL bytecode,
         Handles bitXor: keyword messages.
         """
-        self.send_message(arg, False, self._sel_bit_xor())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_bit_xor())
         
     def b_send_spec_bit_shift(self, ctx, arg):
         """
         Execute the B_BIT_SHIFT_SPECIAL bytecode,
         Handles bitShift: keyword messages.
         """
-        self.send_message(arg, False, self._sel_bit_shift())
         ctx.ip += 2
+        self.send_message(arg, False, self._sel_bit_shift())
         
     def b_meth_ret(self, ctx, arg):
         """
