@@ -94,6 +94,10 @@ class Interp(object):
         self.i_alloc_blk    = 0
         self.i_alloc_mth    = 0
         
+        # cached empty method
+        self._nil_method            = CompiledMethod()
+        self._nil_method.descriptor = MethodInfo(self._nil())
+        
         # file operations handler table
         self.i_fileop = fTbl = [self._file_undef] * 20
         fTbl[self.FILE_OPEN_FILE]       = self.f_open
@@ -259,8 +263,7 @@ class Interp(object):
         ctx                     = self.alloc_mth_context()
         ctx.parent              = self._nil()
         ctx.receiver            = self._nil()
-        ctx.method              = CompiledMethod()
-        ctx.method.descriptor   = MethodInfo(self._nil())
+        ctx.method              = self._nil_method
         ctx.flags               = 4
         return ctx
         
