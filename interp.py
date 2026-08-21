@@ -571,7 +571,7 @@ class Interp(object):
                     # push variable to stack
                     ctx.push(var[1])
                     ctx.ip += 2
-                    return 2
+                    return
             klassObj = klassObj.superClass
             
         # look in globals
@@ -696,7 +696,7 @@ class Interp(object):
                     # pop variable from stack and store in dict assoc
                     var[1] = ctx.pop()
                     ctx.ip += 2
-                    return 2
+                    return
             klassObj = klassObj.superClass
             
         # look in globals
