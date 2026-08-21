@@ -733,7 +733,7 @@ class Smalltalk(object):
             if not self.g_interp.add_primitive(primName):
                 self.fatal_err("cannot find primitive handler", primName)
             symObj = self.symbol_find_or_add("VMpr_" + primName)
-            self.dict_add(primDict, symObj, Association(symObj, primId))
+            self.dict_add(primDict, symObj, VariableBinding(symObj, primId, primDict))
         if verbose:
             print("VM Primitives:")
             self.dict_print(primDict)
@@ -1040,7 +1040,7 @@ class Smalltalk(object):
         bindDict.environment = klassObj
         for s in varNames:
             symObj = self.symbol_find_or_add(s)
-            self.dict_add(bindDict, symObj, Association(symObj, self.o_nil))
+            self.dict_add(bindDict, symObj, VariableBinding(symObj, self.o_nil, bindDict))
         return bindDict
         
     def create_shared_pools(self, poolNames):
